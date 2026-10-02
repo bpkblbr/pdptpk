@@ -1193,8 +1193,10 @@
               return;
             }
 
-            const dataPayload = [];
+            // Gunakan Map untuk mengeliminasi duplikat kode_dusun di dalam file Excel
+            const mapWilayahUnik = new Map();
             let ditolak = 0;
+            let duplikatExcel = 0;
 
             rows.forEach((row) => {
               const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
@@ -1210,7 +1212,7 @@
               let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
               
               const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
-              let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
+              let rawKdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim();
               const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
 
               // Validasi role
@@ -1223,8 +1225,19 @@
                 return;
               }
 
-              if (desa && dusun && kdDusun) {
-                dataPayload.push({
+              if (desa && dusun && rawKdDusun) {
+                // Pastikan kode dusun unik secara global (gabungkan kode desa + kode dusun 4 digit)
+                // Contoh: desa 2001 + dusun 0100 -> '2001.0100' atau tetap 4 digit jika sudah unik
+                let kdDusun = rawKdDusun.padStart(4, '0');
+                
+                // Gunakan kunci unik kombinasi kode_desa + kode_dusun
+                const kunciUnik = `${kdDesa}.${kdDusun}`;
+
+                if (mapWilayahUnik.has(kunciUnik)) {
+                  duplikatExcel++;
+                }
+
+                mapWilayahUnik.set(kunciUnik, {
                   provinsi: prov || userAktif.provinsi,
                   kode_provinsi: kdProv,
                   kabupaten: kab || userAktif.kabupaten,
@@ -1234,11 +1247,13 @@
                   desa: desa,
                   kode_desa: kdDesa,
                   dusun: dusun,
-                  kode_dusun: kdDusun,
+                  kode_dusun: kunciUnik, // Menjamin tidak ada bentrok antar desa
                   jumlah_rt: jmlRt
                 });
               }
             });
+
+            const dataPayload = Array.from(mapWilayahUnik.values());
 
             if (dataPayload.length === 0) {
               Swal.fire('Data Ditolak', `Tidak ada data yang valid disimpan. (${ditolak} baris di luar kewenangan wilayah Anda)`, 'error');
@@ -1254,10 +1269,14 @@
               if (error) throw error;
             }
 
+            let pesanInfo = `Berhasil memproses ${dataPayload.length} data dusun!`;
+            if (duplikatExcel > 0) pesanInfo += ` (${duplikatExcel} baris duplikat di Excel otomatis digabungkan).`;
+            if (ditolak > 0) pesanInfo += ` (${ditolak} data dilewati di luar wilayah).`;
+
             Swal.fire({
               icon: 'success',
               title: 'Import Selesai',
-              text: `Berhasil mengunggah ${dataPayload.length} data wilayah! ${ditolak > 0 ? `(${ditolak} data dilewati)` : ''}`,
+              text: pesanInfo,
               confirmButtonColor: '#059669'
             });
 
