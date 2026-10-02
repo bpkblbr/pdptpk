@@ -9,24 +9,23 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Format teks input selalu UPPERCASE khusus isian identitas (bukan login) */
     .form-uppercase input[type="text"], 
     .form-uppercase textarea, 
     .form-uppercase select {
       text-transform: uppercase;
     }
     .halaman-tampilan {
-      display: none;
+      display: none !important;
     }
     .halaman-tampilan.aktif {
-      display: block;
+      display: block !important;
       animation: fadeIn 0.2s ease-in-out;
     }
     .halaman-form {
-      display: none;
+      display: none !important;
     }
     .halaman-form.aktif {
-      display: block;
+      display: block !important;
       animation: fadeIn 0.2s ease-in-out;
     }
     @keyframes fadeIn {
@@ -35,7 +34,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen antialiased">
 
   <!-- ========================================================
        1. HALAMAN LOGIN
@@ -44,7 +43,7 @@
     <div class="w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
       
       <!-- Header Login -->
-      <div class="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-6 sm:p-8 text-center text-white relative">
+      <div class="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-6 sm:p-8 text-center text-white">
         <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
           <svg class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -60,7 +59,7 @@
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Username / Email</label>
           <div class="relative">
             <input type="text" id="login_username" required placeholder="superadmin" autocomplete="username"
-                   class="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition font-medium" />
+                   class="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-medium" />
             <div class="absolute left-3.5 top-3.5 text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -73,14 +72,14 @@
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Kata Sandi (Password)</label>
           <div class="relative">
             <input type="password" id="login_password" required placeholder="AdminPus2026!" autocomplete="current-password"
-                   class="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition font-medium" />
+                   class="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-medium" />
             <div class="absolute left-3.5 top-3.5 text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
             <!-- Tombol Toggle Password -->
-            <button type="button" id="btnTogglePassword" aria-label="Lihat Password" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5">
+            <button type="button" onclick="togglePasswordEye()" aria-label="Lihat Password" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5">
               <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -90,8 +89,8 @@
         </div>
 
         <div class="pt-3 space-y-2.5">
-          <button type="submit" id="btnSubmitLogin"
-                  class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition uppercase text-sm tracking-wide">
+          <button type="button" onclick="eksekusiLogin()" id="btnSubmitLogin"
+                  class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg transition uppercase text-sm tracking-wide">
             MASUK KE SISTEM
           </button>
           <button type="button" onclick="alert('Hubungi admin jika memerlukan reset akun.')"
@@ -133,7 +132,7 @@
       <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-2xl mx-auto">Kelola pendataan keluarga terpadu, rekapitulasi capaian KB, dan pemantauan sasaran lapangan</p>
     </div>
 
-    <!-- Pill Navigasi Cepat (Quick Access Pills) -->
+    <!-- Pill Navigasi Cepat -->
     <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
       <button onclick="navigasiKe('kelola_wilayah')" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         📍 KELOLA WILAYAH
@@ -155,7 +154,7 @@
     <!-- Grid Kartu Menu Utama -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
       
-      <!-- Kartu 1: Form Input Pendataan (Utama) -->
+      <!-- Kartu 1: Form Input Pendataan -->
       <div onclick="bukaFormulirPendataan()" class="cursor-pointer bg-white hover:bg-emerald-50/60 p-6 rounded-2xl border-2 border-emerald-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
         <div class="space-y-3">
           <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
@@ -539,45 +538,57 @@
   </div>
 
   <!-- ========================================================
-       4. JAVASCRIPT INTEGRASI & LOGIKA APLIKASI
+       4. JAVASCRIPT LOGIKA UTAMA
        ======================================================== -->
   <script>
-    // Inisialisasi Klien Supabase
     const SUPABASE_URL = "https://suyeimwyswhpzymbdwiw.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1eWVpbXd5c3docHp5bWJkd2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODEzNDUsImV4cCI6MjEwNjQ1NzM0NX0.BUAMHO174gMlXKxUrVG8eqk47daD4YBntv0RPrHWYJQ";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(e) {
+      console.warn("Inisialisasi Supabase gagal:", e);
+    }
 
     let cacheWilayah = [];
     let totalHalamanAnggota = 0;
 
     // --- TOGGLE PASSWORD EYE ---
-    const btnTogglePassword = document.getElementById('btnTogglePassword');
-    const inputPassword = document.getElementById('login_password');
-    const eyeIcon = document.getElementById('eyeIcon');
+    function togglePasswordEye() {
+      const inputPass = document.getElementById('login_password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (!inputPass || !eyeIcon) return;
 
-    if (btnTogglePassword && inputPassword && eyeIcon) {
-      btnTogglePassword.addEventListener('click', () => {
-        const isPassword = inputPassword.getAttribute('type') === 'password';
-        inputPassword.setAttribute('type', isPassword ? 'text' : 'password');
-        eyeIcon.innerHTML = isPassword
-          ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`
-          : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-      });
+      const isPass = inputPass.getAttribute('type') === 'password';
+      inputPass.setAttribute('type', isPass ? 'text' : 'password');
+      eyeIcon.innerHTML = isPass
+        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`
+        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
     }
 
-    // --- MANAJEMEN HALAMAN TAMPILAN UTAMA ---
+    // --- NAVIGASI LAYAR UTAMA ---
     function tampilkanLayar(layarId) {
-      document.querySelectorAll('.halaman-tampilan').forEach(el => el.classList.remove('aktif'));
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir'];
+      layarList.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.remove('aktif');
+        }
+      });
       const target = document.getElementById(layarId);
-      if (target) target.classList.add('aktif');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (target) {
+        target.classList.add('aktif');
+      }
+      window.scrollTo(0, 0);
     }
 
-    // --- FUNGSI LOGIN (PASTI BISA MASUK) ---
-    async function eksekusiLogin() {
+    // --- FUNGSI LOGIN (INSTAN & SINKRON) ---
+    function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
-      const btn = document.getElementById('btnSubmitLogin');
 
       const user = userEl ? userEl.value.trim() : '';
       const pass = passEl ? passEl.value.trim() : '';
@@ -587,56 +598,28 @@
         return;
       }
 
-      btn.disabled = true;
-      btn.innerText = "MEMERIKSA AKUN...";
+      const uLow = user.toLowerCase();
+      const pLow = pass.toLowerCase();
 
-      // 1. Prioritas Utama: Super Admin Instan
-      const userLower = user.toLowerCase();
-      const passLower = pass.toLowerCase();
-
-      if ((userLower === 'superadmin' || userLower === 'superadmin@lembar.go.id') && 
-          (pass === 'AdminPus2026!' || passLower === 'adminpus2026!')) {
+      // 1. Akun Super Admin Default (Langsung lolos tanpa request jaringan)
+      if ((uLow === 'superadmin' || uLow === 'superadmin@lembar.go.id') && 
+          (pass === 'AdminPus2026!' || pLow === 'adminpus2026!')) {
         document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
         tampilkanLayar('tampilan_dashboard');
-        btn.disabled = false;
-        btn.innerText = "MASUK KE SISTEM";
         return;
       }
 
-      // 2. Jika akun email selain default, coba Supabase Auth
-      if (user.includes('@')) {
-        try {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: user,
-            password: pass
-          });
-          if (!error && data?.user) {
-            document.getElementById('userNameDisplay').innerText = data.user.email.toUpperCase();
-            tampilkanLayar('tampilan_dashboard');
-            btn.disabled = false;
-            btn.innerText = "MASUK KE SISTEM";
-            return;
-          }
-        } catch (netErr) {
-          console.warn("Supabase auth offline:", netErr);
-        }
-      }
-
-      // 3. Fallback Login Kader/Petugas (Minimal 3 karakter)
+      // 2. Fallback Login Petugas / Kader Lapangan (Password minimal 3 karakter)
       if (pass.length >= 3) {
         document.getElementById('userNameDisplay').innerText = user.toUpperCase();
         tampilkanLayar('tampilan_dashboard');
       } else {
-        alert("Kata sandi minimal 3 karakter!");
+        alert("Kata sandi salah atau minimal 3 karakter!");
       }
-
-      btn.disabled = false;
-      btn.innerText = "MASUK KE SISTEM";
     }
 
     function prosesLogout() {
       if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
-        try { supabaseClient.auth.signOut(); } catch(e){}
         const form = document.getElementById('formLogin');
         if (form) form.reset();
         tampilkanLayar('tampilan_login');
@@ -656,7 +639,7 @@
       alert(`Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`);
     }
 
-    // --- LOGIKA FORMULIR WIZARD (MULTI-STEP) ---
+    // --- FORM WIZARD (MULTI-STEP) ---
     function sembunyikanSemuaHalamanForm() {
       document.querySelectorAll('.halaman-form').forEach(el => el.classList.remove('aktif'));
     }
@@ -667,11 +650,12 @@
       if (target) target.classList.add('aktif');
       const label = document.getElementById('labelTotalTahap');
       if (label) label.innerText = labelJudul.toUpperCase();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo(0, 0);
     }
 
     // --- MASTER WILAYAH SUPABASE ---
     async function muatMasterWilayah() {
+      if (!supabaseClient) return;
       try {
         const { data, error } = await supabaseClient
           .from('master_wilayah')
@@ -690,7 +674,7 @@
           });
         }
       } catch (err) {
-        console.warn("Gagal memuat master wilayah dari server:", err);
+        console.warn("Gagal mengambil master wilayah:", err);
       }
     }
 
@@ -994,7 +978,7 @@
       }
     }
 
-    // --- SIMPAN FORMULIR PENDATAAN KE SUPABASE ---
+    // --- SUBMIT DATA KE SUPABASE ---
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
