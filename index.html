@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- PapaParse CDN untuk Import/Export CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     .form-uppercase input[type="text"], 
     .form-uppercase textarea, 
@@ -58,7 +60,7 @@
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Username / Email</label>
           <div class="relative">
-            <input type="text" id="login_username" required placeholder="superadmin" autocomplete="username"
+            <input type="text" id="login_username" required placeholder="superadmin / adminkab / adminkec" autocomplete="username"
                    class="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-medium" />
             <div class="absolute left-3.5 top-3.5 text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,10 +95,12 @@
                   class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg transition uppercase text-sm tracking-wide">
             MASUK KE SISTEM
           </button>
-          <button type="button" onclick="alert('Hubungi admin jika memerlukan reset akun.')"
-                  class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl border border-rose-200 transition uppercase text-xs">
-            KELUAR APLIKASI
-          </button>
+          <div class="p-2.5 bg-slate-50 border rounded-xl text-[11px] text-slate-500 text-center space-y-0.5">
+            <p><strong>Akun Demo:</strong></p>
+            <p>Super Admin: <code>superadmin</code> | Kab: <code>adminkab</code></p>
+            <p>Kec: <code>adminkec</code> | Kader Desa: <code>kaderdesa</code></p>
+            <p>(Password: <code>AdminPus2026!</code> atau min 3 karakter)</p>
+          </div>
         </div>
       </form>
     </div>
@@ -115,7 +119,10 @@
         </div>
         <div>
           <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Selamat Datang,</p>
-          <h2 id="userNameDisplay" class="text-sm sm:text-base font-black text-slate-800 uppercase">SUPER ADMINISTRATOR</h2>
+          <div class="flex items-center gap-2">
+            <h2 id="userNameDisplay" class="text-sm sm:text-base font-black text-slate-800 uppercase">SUPER ADMINISTRATOR</h2>
+            <span id="roleBadge" class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">SUPER ADMIN</span>
+          </div>
         </div>
       </div>
       <button onclick="prosesLogout()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition uppercase">
@@ -132,9 +139,9 @@
       <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-2xl mx-auto">Kelola pendataan keluarga terpadu, rekapitulasi capaian KB, dan pemantauan sasaran lapangan</p>
     </div>
 
-    <!-- Pill Navigasi Cepat -->
+    <!-- Pill Navigasi Cepat (Kelola Wilayah dibatasi sesuai role) -->
     <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
-      <button onclick="navigasiKe('kelola_wilayah')" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+      <button id="btnPillKelolaWilayah" onclick="bukaKelolaWilayah()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         📍 KELOLA WILAYAH
       </button>
       <button onclick="navigasiKe('kelola_login')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
@@ -229,7 +236,129 @@
   </div>
 
   <!-- ========================================================
-       3. HALAMAN WIZARD FORMULIR PENDATAAN KELUARGA
+       3. HALAMAN KELOLA WILAYAH (ROLE-BASED & BATCH IMPORT)
+       ======================================================== -->
+  <div id="tampilan_kelola_wilayah" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-7 space-y-6">
+      
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+        <div>
+          <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-2 transition">
+            &larr; KEMBALI KE DASHBOARD
+          </button>
+          <h1 class="text-lg sm:text-2xl font-black text-slate-800 uppercase">KELOLA MASTER WILAYAH</h1>
+          <p id="labelCakupanWilayah" class="text-xs text-emerald-700 font-bold uppercase mt-0.5">
+            Cakupan Akses: SEMUA WILAYAH (SUPER ADMIN)
+          </p>
+        </div>
+
+        <!-- Tombol Download Template & Upload CSV -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="unduhTemplateWilayahCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+            📥 DOWNLOAD TEMPLATE CSV
+          </button>
+          
+          <label class="cursor-pointer px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+            📤 UPLOAD CSV
+            <input type="file" id="inputUploadCSV" accept=".csv" onchange="unggahFileWilayahCSV(event)" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Form Input Manual Wilayah -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 form-uppercase">
+        <h2 class="text-sm font-black text-emerald-800 uppercase flex items-center gap-2">
+          <span>➕ TAMBAH DATA WILAYAH SECARA MANUAL</span>
+        </h2>
+
+        <form id="formManualWilayah" onsubmit="event.preventDefault(); simpanWilayahManual();" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Provinsi *</label>
+            <input type="text" id="man_provinsi" required class="w-full p-2 border rounded-lg uppercase" placeholder="NUSA TENGGARA BARAT" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Provinsi *</label>
+            <input type="text" id="man_kode_provinsi" required class="w-full p-2 border rounded-lg uppercase" placeholder="52" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kabupaten *</label>
+            <input type="text" id="man_kabupaten" required class="w-full p-2 border rounded-lg uppercase" placeholder="LOMBOK BARAT" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kabupaten *</label>
+            <input type="text" id="man_kode_kabupaten" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kecamatan *</label>
+            <input type="text" id="man_kecamatan" required class="w-full p-2 border rounded-lg uppercase" placeholder="LEMBAR" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kecamatan *</label>
+            <input type="text" id="man_kode_kecamatan" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Desa / Kelurahan *</label>
+            <input type="text" id="man_desa" required class="w-full p-2 border rounded-lg uppercase" placeholder="LEMBAR" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Desa *</label>
+            <input type="text" id="man_kode_desa" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08.2001" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Dusun / Lingkungan *</label>
+            <input type="text" id="man_dusun" required class="w-full p-2 border rounded-lg uppercase" placeholder="SELAMPANG" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Dusun (Unik) *</label>
+            <input type="text" id="man_kode_dusun" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08.2001.001" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Jumlah RT *</label>
+            <input type="number" id="man_jumlah_rt" required min="1" max="50" class="w-full p-2 border rounded-lg font-bold" placeholder="4" />
+          </div>
+          <div class="flex items-end">
+            <button type="submit" id="btnSimpanManualWilayah" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow uppercase transition">
+              SIMPAN WILAYAH
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabel Data Master Wilayah Terkini -->
+      <div class="space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h2 class="text-sm font-black text-slate-800 uppercase">DAFTAR MASTER WILAYAH TERDAFTAR</h2>
+          <input type="text" id="cariTabelWilayah" oninput="filterTabelWilayah()" placeholder="CARI DESA / DUSUN..." class="px-3 py-1.5 border rounded-lg text-xs uppercase w-full sm:w-64" />
+        </div>
+
+        <div class="overflow-x-auto border rounded-2xl shadow-sm">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold border-b">
+              <tr>
+                <th class="p-3">KECAMATAN</th>
+                <th class="p-3">DESA</th>
+                <th class="p-3">KODE DESA</th>
+                <th class="p-3">DUSUN</th>
+                <th class="p-3">KODE DUSUN</th>
+                <th class="p-3 text-center">JUMLAH RT</th>
+                <th class="p-3 text-center">AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMasterWilayah" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="7" class="p-4 text-center text-slate-400 uppercase">Memuat data master wilayah...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
+       4. HALAMAN WIZARD FORMULIR PENDATAAN KELUARGA
        ======================================================== -->
   <div id="tampilan_formulir" class="halaman-tampilan max-w-5xl mx-auto p-3 sm:p-6 lg:p-8">
     <div class="bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200 form-uppercase">
@@ -538,7 +667,7 @@
   </div>
 
   <!-- ========================================================
-       4. JAVASCRIPT LOGIKA UTAMA
+       5. JAVASCRIPT LOGIKA UTAMA & ROLE SYSTEM
        ======================================================== -->
   <script>
     const SUPABASE_URL = "https://suyeimwyswhpzymbdwiw.supabase.co";
@@ -550,11 +679,25 @@
         supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       }
     } catch(e) {
-      console.warn("Inisialisasi Supabase gagal:", e);
+      console.warn("Inisialisasi Supabase:", e);
     }
 
     let cacheWilayah = [];
     let totalHalamanAnggota = 0;
+
+    // Data sesi user saat ini
+    let userAktif = {
+      username: '',
+      role: 'SUPER_ADMIN', // 'SUPER_ADMIN', 'ADMIN_KABUPATEN', 'ADMIN_KECAMATAN', 'USER_DESA'
+      provinsi: 'NUSA TENGGARA BARAT',
+      kode_provinsi: '52',
+      kabupaten: 'LOMBOK BARAT',
+      kode_kabupaten: '52.01',
+      kecamatan: 'LEMBAR',
+      kode_kecamatan: '52.01.08',
+      desa: '',
+      kode_desa: ''
+    };
 
     // --- TOGGLE PASSWORD EYE ---
     function togglePasswordEye() {
@@ -571,21 +714,17 @@
 
     // --- NAVIGASI LAYAR UTAMA ---
     function tampilkanLayar(layarId) {
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir'];
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
-          el.classList.remove('aktif');
-        }
+        if (el) el.classList.remove('aktif');
       });
       const target = document.getElementById(layarId);
-      if (target) {
-        target.classList.add('aktif');
-      }
+      if (target) target.classList.add('aktif');
       window.scrollTo(0, 0);
     }
 
-    // --- FUNGSI LOGIN (INSTAN & SINKRON) ---
+    // --- FUNGSI LOGIN & SET ROLE PENGGUNA ---
     function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
@@ -599,23 +738,78 @@
       }
 
       const uLow = user.toLowerCase();
-      const pLow = pass.toLowerCase();
 
-      // 1. Akun Super Admin Default (Langsung lolos tanpa request jaringan)
-      if ((uLow === 'superadmin' || uLow === 'superadmin@lembar.go.id') && 
-          (pass === 'AdminPus2026!' || pLow === 'adminpus2026!')) {
-        document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
-        tampilkanLayar('tampilan_dashboard');
-        return;
-      }
-
-      // 2. Fallback Login Petugas / Kader Lapangan (Password minimal 3 karakter)
-      if (pass.length >= 3) {
-        document.getElementById('userNameDisplay').innerText = user.toUpperCase();
-        tampilkanLayar('tampilan_dashboard');
+      // Penentuan Role Berdasarkan Username
+      if (uLow.includes('superadmin')) {
+        userAktif = {
+          username: 'SUPER ADMINISTRATOR',
+          role: 'SUPER_ADMIN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_provinsi: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kabupaten: '52.01',
+          kecamatan: '',
+          kode_kecamatan: '',
+          desa: '',
+          kode_desa: ''
+        };
+      } else if (uLow.includes('kab')) {
+        userAktif = {
+          username: 'ADMIN KABUPATEN LOMBOK BARAT',
+          role: 'ADMIN_KABUPATEN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_provinsi: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kabupaten: '52.01',
+          kecamatan: '',
+          kode_kecamatan: '',
+          desa: '',
+          kode_desa: ''
+        };
+      } else if (uLow.includes('kec')) {
+        userAktif = {
+          username: 'ADMIN KECAMATAN LEMBAR',
+          role: 'ADMIN_KECAMATAN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_provinsi: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kabupaten: '52.01',
+          kecamatan: 'LEMBAR',
+          kode_kecamatan: '52.01.08',
+          desa: '',
+          kode_desa: ''
+        };
       } else {
-        alert("Kata sandi salah atau minimal 3 karakter!");
+        // Default User Desa / Kader Lapangan
+        userAktif = {
+          username: user.toUpperCase(),
+          role: 'USER_DESA',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_provinsi: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kabupaten: '52.01',
+          kecamatan: 'LEMBAR',
+          kode_kecamatan: '52.01.08',
+          desa: 'LEMBAR',
+          kode_desa: '52.01.08.2001'
+        };
       }
+
+      // Terapkan Role ke Tampilan Dashboard
+      document.getElementById('userNameDisplay').innerText = userAktif.username;
+      const roleBadge = document.getElementById('roleBadge');
+      roleBadge.innerText = userAktif.role.replace('_', ' ');
+
+      // Terapkan batasan tombol "KELOLA WILAYAH"
+      const btnPill = document.getElementById('btnPillKelolaWilayah');
+      if (userAktif.role === 'USER_DESA') {
+        btnPill.style.display = 'none'; // USER DESA TIDAK ADA TAMPILAN KELOLA WILAYAH
+      } else {
+        btnPill.style.display = 'flex';
+      }
+
+      tampilkanLayar('tampilan_dashboard');
+      muatMasterWilayah();
     }
 
     function prosesLogout() {
@@ -626,11 +820,6 @@
       }
     }
 
-    function bukaFormulirPendataan() {
-      tampilkanLayar('tampilan_formulir');
-      pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
-    }
-
     function kembaliKeDashboard() {
       tampilkanLayar('tampilan_dashboard');
     }
@@ -639,7 +828,338 @@
       alert(`Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`);
     }
 
-    // --- FORM WIZARD (MULTI-STEP) ---
+    // ========================================================
+    // 6. LOGIKA KELOLA MASTER WILAYAH (MANUAL, CSV & ROLE)
+    // ========================================================
+    function bukaKelolaWilayah() {
+      if (userAktif.role === 'USER_DESA') {
+        alert("Akses Ditolak: User Desa tidak memiliki hak akses ke modul Kelola Wilayah!");
+        return;
+      }
+
+      tampilkanLayar('tampilan_kelola_wilayah');
+      
+      // Update label cakupan wilayah
+      const labelCakupan = document.getElementById('labelCakupanWilayah');
+      if (userAktif.role === 'SUPER_ADMIN') {
+        labelCakupan.innerText = "Cakupan Akses: SEMUA WILAYAH (PROVINSI & SUPER ADMIN)";
+      } else if (userAktif.role === 'ADMIN_KABUPATEN') {
+        labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kabupaten})`;
+      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (${userAktif.kabupaten})`;
+      }
+
+      // Kunci dan autofill form input manual sesuai cakupan role
+      aturFormManualSesuaiRole();
+      tampilkanTabelMasterWilayah();
+    }
+
+    function aturFormManualSesuaiRole() {
+      const p = document.getElementById('man_provinsi');
+      const kp = document.getElementById('man_kode_provinsi');
+      const kab = document.getElementById('man_kabupaten');
+      const kkab = document.getElementById('man_kode_kabupaten');
+      const kec = document.getElementById('man_kecamatan');
+      const kkec = document.getElementById('man_kode_kecamatan');
+
+      // Default Provinsi
+      p.value = userAktif.provinsi || 'NUSA TENGGARA BARAT';
+      kp.value = userAktif.kode_provinsi || '52';
+
+      if (userAktif.role === 'ADMIN_KABUPATEN') {
+        kab.value = userAktif.kabupaten;
+        kkab.value = userAktif.kode_kabupaten;
+        kab.readOnly = true;
+        kkab.readOnly = true;
+        kab.classList.add('bg-slate-100');
+        kkab.classList.add('bg-slate-100');
+      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+        kab.value = userAktif.kabupaten;
+        kkab.value = userAktif.kode_kabupaten;
+        kec.value = userAktif.kecamatan;
+        kkec.value = userAktif.kode_kecamatan;
+        kab.readOnly = true;
+        kkab.readOnly = true;
+        kec.readOnly = true;
+        kkec.readOnly = true;
+        kab.classList.add('bg-slate-100');
+        kkab.classList.add('bg-slate-100');
+        kec.classList.add('bg-slate-100');
+        kkec.classList.add('bg-slate-100');
+      } else {
+        kab.readOnly = false;
+        kkab.readOnly = false;
+        kec.readOnly = false;
+        kkec.readOnly = false;
+        kab.classList.remove('bg-slate-100');
+        kkab.classList.remove('bg-slate-100');
+        kec.classList.remove('bg-slate-100');
+        kkec.classList.remove('bg-slate-100');
+      }
+    }
+
+    // Filter daftar wilayah berdasarkan batasan role admin
+    function getWilayahTersaringSesuaiRole() {
+      if (userAktif.role === 'SUPER_ADMIN') {
+        return cacheWilayah;
+      }
+      if (userAktif.role === 'ADMIN_KABUPATEN') {
+        return cacheWilayah.filter(w => w.kode_kabupaten === userAktif.kode_kabupaten || w.kabupaten.toUpperCase() === userAktif.kabupaten.toUpperCase());
+      }
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        return cacheWilayah.filter(w => w.kode_kecamatan === userAktif.kode_kecamatan || w.kecamatan.toUpperCase() === userAktif.kecamatan.toUpperCase());
+      }
+      return [];
+    }
+
+    function tampilkanTabelMasterWilayah() {
+      const tbody = document.getElementById('tbodyMasterWilayah');
+      const dataSaring = getWilayahTersaringSesuaiRole();
+
+      if (!dataSaring || dataSaring.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah di cakupan Anda.</td></tr>`;
+        return;
+      }
+
+      let baris = '';
+      dataSaring.forEach(item => {
+        baris += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-3 font-semibold">${item.kecamatan.toUpperCase()}</td>
+            <td class="p-3 font-semibold text-emerald-800">${item.desa.toUpperCase()}</td>
+            <td class="p-3 font-mono text-slate-500">${item.kode_desa}</td>
+            <td class="p-3 font-bold">${item.dusun.toUpperCase()}</td>
+            <td class="p-3 font-mono text-slate-600">${item.kode_dusun}</td>
+            <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
+            <td class="p-3 text-center">
+              <button onclick="hapusWilayah('${item.id}', '${item.dusun}')" class="text-rose-600 hover:text-rose-800 font-bold uppercase text-[11px]">
+                Hapus
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = baris;
+    }
+
+    function filterTabelWilayah() {
+      const keyword = document.getElementById('cariTabelWilayah').value.toLowerCase();
+      const trList = document.querySelectorAll('#tbodyMasterWilayah tr');
+      trList.forEach(tr => {
+        const text = tr.innerText.toLowerCase();
+        tr.style.display = text.includes(keyword) ? '' : 'none';
+      });
+    }
+
+    // Simpan Wilayah Manual
+    async function simpanWilayahManual() {
+      const btn = document.getElementById('btnSimpanManualWilayah');
+      btn.disabled = true;
+      btn.innerText = "MENYIMPAN...";
+
+      const payload = {
+        provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
+        kode_provinsi: document.getElementById('man_kode_provinsi').value.trim(),
+        kabupaten: document.getElementById('man_kabupaten').value.trim().toUpperCase(),
+        kode_kabupaten: document.getElementById('man_kode_kabupaten').value.trim(),
+        kecamatan: document.getElementById('man_kecamatan').value.trim().toUpperCase(),
+        kode_kecamatan: document.getElementById('man_kode_kecamatan').value.trim(),
+        desa: document.getElementById('man_desa').value.trim().toUpperCase(),
+        kode_desa: document.getElementById('man_kode_desa').value.trim(),
+        dusun: document.getElementById('man_dusun').value.trim().toUpperCase(),
+        kode_dusun: document.getElementById('man_kode_dusun').value.trim(),
+        jumlah_rt: parseInt(document.getElementById('man_jumlah_rt').value) || 0
+      };
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient
+            .from('master_wilayah')
+            .upsert([payload], { onConflict: 'kode_dusun' });
+
+          if (error) throw error;
+        }
+
+        alert(`Wilayah dusun [${payload.dusun}] berhasil disimpan!`);
+        document.getElementById('man_dusun').value = '';
+        document.getElementById('man_kode_dusun').value = '';
+        document.getElementById('man_jumlah_rt').value = '';
+
+        await muatMasterWilayah();
+        tampilkanTabelMasterWilayah();
+
+      } catch (err) {
+        console.error(err);
+        alert('Gagal menyimpan wilayah: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "SIMPAN WILAYAH";
+      }
+    }
+
+    // Hapus Wilayah
+    async function hapusWilayah(id, namaDusun) {
+      if (!confirm(`Yakin ingin menghapus dusun ${namaDusun}?`)) return;
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient
+            .from('master_wilayah')
+            .delete()
+            .eq('id', id);
+
+          if (error) throw error;
+        }
+
+        alert(`Dusun ${namaDusun} berhasil dihapus.`);
+        await muatMasterWilayah();
+        tampilkanTabelMasterWilayah();
+      } catch (err) {
+        alert('Gagal menghapus wilayah: ' + err.message);
+      }
+    }
+
+    // Unduh Template CSV Sesuai Cakupan Role
+    function unduhTemplateWilayahCSV() {
+      const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
+      const defaultKdProv = userAktif.kode_provinsi || '52';
+      const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
+      const defaultKdKab = userAktif.kode_kabupaten || '52.01';
+      const defaultKec = userAktif.kecamatan || 'LEMBAR';
+      const defaultKdKec = userAktif.kode_kecamatan || '52.01.08';
+
+      // Baris contoh template
+      const barisHeader = [
+        "PROVINSI", "KODE_PROVINSI", "KABUPATEN", "KODE_KABUPATEN", 
+        "KECAMATAN", "KODE_KECAMATAN", "DESA", "KODE_DESA", 
+        "DUSUN", "KODE_DUSUN", "JUMLAH_RT"
+      ];
+
+      const barisContoh1 = [
+        defaultProv, defaultKdProv, defaultKab, defaultKdKab,
+        defaultKec, defaultKdKec, "LEMBAR", "52.01.08.2001",
+        "SELAMPANG", "52.01.08.2001.001", "4"
+      ];
+
+      const barisContoh2 = [
+        defaultProv, defaultKdProv, defaultKab, defaultKdKab,
+        defaultKec, defaultKdKec, "LEMBAR", "52.01.08.2001",
+        "PELEPOK", "52.01.08.2001.002", "3"
+      ];
+
+      const csvContent = "data:text/csv;charset=utf-8," 
+        + [barisHeader, barisContoh1, barisContoh2].map(e => e.join(",")).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Upload & Batch Import File CSV ke Supabase
+    function unggahFileWilayahCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!confirm(`Import data wilayah dari file "${file.name}"?`)) {
+        event.target.value = '';
+        return;
+      }
+
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async function(results) {
+          const rows = results.data;
+          if (!rows || rows.length === 0) {
+            alert("File CSV kosong atau format header tidak sesuai!");
+            return;
+          }
+
+          const dataPayload = [];
+          let ditolak = 0;
+
+          rows.forEach((row, idx) => {
+            // Pemetaan nama kolom
+            const prov = (row.PROVINSI || row.provinsi || '').trim().toUpperCase();
+            const kdProv = (row.KODE_PROVINSI || row.kode_provinsi || '').trim();
+            const kab = (row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
+            const kdKab = (row.KODE_KABUPATEN || row.kode_kabupaten || '').trim();
+            const kec = (row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
+            const kdKec = (row.KODE_KECAMATAN || row.kode_kecamatan || '').trim();
+            const desa = (row.DESA || row.desa || '').trim().toUpperCase();
+            const kdDesa = (row.KODE_DESA || row.kode_desa || '').trim();
+            const dusun = (row.DUSUN || row.dusun || '').trim().toUpperCase();
+            const kdDusun = (row.KODE_DUSUN || row.kode_dusun || '').trim();
+            const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
+
+            // Validasi hak akses role
+            if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kabupaten) {
+              ditolak++;
+              return;
+            }
+            if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kecamatan) {
+              ditolak++;
+              return;
+            }
+
+            if (desa && dusun && kdDusun) {
+              dataPayload.push({
+                provinsi: prov || userAktif.provinsi,
+                kode_provinsi: kdProv || userAktif.kode_provinsi,
+                kabupaten: kab || userAktif.kabupaten,
+                kode_kabupaten: kdKab || userAktif.kode_kabupaten,
+                kecamatan: kec || userAktif.kecamatan,
+                kode_kecamatan: kdKec || userAktif.kode_kecamatan,
+                desa: desa,
+                kode_desa: kdDesa,
+                dusun: dusun,
+                kode_dusun: kdDusun,
+                jumlah_rt: jmlRt
+              });
+            }
+          });
+
+          if (dataPayload.length === 0) {
+            alert(`Tidak ada data yang valid untuk disimpan! (${ditolak} baris di luar kewenangan wilayah Anda)`);
+            event.target.value = '';
+            return;
+          }
+
+          try {
+            if (supabaseClient) {
+              const { error } = await supabaseClient
+                .from('master_wilayah')
+                .upsert(dataPayload, { onConflict: 'kode_dusun' });
+
+              if (error) throw error;
+            }
+
+            alert(`Berhasil mengunggah ${dataPayload.length} data dusun! ${ditolak > 0 ? `(${ditolak} data dilewati karena di luar wilayah Anda)` : ''}`);
+            await muatMasterWilayah();
+            tampilkanTabelMasterWilayah();
+
+          } catch (err) {
+            console.error(err);
+            alert("Gagal melakukan batch import: " + err.message);
+          } finally {
+            event.target.value = '';
+          }
+        }
+      });
+    }
+
+    // ========================================================
+    // 7. MASTER WILAYAH UNTUK FORMULIR SASARAN KELUARGA
+    // ========================================================
+    function bukaFormulirPendataan() {
+      tampilkanLayar('tampilan_formulir');
+      pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+    }
+
     function sembunyikanSemuaHalamanForm() {
       document.querySelectorAll('.halaman-form').forEach(el => el.classList.remove('aktif'));
     }
@@ -653,7 +1173,6 @@
       window.scrollTo(0, 0);
     }
 
-    // --- MASTER WILAYAH SUPABASE ---
     async function muatMasterWilayah() {
       if (!supabaseClient) return;
       try {
@@ -978,7 +1497,7 @@
       }
     }
 
-    // --- SUBMIT DATA KE SUPABASE ---
+    // --- SIMPAN FORMULIR PENDATAAN KE SUPABASE ---
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
