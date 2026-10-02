@@ -139,7 +139,7 @@
       <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-2xl mx-auto">Kelola pendataan keluarga terpadu, rekapitulasi capaian KB, dan pemantauan sasaran lapangan</p>
     </div>
 
-    <!-- Pill Navigasi Cepat (Kelola Wilayah dibatasi sesuai role) -->
+    <!-- Pill Navigasi Cepat -->
     <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
       <button id="btnPillKelolaWilayah" onclick="bukaKelolaWilayah()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         📍 KELOLA WILAYAH
@@ -170,7 +170,7 @@
             </svg>
           </div>
           <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">FORM INPUT PUS & KELUARGA</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan.</p>
+          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan[cite: 7].</p>
         </div>
         <div>
           <span class="inline-block mt-2 text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full uppercase">Mulai Input &rarr;</span>
@@ -185,7 +185,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang[cite: 7].</p>
       </div>
 
       <!-- Kartu 3: Data BNBA -->
@@ -196,7 +196,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun[cite: 7].</p>
       </div>
 
       <!-- Kartu 4: Pencarian & Edit -->
@@ -207,7 +207,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK[cite: 7].</p>
       </div>
 
       <!-- Kartu 5: Grafik & Statistik -->
@@ -218,7 +218,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">GRAFIK & STATISTIK</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran[cite: 7].</p>
       </div>
 
       <!-- Kartu 6: Pelayanan KB -->
@@ -229,7 +229,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">PELAYANAN KB</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes[cite: 7].</p>
       </div>
 
     </div>
@@ -278,40 +278,40 @@
             <input type="text" id="man_provinsi" required class="w-full p-2 border rounded-lg uppercase" placeholder="NUSA TENGGARA BARAT" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Provinsi *</label>
-            <input type="text" id="man_kode_provinsi" required class="w-full p-2 border rounded-lg uppercase" placeholder="52" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Provinsi (2 Digit) *</label>
+            <input type="text" id="man_kode_provinsi" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="52" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Kabupaten *</label>
             <input type="text" id="man_kabupaten" required class="w-full p-2 border rounded-lg uppercase" placeholder="LOMBOK BARAT" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kabupaten *</label>
-            <input type="text" id="man_kode_kabupaten" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kabupaten (2 Digit) *</label>
+            <input type="text" id="man_kode_kabupaten" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="01" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Kecamatan *</label>
             <input type="text" id="man_kecamatan" required class="w-full p-2 border rounded-lg uppercase" placeholder="LEMBAR" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kecamatan *</label>
-            <input type="text" id="man_kode_kecamatan" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kecamatan (2 Digit) *</label>
+            <input type="text" id="man_kode_kecamatan" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="08" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Desa / Kelurahan *</label>
             <input type="text" id="man_desa" required class="w-full p-2 border rounded-lg uppercase" placeholder="LEMBAR" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Desa *</label>
-            <input type="text" id="man_kode_desa" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08.2001" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Desa (4 Digit) *</label>
+            <input type="text" id="man_kode_desa" required maxlength="4" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="2001" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Dusun / Lingkungan *</label>
             <input type="text" id="man_dusun" required class="w-full p-2 border rounded-lg uppercase" placeholder="SELAMPANG" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Dusun (Unik) *</label>
-            <input type="text" id="man_kode_dusun" required class="w-full p-2 border rounded-lg uppercase" placeholder="52.01.08.2001.001" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Dusun (4 Digit) *</label>
+            <input type="text" id="man_kode_dusun" required maxlength="4" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="0100" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Jumlah RT *</label>
@@ -337,17 +337,18 @@
             <thead class="bg-slate-100 text-slate-600 uppercase font-bold border-b">
               <tr>
                 <th class="p-3">KECAMATAN</th>
+                <th class="p-3 text-center">KD KEC</th>
                 <th class="p-3">DESA</th>
-                <th class="p-3">KODE DESA</th>
+                <th class="p-3 text-center">KD DESA</th>
                 <th class="p-3">DUSUN</th>
-                <th class="p-3">KODE DUSUN</th>
+                <th class="p-3 text-center">KD DUSUN (4 DIGIT)</th>
                 <th class="p-3 text-center">JUMLAH RT</th>
                 <th class="p-3 text-center">AKSI</th>
               </tr>
             </thead>
             <tbody id="tbodyMasterWilayah" class="divide-y divide-slate-100">
               <tr>
-                <td colspan="7" class="p-4 text-center text-slate-400 uppercase">Memuat data master wilayah...</td>
+                <td colspan="8" class="p-4 text-center text-slate-400 uppercase">Memuat data master wilayah...</td>
               </tr>
             </tbody>
           </table>
@@ -407,9 +408,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROVINSI</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROVINSI (2 DIGIT)</label>
               <input type="text" id="kode_provinsi" readonly placeholder="OTOMATIS"
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
             <div>
@@ -420,9 +421,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KABUPATEN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KABUPATEN (2 DIGIT)</label>
               <input type="text" id="kode_kabupaten" readonly placeholder="OTOMATIS"
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
             <div>
@@ -433,9 +434,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KECAMATAN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KECAMATAN (2 DIGIT)</label>
               <input type="text" id="kode_kecamatan" readonly placeholder="OTOMATIS"
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
             <div>
@@ -446,9 +447,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DESA</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DESA (4 DIGIT)</label>
               <input type="text" id="kode_desa" readonly placeholder="OTOMATIS"
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
             <div>
@@ -459,9 +460,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DUSUN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DUSUN (4 DIGIT)</label>
               <input type="text" id="kode_dusun" readonly placeholder="OTOMATIS"
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
             <div>
@@ -685,16 +686,16 @@
     let cacheWilayah = [];
     let totalHalamanAnggota = 0;
 
-    // Sesi aktif pengguna
+    // Sesi aktif pengguna (Prov: 2 digit, Kab: 2 digit, Kec: 2 digit, Desa: 4 digit, Dusun: 4 digit)
     let userAktif = {
       username: '',
       role: 'SUPER_ADMIN',
       provinsi: 'NUSA TENGGARA BARAT',
       kode_provinsi: '52',
       kabupaten: 'LOMBOK BARAT',
-      kode_kabupaten: '52.01',
+      kode_kabupaten: '01',
       kecamatan: 'LEMBAR',
-      kode_kecamatan: '52.01.08',
+      kode_kecamatan: '08',
       desa: '',
       kode_desa: ''
     };
@@ -717,10 +718,14 @@
       const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.classList.remove('aktif');
+        if (el) {
+          el.classList.remove('aktif');
+        }
       });
       const target = document.getElementById(layarId);
-      if (target) target.classList.add('aktif');
+      if (target) {
+        target.classList.add('aktif');
+      }
       window.scrollTo(0, 0);
     }
 
@@ -739,7 +744,7 @@
 
       const uLow = user.toLowerCase();
 
-      // Penentuan Role Berdasarkan Username
+      // Penentuan Role & Wilayah Berjenjang
       if (uLow.includes('superadmin')) {
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
@@ -747,7 +752,7 @@
           provinsi: 'NUSA TENGGARA BARAT',
           kode_provinsi: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '52.01',
+          kode_kabupaten: '01',
           kecamatan: '',
           kode_kecamatan: '',
           desa: '',
@@ -760,7 +765,7 @@
           provinsi: 'NUSA TENGGARA BARAT',
           kode_provinsi: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '52.01',
+          kode_kabupaten: '01',
           kecamatan: '',
           kode_kecamatan: '',
           desa: '',
@@ -773,9 +778,9 @@
           provinsi: 'NUSA TENGGARA BARAT',
           kode_provinsi: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '52.01',
+          kode_kabupaten: '01',
           kecamatan: 'LEMBAR',
-          kode_kecamatan: '52.01.08',
+          kode_kecamatan: '08',
           desa: '',
           kode_desa: ''
         };
@@ -786,11 +791,11 @@
           provinsi: 'NUSA TENGGARA BARAT',
           kode_provinsi: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '52.01',
+          kode_kabupaten: '01',
           kecamatan: 'LEMBAR',
-          kode_kecamatan: '52.01.08',
+          kode_kecamatan: '08',
           desa: 'LEMBAR',
-          kode_desa: '52.01.08.2001'
+          kode_desa: '2001'
         };
       }
 
@@ -843,7 +848,7 @@
       } else if (userAktif.role === 'ADMIN_KABUPATEN') {
         labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kabupaten})`;
       } else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (${userAktif.kabupaten})`;
+        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (KODE: ${userAktif.kode_kecamatan}) - ${userAktif.kabupaten}`;
       }
 
       aturFormManualSesuaiRole();
@@ -911,7 +916,7 @@
       const dataSaring = getWilayahTersaringSesuaiRole();
 
       if (!dataSaring || dataSaring.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah di cakupan Anda.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah di cakupan Anda.</td></tr>`;
         return;
       }
 
@@ -920,10 +925,11 @@
         baris += `
           <tr class="hover:bg-slate-50 transition border-b">
             <td class="p-3 font-semibold">${item.kecamatan.toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${item.kode_kecamatan}</td>
             <td class="p-3 font-semibold text-emerald-800">${item.desa.toUpperCase()}</td>
-            <td class="p-3 font-mono text-slate-500">${item.kode_desa}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${item.kode_desa}</td>
             <td class="p-3 font-bold">${item.dusun.toUpperCase()}</td>
-            <td class="p-3 font-mono text-slate-600">${item.kode_dusun}</td>
+            <td class="p-3 font-mono text-center text-slate-600 font-bold">${item.kode_dusun}</td>
             <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
             <td class="p-3 text-center">
               <button onclick="hapusWilayah('${item.id}', '${item.dusun}')" class="text-rose-600 hover:text-rose-800 font-bold uppercase text-[11px]">
@@ -950,17 +956,24 @@
       btn.disabled = true;
       btn.innerText = "MENYIMPAN...";
 
+      // Standardisasi Digit: Prov 2 digit, Kab 2 digit, Kec 2 digit, Desa 4 digit, Dusun 4 digit
+      const kdProv = document.getElementById('man_kode_provinsi').value.trim().padStart(2, '0');
+      const kdKab = document.getElementById('man_kode_kabupaten').value.trim().padStart(2, '0');
+      const kdKec = document.getElementById('man_kode_kecamatan').value.trim().padStart(2, '0');
+      const kdDesa = document.getElementById('man_kode_desa').value.trim().padStart(4, '0');
+      const kdDusun = document.getElementById('man_kode_dusun').value.trim().padStart(4, '0');
+
       const payload = {
         provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
-        kode_provinsi: document.getElementById('man_kode_provinsi').value.trim(),
+        kode_provinsi: kdProv,
         kabupaten: document.getElementById('man_kabupaten').value.trim().toUpperCase(),
-        kode_kabupaten: document.getElementById('man_kode_kabupaten').value.trim(),
+        kode_kabupaten: kdKab,
         kecamatan: document.getElementById('man_kecamatan').value.trim().toUpperCase(),
-        kode_kecamatan: document.getElementById('man_kode_kecamatan').value.trim(),
+        kode_kecamatan: kdKec,
         desa: document.getElementById('man_desa').value.trim().toUpperCase(),
-        kode_desa: document.getElementById('man_kode_desa').value.trim(),
+        kode_desa: kdDesa,
         dusun: document.getElementById('man_dusun').value.trim().toUpperCase(),
-        kode_dusun: document.getElementById('man_kode_dusun').value.trim(),
+        kode_dusun: kdDusun,
         jumlah_rt: parseInt(document.getElementById('man_jumlah_rt').value) || 0
       };
 
@@ -973,7 +986,7 @@
           if (error) throw error;
         }
 
-        alert(`Wilayah dusun [${payload.dusun}] berhasil disimpan!`);
+        alert(`Wilayah dusun [${payload.dusun}] dengan kode [${payload.kode_dusun}] berhasil disimpan!`);
         document.getElementById('man_dusun').value = '';
         document.getElementById('man_kode_dusun').value = '';
         document.getElementById('man_jumlah_rt').value = '';
@@ -1012,29 +1025,29 @@
     }
 
     // ========================================================
-    // DOWNLOAD TEMPLATE FILE EXCEL (.XLSX)
+    // DOWNLOAD TEMPLATE FILE EXCEL (.XLSX) - DUSUN 4 DIGIT
     // ========================================================
     function unduhTemplateWilayahExcel() {
       const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
-      const defaultKdProv = userAktif.kode_provinsi || '52';
+      const defaultKdProv = (userAktif.kode_provinsi || '52').padStart(2, '0');
       const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
-      const defaultKdKab = userAktif.kode_kabupaten || '52.01';
+      const defaultKdKab = (userAktif.kode_kabupaten || '01').padStart(2, '0');
       const defaultKec = userAktif.kecamatan || 'LEMBAR';
-      const defaultKdKec = userAktif.kode_kecamatan || '52.01.08';
+      const defaultKdKec = (userAktif.kode_kecamatan || '08').padStart(2, '0');
 
-      // Data template
+      // Data Template dengan Kode Dusun 4 Digit ('0100', '0200')
       const dataTemplate = [
         {
           PROVINSI: defaultProv,
-          KODE_PROVINSI: defaultKdProv,
+          KODE_PROVINSI: defaultKdProv,  // 2 Digit (contoh: 52)
           KABUPATEN: defaultKab,
-          KODE_KABUPATEN: defaultKdKab,
+          KODE_KABUPATEN: defaultKdKab,  // 2 Digit (contoh: 01)
           KECAMATAN: defaultKec,
-          KODE_KECAMATAN: defaultKdKec,
+          KODE_KECAMATAN: defaultKdKec,  // 2 Digit (contoh: 08)
           DESA: "LEMBAR",
-          KODE_DESA: "52.01.08.2001",
+          KODE_DESA: "2001",             // 4 Digit (contoh: 2001)
           DUSUN: "SELAMPANG",
-          KODE_DUSUN: "52.01.08.2001.001",
+          KODE_DUSUN: "0100",            // 4 Digit (contoh: 0100)
           JUMLAH_RT: 4
         },
         {
@@ -1045,27 +1058,35 @@
           KECAMATAN: defaultKec,
           KODE_KECAMATAN: defaultKdKec,
           DESA: "LEMBAR",
-          KODE_DESA: "52.01.08.2001",
+          KODE_DESA: "2001",
           DUSUN: "PELEPOK",
-          KODE_DUSUN: "52.01.08.2001.002",
+          KODE_DUSUN: "0200",            // 4 Digit (contoh: 0200)
           JUMLAH_RT: 3
         }
       ];
 
-      // Buat workbook & sheet menggunakan SheetJS
       const worksheet = XLSX.utils.json_to_sheet(dataTemplate);
       
-      // Atur lebar kolom agar rapi saat dibuka di Microsoft Excel
+      // Paksa semua sel kode bertipe String ('s') agar angka 0 di depan tidak lenyap
+      const range = XLSX.utils.decode_range(worksheet['!ref']);
+      for (let R = range.s.r; R <= range.t.r; ++R) {
+        for (let C = range.s.c; C <= range.t.c; ++C) {
+          const cell_ref = XLSX.utils.encode_cell({c: C, r: R});
+          if (worksheet[cell_ref] && C !== 10) { // Selain kolom JUMLAH_RT
+            worksheet[cell_ref].t = 's';
+          }
+        }
+      }
+
       worksheet['!cols'] = [
-        { wch: 25 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
-        { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 18 },
-        { wch: 25 }, { wch: 22 }, { wch: 12 }
+        { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
+        { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
+        { wch: 25 }, { wch: 20 }, { wch: 12 }
       ];
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "MASTER_WILAYAH");
 
-      // Trigger download file .xlsx
       const namaFile = `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.xlsx`;
       XLSX.writeFile(workbook, namaFile);
     }
@@ -1086,7 +1107,7 @@
       reader.onload = async function(e) {
         try {
           const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array', raw: false }); // raw: false agar kode '01' tetap string
+          const workbook = XLSX.read(data, { type: 'array', raw: false });
           
           const sheetPertama = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetPertama];
@@ -1102,20 +1123,24 @@
           let ditolak = 0;
 
           rows.forEach((row) => {
-            // Pencocokan nama kolom (toleransi huruf besar/kecil)
             const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
-            const kdProv = String(row.KODE_PROVINSI || row.kode_provinsi || '').trim();
+            let kdProv = String(row.KODE_PROVINSI || row.kode_provinsi || '').trim().padStart(2, '0');
+            
             const kab = String(row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
-            const kdKab = String(row.KODE_KABUPATEN || row.kode_kabupaten || '').trim();
+            let kdKab = String(row.KODE_KABUPATEN || row.kode_kabupaten || '').trim().padStart(2, '0');
+            
             const kec = String(row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
-            const kdKec = String(row.KODE_KECAMATAN || row.kode_kecamatan || '').trim();
+            let kdKec = String(row.KODE_KECAMATAN || row.kode_kecamatan || '').trim().padStart(2, '0');
+            
             const desa = String(row.DESA || row.desa || '').trim().toUpperCase();
-            const kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim();
+            let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
+            
             const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
-            const kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim();
+            // Kode dusun 4 Digit
+            let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
             const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
 
-            // Validasi batasan hak akses role admin
+            // Validasi hak akses role admin
             if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kabupaten) {
               ditolak++;
               return;
@@ -1128,11 +1153,11 @@
             if (desa && dusun && kdDusun) {
               dataPayload.push({
                 provinsi: prov || userAktif.provinsi,
-                kode_provinsi: kdProv || userAktif.kode_provinsi,
+                kode_provinsi: kdProv,
                 kabupaten: kab || userAktif.kabupaten,
-                kode_kabupaten: kdKab || userAktif.kode_kabupaten,
+                kode_kabupaten: kdKab,
                 kecamatan: kec || userAktif.kecamatan,
-                kode_kecamatan: kdKec || userAktif.kode_kecamatan,
+                kode_kecamatan: kdKec,
                 desa: desa,
                 kode_desa: kdDesa,
                 dusun: dusun,
@@ -1156,7 +1181,7 @@
             if (error) throw error;
           }
 
-          alert(`Berhasil mengunggah ${dataPayload.length} data wilayah dari Excel! ${ditolak > 0 ? `(${ditolak} data dilewati karena di luar wilayah Anda)` : ''}`);
+          alert(`Berhasil mengunggah ${dataPayload.length} data wilayah! ${ditolak > 0 ? `(${ditolak} data dilewati karena di luar wilayah Anda)` : ''}`);
           await muatMasterWilayah();
           tampilkanTabelMasterWilayah();
 
