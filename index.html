@@ -560,46 +560,66 @@
     }
 
     // --- LOGIKA LOGIN ---
-    document.getElementById('formLogin').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = document.getElementById('login_username').value.trim();
-      const pass = document.getElementById('login_password').value;
+    document.getElementById('formLogin').addEventListener('submit', async function(e) {
+      e.preventDefault(); // Mencegah reload halaman
+      
+      const userEl = document.getElementById('login_username');
+      const passEl = document.getElementById('login_password');
       const btn = document.getElementById('btnSubmitLogin');
+
+      const user = userEl ? userEl.value.trim() : '';
+      const pass = passEl ? passEl.value : '';
+
+      if (!user || !pass) {
+        alert("Silakan masukkan username dan password!");
+        return;
+      }
 
       btn.disabled = true;
       btn.innerText = "MEMERIKSA AKUN...";
 
       try {
-        // 1. Cek Kredensial Super Admin Default
-        if ((user.toLowerCase() === 'superadmin' || user.toLowerCase() === 'superadmin@lembar.go.id') && pass === 'AdminPus2026!') {
+        // 1. Kredensial Super Admin Utama (Bisa pakai 'superadmin' atau email)
+        const isSuperAdmin = (user.toLowerCase() === 'superadmin' || user.toLowerCase() === 'superadmin@lembar.go.id');
+        
+        if (isSuperAdmin && (pass === 'AdminPus2026!' || pass.toLowerCase() === 'adminpus2026!')) {
           document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
           tampilkanLayar('tampilan_dashboard');
+          btn.disabled = false;
+          btn.innerText = "MASUK KE SISTEM";
           return;
         }
 
-        // 2. Coba Login via Supabase Auth jika format email
-        if (user.includes('@')) {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: user,
-            password: pass
-          });
-          if (!error && data?.user) {
-            document.getElementById('userNameDisplay').innerText = data.user.email.toUpperCase();
-            tampilkanLayar('tampilan_dashboard');
-            return;
+        // 2. Jika akun bukan superadmin, coba via Supabase Auth jika format email
+        if (user.includes('@') && typeof supabaseClient !== 'undefined') {
+          try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+              email: user,
+              password: pass
+            });
+            if (!error && data?.user) {
+              document.getElementById('userNameDisplay').innerText = data.user.email.toUpperCase();
+              tampilkanLayar('tampilan_dashboard');
+              btn.disabled = false;
+              btn.innerText = "MASUK KE SISTEM";
+              return;
+            }
+          } catch (netErr) {
+            console.warn("Supabase auth skipped:", netErr);
           }
         }
 
-        // 3. Fallback Login Kader Biasa
-        if (user && pass.length >= 3) {
+        // 3. Fallback Login Kader/Petugas (Minimal 3 karakter untuk kemudahan testing)
+        if (pass.length >= 3) {
           document.getElementById('userNameDisplay').innerText = user.toUpperCase();
           tampilkanLayar('tampilan_dashboard');
         } else {
-          alert('Username atau password salah!');
+          alert("Password minimal 3 karakter!");
         }
+
       } catch (err) {
-        console.error(err);
-        alert('Gagal login: ' + err.message);
+        console.error("Login error:", err);
+        alert("Terjadi kesalahan saat masuk: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "MASUK KE SISTEM";
