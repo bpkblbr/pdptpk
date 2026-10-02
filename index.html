@@ -1212,10 +1212,10 @@
               let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
               
               const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
-              let rawKdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim();
+              let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
               const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
 
-              // Validasi role
+              // Validasi role admin
               if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kabupaten) {
                 ditolak++;
                 return;
@@ -1225,19 +1225,16 @@
                 return;
               }
 
-              if (desa && dusun && rawKdDusun) {
-                // Pastikan kode dusun unik secara global (gabungkan kode desa + kode dusun 4 digit)
-                // Contoh: desa 2001 + dusun 0100 -> '2001.0100' atau tetap 4 digit jika sudah unik
-                let kdDusun = rawKdDusun.padStart(4, '0');
-                
-                // Gunakan kunci unik kombinasi kode_desa + kode_dusun
-                const kunciUnik = `${kdDesa}.${kdDusun}`;
+              if (desa && dusun && kdDusun) {
+                // KUNCI ABSOLUT: 2 digit prov + 2 digit kab + 2 digit kec + 4 digit desa + 4 digit dusun
+                // Contoh: "52.01.08.2001.0100" (Pasti unik se-Indonesia, mustahil tertukar ke kecamatan lain)
+                const kodeDusunAbsolut = `${kdProv}.${kdKab}.${kdKec}.${kdDesa}.${kdDusun}`;
 
-                if (mapWilayahUnik.has(kunciUnik)) {
+                if (mapWilayahUnik.has(kodeDusunAbsolut)) {
                   duplikatExcel++;
                 }
 
-                mapWilayahUnik.set(kunciUnik, {
+                mapWilayahUnik.set(kodeDusunAbsolut, {
                   provinsi: prov || userAktif.provinsi,
                   kode_provinsi: kdProv,
                   kabupaten: kab || userAktif.kabupaten,
@@ -1247,7 +1244,7 @@
                   desa: desa,
                   kode_desa: kdDesa,
                   dusun: dusun,
-                  kode_dusun: kunciUnik, // Menjamin tidak ada bentrok antar desa
+                  kode_dusun: kodeDusunAbsolut, // Tersimpan dengan identitas hierarki utuh
                   jumlah_rt: jmlRt
                 });
               }
@@ -1391,16 +1388,32 @@
     document.getElementById('desa')?.addEventListener('change', function() {
       const kdDesa = this.value;
       document.getElementById('kode_desa').value = kdDesa;
+      
+      const kdKec = document.getElementById('kode_kecamatan').value;
+      const kdKab = document.getElementById('kode_kabupaten').value;
+      
       const elDusun = document.getElementById('dusun');
       elDusun.innerHTML = '<option value="">-- PILIH DUSUN --</option>';
       document.getElementById('kode_dusun').value = '';
       resetDropdownBerikutnya(['rt']);
+
       if (!kdDesa) { elDusun.disabled = true; return; }
 
-      const listDusun = cacheWilayah.filter(w => w.kode_desa === kdDesa);
+      // KUNCI FILTER KETAT: Dusun harus cocok dengan Desa DAN Kecamatan DAN Kabupaten
+      const listDusun = cacheWilayah.filter(w => 
+        w.kode_desa === kdDesa && 
+        w.kode_kecamatan === kdKec && 
+        w.kode_kabupaten === kdKab
+      );
+
       listDusun.forEach(item => {
-        elDusun.innerHTML += `<option value="${item.kode_dusun}" data-rt="${item.jumlah_rt || 0}">${item.dusun.toUpperCase()}</option>`;
+        // Tampilkan 4 digit kode dusun aslinya
+        const kodeDusunTampil = item.kode_dusun.split('.').pop(); 
+        elDusun.innerHTML += `<option value="${item.kode_dusun}" data-rt="${item.jumlah_rt || 0}">
+          ${item.dusun.toUpperCase()} (${kodeDusunTampil})
+        </option>`;
       });
+      
       elDusun.disabled = false;
     });
 
