@@ -4,12 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Aplikasi Register PUS & Pendataan Keluarga</title>
-
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- SheetJS CDN untuk Download & Upload File Excel .xlsx -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- SweetAlert2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <style>
     .form-uppercase input[type="text"], 
     .form-uppercase textarea, 
@@ -178,7 +180,7 @@
       </div>
 
       <!-- Kartu 2: Rekapitulasi -->
-      <div onclick="alert('Modul Rekapitulasi Sedang Disiapkan')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="Swal.fire('Informasi', 'Modul Rekapitulasi sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -189,7 +191,7 @@
       </div>
 
       <!-- Kartu 3: Data BNBA -->
-      <div onclick="alert('Modul Data BNBA Sedang Disiapkan')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="Swal.fire('Informasi', 'Modul Data BNBA sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -200,7 +202,7 @@
       </div>
 
       <!-- Kartu 4: Pencarian & Edit -->
-      <div onclick="alert('Modul Pencarian Sedang Disiapkan')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="Swal.fire('Informasi', 'Modul Pencarian & Edit data sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -211,7 +213,7 @@
       </div>
 
       <!-- Kartu 5: Grafik & Statistik -->
-      <div onclick="alert('Modul Statistik Sedang Disiapkan')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="Swal.fire('Informasi', 'Modul Grafik Visualisasi sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -222,7 +224,7 @@
       </div>
 
       <!-- Kartu 6: Pelayanan KB -->
-      <div onclick="alert('Modul Pelayanan KB Sedang Disiapkan')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="Swal.fire('Informasi', 'Modul Pelayanan KB Faskes sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -738,7 +740,12 @@
       const pass = passEl ? passEl.value.trim() : '';
 
       if (!user || !pass) {
-        alert("Silakan masukkan username dan password!");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Silakan masukkan username dan password terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
         return;
       }
 
@@ -819,7 +826,7 @@
       Swal.fire({
         title: 'Konfirmasi Keluar',
         text: 'Apakah Anda yakin ingin keluar dari sistem?',
-        icon: 'warning',
+        icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#e11d48',
         cancelButtonColor: '#64748b',
@@ -839,7 +846,12 @@
     }
 
     function navigasiKe(menu) {
-      alert(`Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`);
+      Swal.fire({
+        icon: 'info',
+        title: 'Menu Terpilih',
+        text: `Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`,
+        confirmButtonColor: '#059669'
+      });
     }
 
     // ========================================================
@@ -847,7 +859,12 @@
     // ========================================================
     function bukaKelolaWilayah() {
       if (userAktif.role === 'USER_DESA') {
-        alert("Akses Ditolak: User Desa tidak memiliki hak akses ke modul Kelola Wilayah!");
+        Swal.fire({
+          icon: 'error',
+          title: 'Akses Ditolak',
+          text: 'User Desa tidak memiliki hak akses ke modul Kelola Wilayah!',
+          confirmButtonColor: '#e11d48'
+        });
         return;
       }
 
@@ -967,7 +984,7 @@
       btn.disabled = true;
       btn.innerText = "MENYIMPAN...";
 
-      // Standardisasi Digit: Prov 2 digit, Kab 2 digit, Kec 2 digit, Desa 4 digit, Dusun 4 digit
+      // Standardisasi Digit
       const kdProv = document.getElementById('man_kode_provinsi').value.trim().padStart(2, '0');
       const kdKab = document.getElementById('man_kode_kabupaten').value.trim().padStart(2, '0');
       const kdKec = document.getElementById('man_kode_kecamatan').value.trim().padStart(2, '0');
@@ -997,7 +1014,13 @@
           if (error) throw error;
         }
 
-        alert(`Wilayah dusun [${payload.dusun}] dengan kode [${payload.kode_dusun}] berhasil disimpan!`);
+        Swal.fire({
+          icon: 'success',
+          title: 'BERHASIL DISIMPAN',
+          text: `Wilayah dusun [${payload.dusun}] dengan kode [${payload.kode_dusun}] berhasil dicatat!`,
+          confirmButtonColor: '#059669'
+        });
+
         document.getElementById('man_dusun').value = '';
         document.getElementById('man_kode_dusun').value = '';
         document.getElementById('man_jumlah_rt').value = '';
@@ -1007,7 +1030,12 @@
 
       } catch (err) {
         console.error(err);
-        alert('Gagal menyimpan wilayah: ' + err.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menyimpan',
+          text: err.message || 'Terjadi kesalahan sistem.',
+          confirmButtonColor: '#e11d48'
+        });
       } finally {
         btn.disabled = false;
         btn.innerText = "SIMPAN WILAYAH";
@@ -1015,24 +1043,35 @@
     }
 
     async function hapusWilayah(id, namaDusun) {
-      if (!confirm(`Yakin ingin menghapus dusun ${namaDusun}?`)) return;
+      Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: `Yakin ingin menghapus data dusun ${namaDusun}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            if (supabaseClient) {
+              const { error } = await supabaseClient
+                .from('master_wilayah')
+                .delete()
+                .eq('id', id);
 
-      try {
-        if (supabaseClient) {
-          const { error } = await supabaseClient
-            .from('master_wilayah')
-            .delete()
-            .eq('id', id);
+              if (error) throw error;
+            }
 
-          if (error) throw error;
+            Swal.fire('Terhapus!', `Dusun ${namaDusun} telah dihapus.`, 'success');
+            await muatMasterWilayah();
+            tampilkanTabelMasterWilayah();
+          } catch (err) {
+            Swal.fire('Gagal Menghapus', err.message, 'error');
+          }
         }
-
-        alert(`Dusun ${namaDusun} berhasil dihapus.`);
-        await muatMasterWilayah();
-        tampilkanTabelMasterWilayah();
-      } catch (err) {
-        alert('Gagal menghapus wilayah: ' + err.message);
-      }
+      });
     }
 
     // ========================================================
@@ -1040,20 +1079,18 @@
     // ========================================================
     function unduhTemplateWilayahExcel() {
       try {
-        // Cek apakah library XLSX berhasil dimuat
         if (typeof XLSX === 'undefined') {
-          alert('Pustaka Excel belum siap dimuat. Pastikan koneksi internet aktif atau muat ulang halaman.');
+          Swal.fire('Gagal', 'Pustaka Excel belum siap. Cek koneksi Anda dan refresh.', 'error');
           return;
         }
 
         const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
-        const defaultKdProv = String(userAktif.kode_provinsi || '52').padStart(2, '0');
+        const defaultKdProv = (userAktif.kode_provinsi || '52').padStart(2, '0');
         const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
-        const defaultKdKab = String(userAktif.kode_kabupaten || '01').padStart(2, '0');
+        const defaultKdKab = (userAktif.kode_kabupaten || '01').padStart(2, '0');
         const defaultKec = userAktif.kecamatan || 'LEMBAR';
-        const defaultKdKec = String(userAktif.kode_kecamatan || '08').padStart(2, '0');
+        const defaultKdKec = (userAktif.kode_kecamatan || '08').padStart(2, '0');
 
-        // Susun baris data tabel template (sebagai array of arrays untuk menjaga teks leading zero)
         const dataAOA = [
           [
             "PROVINSI", "KODE_PROVINSI", "KABUPATEN", "KODE_KABUPATEN", 
@@ -1072,25 +1109,22 @@
           ]
         ];
 
-        // Buat worksheet dari Array-of-Arrays
         const worksheet = XLSX.utils.aoa_to_sheet(dataAOA);
 
-        // Lebar kolom
         worksheet['!cols'] = [
           { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
           { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
           { wch: 25 }, { wch: 18 }, { wch: 12 }
         ];
 
-        // Format seluruh kode wilayah sebagai Text (@) agar 0 tidak hilang
         const range = XLSX.utils.decode_range(worksheet['!ref']);
         for (let R = 1; R <= range.e.r; ++R) {
           for (let C = 0; C <= range.e.c; ++C) {
-            if (C !== 10) { // Selain JUMLAH_RT
+            if (C !== 10) {
               const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
               if (worksheet[cellAddress]) {
-                worksheet[cellAddress].t = 's'; // Set type string
-                worksheet[cellAddress].z = '@'; // Set text format
+                worksheet[cellAddress].t = 's';
+                worksheet[cellAddress].z = '@';
               }
             }
           }
@@ -1099,11 +1133,9 @@
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "MASTER_WILAYAH");
 
-        // Tulis file ke array buffer
         const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-        // Trigger download via anchor element
         const namaFile = `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.xlsx`;
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1118,8 +1150,8 @@
         }, 100);
 
       } catch (err) {
-        console.error("Gagal mendownload template Excel:", err);
-        alert("Gagal mendownload template Excel: " + err.message);
+        console.error(err);
+        Swal.fire('Error', 'Gagal mendownload template: ' + err.message, 'error');
       }
     }
 
@@ -1130,102 +1162,118 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      if (!confirm(`Import data master wilayah dari file Excel "${file.name}"?`)) {
-        event.target.value = '';
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array', raw: false });
-          
-          const sheetPertama = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetPertama];
-          const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-          if (!rows || rows.length === 0) {
-            alert("File Excel kosong atau tidak memiliki baris data!");
-            event.target.value = '';
-            return;
-          }
-
-          const dataPayload = [];
-          let ditolak = 0;
-
-          rows.forEach((row) => {
-            const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
-            let kdProv = String(row.KODE_PROVINSI || row.kode_provinsi || '').trim().padStart(2, '0');
-            
-            const kab = String(row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
-            let kdKab = String(row.KODE_KABUPATEN || row.kode_kabupaten || '').trim().padStart(2, '0');
-            
-            const kec = String(row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
-            let kdKec = String(row.KODE_KECAMATAN || row.kode_kecamatan || '').trim().padStart(2, '0');
-            
-            const desa = String(row.DESA || row.desa || '').trim().toUpperCase();
-            let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
-            
-            const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
-            // Kode dusun 4 Digit
-            let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
-            const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
-
-            // Validasi hak akses role admin
-            if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kabupaten) {
-              ditolak++;
-              return;
-            }
-            if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kecamatan) {
-              ditolak++;
-              return;
-            }
-
-            if (desa && dusun && kdDusun) {
-              dataPayload.push({
-                provinsi: prov || userAktif.provinsi,
-                kode_provinsi: kdProv,
-                kabupaten: kab || userAktif.kabupaten,
-                kode_kabupaten: kdKab,
-                kecamatan: kec || userAktif.kecamatan,
-                kode_kecamatan: kdKec,
-                desa: desa,
-                kode_desa: kdDesa,
-                dusun: dusun,
-                kode_dusun: kdDusun,
-                jumlah_rt: jmlRt
-              });
-            }
-          });
-
-          if (dataPayload.length === 0) {
-            alert(`Tidak ada data yang dapat disimpan! (${ditolak} baris di luar kewenangan wilayah Anda)`);
-            event.target.value = '';
-            return;
-          }
-
-          if (supabaseClient) {
-            const { error } = await supabaseClient
-              .from('master_wilayah')
-              .upsert(dataPayload, { onConflict: 'kode_dusun' });
-
-            if (error) throw error;
-          }
-
-          alert(`Berhasil mengunggah ${dataPayload.length} data wilayah! ${ditolak > 0 ? `(${ditolak} data dilewati karena di luar wilayah Anda)` : ''}`);
-          await muatMasterWilayah();
-          tampilkanTabelMasterWilayah();
-
-        } catch (err) {
-          console.error("Gagal membaca Excel:", err);
-          alert("Terjadi kesalahan saat memproses file Excel: " + err.message);
-        } finally {
+      Swal.fire({
+        title: 'Konfirmasi Upload',
+        text: `Import data master wilayah dari file Excel "${file.name}"?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4f46e5',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Proses Import',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (!result.isConfirmed) {
           event.target.value = '';
+          return;
         }
-      };
 
-      reader.readAsArrayBuffer(file);
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array', raw: false });
+            
+            const sheetPertama = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetPertama];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+            if (!rows || rows.length === 0) {
+              Swal.fire('File Kosong', 'File Excel tidak memiliki baris data!', 'warning');
+              event.target.value = '';
+              return;
+            }
+
+            const dataPayload = [];
+            let ditolak = 0;
+
+            rows.forEach((row) => {
+              const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
+              let kdProv = String(row.KODE_PROVINSI || row.kode_provinsi || '').trim().padStart(2, '0');
+              
+              const kab = String(row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
+              let kdKab = String(row.KODE_KABUPATEN || row.kode_kabupaten || '').trim().padStart(2, '0');
+              
+              const kec = String(row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
+              let kdKec = String(row.KODE_KECAMATAN || row.kode_kecamatan || '').trim().padStart(2, '0');
+              
+              const desa = String(row.DESA || row.desa || '').trim().toUpperCase();
+              let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
+              
+              const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
+              let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
+              const jmlRt = parseInt(row.JUMLAH_RT || row.jumlah_rt) || 0;
+
+              // Validasi role
+              if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kabupaten) {
+                ditolak++;
+                return;
+              }
+              if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kecamatan) {
+                ditolak++;
+                return;
+              }
+
+              if (desa && dusun && kdDusun) {
+                dataPayload.push({
+                  provinsi: prov || userAktif.provinsi,
+                  kode_provinsi: kdProv,
+                  kabupaten: kab || userAktif.kabupaten,
+                  kode_kabupaten: kdKab,
+                  kecamatan: kec || userAktif.kecamatan,
+                  kode_kecamatan: kdKec,
+                  desa: desa,
+                  kode_desa: kdDesa,
+                  dusun: dusun,
+                  kode_dusun: kdDusun,
+                  jumlah_rt: jmlRt
+                });
+              }
+            });
+
+            if (dataPayload.length === 0) {
+              Swal.fire('Data Ditolak', `Tidak ada data yang valid disimpan. (${ditolak} baris di luar kewenangan wilayah Anda)`, 'error');
+              event.target.value = '';
+              return;
+            }
+
+            if (supabaseClient) {
+              const { error } = await supabaseClient
+                .from('master_wilayah')
+                .upsert(dataPayload, { onConflict: 'kode_dusun' });
+
+              if (error) throw error;
+            }
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Import Selesai',
+              text: `Berhasil mengunggah ${dataPayload.length} data wilayah! ${ditolak > 0 ? `(${ditolak} data dilewati)` : ''}`,
+              confirmButtonColor: '#059669'
+            });
+
+            await muatMasterWilayah();
+            tampilkanTabelMasterWilayah();
+
+          } catch (err) {
+            console.error("Gagal membaca Excel:", err);
+            Swal.fire('Error', 'Terjadi kesalahan saat memproses file Excel: ' + err.message, 'error');
+          } finally {
+            event.target.value = '';
+          }
+        };
+
+        reader.readAsArrayBuffer(file);
+      });
     }
 
     // ========================================================
@@ -1377,12 +1425,22 @@
       const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value) || 0;
 
       if (!noKK || !kdDusun || !rt || !alamat || !noHp) {
-        alert("MOHON LENGKAPI SELURUH ISIAN IDENTITAS WILAYAH TERLEBIH DAHULU!");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Data Belum Lengkap',
+          text: 'Mohon lengkapi seluruh isian Identitas Wilayah terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
         return;
       }
 
       if (jmlAnggota < 1) {
-        alert("JUMLAH ANGGOTA KELUARGA MINIMAL 1 ORANG!");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Jumlah Anggota',
+          text: 'Jumlah anggota keluarga minimal 1 orang!',
+          confirmButtonColor: '#059669'
+        });
         return;
       }
 
@@ -1524,20 +1582,35 @@
       const tgl = pageEl.querySelector('[name="tanggal_lahir"]').value;
 
       if (!nama || !nik || !tgl) {
-        alert("LENGKAPI NAMA, NIK, DAN TANGGAL LAHIR PADA ANGGOTA INI TERLEBIH DAHULU!");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Isian Wajib',
+          text: 'Lengkapi Nama, NIK, dan Tanggal Lahir pada anggota ini terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
         return;
       }
 
       if (noUrut === totalHalamanAnggota) {
-        const konfirmasi = confirm("Apakah seluruh anggota keluarga telah terisi?");
-        if (konfirmasi) {
-          pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
-          const badge = document.getElementById('badgeLangkah');
-          if (badge) badge.innerText = "LANGKAH 3";
-        } else {
-          tambahHalamanAnggotaBaru();
-          bukaHalamanAnggota(totalHalamanAnggota);
-        }
+        Swal.fire({
+          title: 'Pemeriksaan Anggota',
+          text: 'Apakah seluruh anggota keluarga telah terisi?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#059669',
+          cancelButtonColor: '#0284c7',
+          confirmButtonText: 'Ya, Lanjut ke Blok KB',
+          cancelButtonText: 'Tambah Anggota Baru'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
+            const badge = document.getElementById('badgeLangkah');
+            if (badge) badge.innerText = "LANGKAH 3";
+          } else {
+            tambahHalamanAnggotaBaru();
+            bukaHalamanAnggota(totalHalamanAnggota);
+          }
+        });
       } else {
         bukaHalamanAnggota(noUrut + 1);
       }
@@ -1545,32 +1618,43 @@
 
     function hapusHalamanAnggota(noUrut) {
       if (totalHalamanAnggota <= 1) {
-        alert("MINIMAL HARUS ADA 1 ANGGOTA KELUARGA!");
+        Swal.fire('Perhatian', 'Minimal harus ada 1 anggota keluarga!', 'warning');
         return;
       }
 
-      if (confirm(`YAKIN INGIN MENGHAPUS DATA ANGGOTA KE-${noUrut}?`)) {
-        const el = document.getElementById(`hal_anggota_${noUrut}`);
-        if (el) el.remove();
+      Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: `Yakin ingin menghapus data anggota ke-${noUrut}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const el = document.getElementById(`hal_anggota_${noUrut}`);
+          if (el) el.remove();
 
-        const sisaHalaman = document.querySelectorAll('.item-anggota-page');
-        totalHalamanAnggota = sisaHalaman.length;
+          const sisaHalaman = document.querySelectorAll('.item-anggota-page');
+          totalHalamanAnggota = sisaHalaman.length;
 
-        sisaHalaman.forEach((hal, idx) => {
-          const indexBaru = idx + 1;
-          hal.id = `hal_anggota_${indexBaru}`;
-          hal.setAttribute('data-urutan', indexBaru);
-          hal.querySelector('h2').innerHTML = `II. DATA ANGGOTA KELUARGA (${indexBaru} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)`;
-          hal.querySelector('p').innerText = `LEMBAR ISIAN ANGGOTA KE-${indexBaru}`;
-          hal.querySelector('button[onclick*="hapusHalamanAnggota"]').setAttribute('onclick', `hapusHalamanAnggota(${indexBaru})`);
-          hal.querySelector('button[onclick*="mundurDariAnggota"]').setAttribute('onclick', `mundurDariAnggota(${indexBaru})`);
-          hal.querySelector('button[onclick*="majuDariAnggota"]').setAttribute('onclick', `majuDariAnggota(${indexBaru})`);
-        });
+          sisaHalaman.forEach((hal, idx) => {
+            const indexBaru = idx + 1;
+            hal.id = `hal_anggota_${indexBaru}`;
+            hal.setAttribute('data-urutan', indexBaru);
+            hal.querySelector('h2').innerHTML = `II. DATA ANGGOTA KELUARGA (${indexBaru} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)`;
+            hal.querySelector('p').innerText = `LEMBAR ISIAN ANGGOTA KE-${indexBaru}`;
+            hal.querySelector('button[onclick*="hapusHalamanAnggota"]').setAttribute('onclick', `hapusHalamanAnggota(${indexBaru})`);
+            hal.querySelector('button[onclick*="mundurDariAnggota"]').setAttribute('onclick', `mundurDariAnggota(${indexBaru})`);
+            hal.querySelector('button[onclick*="majuDariAnggota"]').setAttribute('onclick', `majuDariAnggota(${indexBaru})`);
+          });
 
-        perbaruiLabelTotalAnggota();
-        const targetBuka = noUrut > totalHalamanAnggota ? totalHalamanAnggota : noUrut;
-        bukaHalamanAnggota(targetBuka);
-      }
+          perbaruiLabelTotalAnggota();
+          const targetBuka = noUrut > totalHalamanAnggota ? totalHalamanAnggota : noUrut;
+          bukaHalamanAnggota(targetBuka);
+        }
+      });
     }
 
     // --- SUBMIT FORMULIR PENDATAAN KE SUPABASE ---
@@ -1656,22 +1740,21 @@
 
         Swal.fire({
           icon: 'success',
-          title: 'BERHASIL!',
-          text: 'Seluruh data keluarga berhasil disimpan ke sistem.',
-          confirmButtonColor: '#059669', // Warna emerald senada tema
-          confirmButtonText: 'OK'
+          title: 'BERHASIL DISIMPAN!',
+          text: 'Seluruh data keluarga dan instrumen pendataan telah tersimpan ke database.',
+          confirmButtonColor: '#059669'
+        }).then(() => {
+          document.getElementById('pendataanForm').reset();
+          kembaliKeDashboard();
         });
-        document.getElementById('pendataanForm').reset();
-        kembaliKeDashboard();
 
       } catch (err) {
         console.error(err);
         Swal.fire({
           icon: 'error',
-          title: 'TERJADI KESALAHAN',
-          text: err.message || 'Gagal memproses data.',
-          confirmButtonColor: '#e11d48',
-          confirmButtonText: 'Tutup'
+          title: 'Gagal Menyimpan Data',
+          text: err.message || 'Terjadi kesalahan saat menyimpan ke database.',
+          confirmButtonColor: '#e11d48'
         });
       } finally {
         btnSimpan.disabled = false;
