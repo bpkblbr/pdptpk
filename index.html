@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Aplikasi Register PUS & Pendataan Keluarga</title>
-  <!-- Tailwind CSS CDN -->
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- SheetJS (xlsx) CDN untuk Download & Upload File Excel .xlsx -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <style>
     .form-uppercase input[type="text"], 
     .form-uppercase textarea, 
@@ -1028,67 +1027,88 @@
     // DOWNLOAD TEMPLATE FILE EXCEL (.XLSX) - DUSUN 4 DIGIT
     // ========================================================
     function unduhTemplateWilayahExcel() {
-      const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
-      const defaultKdProv = (userAktif.kode_provinsi || '52').padStart(2, '0');
-      const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
-      const defaultKdKab = (userAktif.kode_kabupaten || '01').padStart(2, '0');
-      const defaultKec = userAktif.kecamatan || 'LEMBAR';
-      const defaultKdKec = (userAktif.kode_kecamatan || '08').padStart(2, '0');
-
-      // Data Template dengan Kode Dusun 4 Digit ('0100', '0200')
-      const dataTemplate = [
-        {
-          PROVINSI: defaultProv,
-          KODE_PROVINSI: defaultKdProv,  // 2 Digit (contoh: 52)
-          KABUPATEN: defaultKab,
-          KODE_KABUPATEN: defaultKdKab,  // 2 Digit (contoh: 01)
-          KECAMATAN: defaultKec,
-          KODE_KECAMATAN: defaultKdKec,  // 2 Digit (contoh: 08)
-          DESA: "LEMBAR",
-          KODE_DESA: "2001",             // 4 Digit (contoh: 2001)
-          DUSUN: "SELAMPANG",
-          KODE_DUSUN: "0100",            // 4 Digit (contoh: 0100)
-          JUMLAH_RT: 4
-        },
-        {
-          PROVINSI: defaultProv,
-          KODE_PROVINSI: defaultKdProv,
-          KABUPATEN: defaultKab,
-          KODE_KABUPATEN: defaultKdKab,
-          KECAMATAN: defaultKec,
-          KODE_KECAMATAN: defaultKdKec,
-          DESA: "LEMBAR",
-          KODE_DESA: "2001",
-          DUSUN: "PELEPOK",
-          KODE_DUSUN: "0200",            // 4 Digit (contoh: 0200)
-          JUMLAH_RT: 3
+      try {
+        // Cek apakah library XLSX berhasil dimuat
+        if (typeof XLSX === 'undefined') {
+          alert('Pustaka Excel belum siap dimuat. Pastikan koneksi internet aktif atau muat ulang halaman.');
+          return;
         }
-      ];
 
-      const worksheet = XLSX.utils.json_to_sheet(dataTemplate);
-      
-      // Paksa semua sel kode bertipe String ('s') agar angka 0 di depan tidak lenyap
-      const range = XLSX.utils.decode_range(worksheet['!ref']);
-      for (let R = range.s.r; R <= range.t.r; ++R) {
-        for (let C = range.s.c; C <= range.t.c; ++C) {
-          const cell_ref = XLSX.utils.encode_cell({c: C, r: R});
-          if (worksheet[cell_ref] && C !== 10) { // Selain kolom JUMLAH_RT
-            worksheet[cell_ref].t = 's';
+        const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
+        const defaultKdProv = String(userAktif.kode_provinsi || '52').padStart(2, '0');
+        const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
+        const defaultKdKab = String(userAktif.kode_kabupaten || '01').padStart(2, '0');
+        const defaultKec = userAktif.kecamatan || 'LEMBAR';
+        const defaultKdKec = String(userAktif.kode_kecamatan || '08').padStart(2, '0');
+
+        // Susun baris data tabel template (sebagai array of arrays untuk menjaga teks leading zero)
+        const dataAOA = [
+          [
+            "PROVINSI", "KODE_PROVINSI", "KABUPATEN", "KODE_KABUPATEN", 
+            "KECAMATAN", "KODE_KECAMATAN", "DESA", "KODE_DESA", 
+            "DUSUN", "KODE_DUSUN", "JUMLAH_RT"
+          ],
+          [
+            defaultProv, defaultKdProv, defaultKab, defaultKdKab,
+            defaultKec, defaultKdKec, "LEMBAR", "2001",
+            "SELAMPANG", "0100", 4
+          ],
+          [
+            defaultProv, defaultKdProv, defaultKab, defaultKdKab,
+            defaultKec, defaultKdKec, "LEMBAR", "2001",
+            "PELEPOK", "0200", 3
+          ]
+        ];
+
+        // Buat worksheet dari Array-of-Arrays
+        const worksheet = XLSX.utils.aoa_to_sheet(dataAOA);
+
+        // Lebar kolom
+        worksheet['!cols'] = [
+          { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
+          { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
+          { wch: 25 }, { wch: 18 }, { wch: 12 }
+        ];
+
+        // Format seluruh kode wilayah sebagai Text (@) agar 0 tidak hilang
+        const range = XLSX.utils.decode_range(worksheet['!ref']);
+        for (let R = 1; R <= range.e.r; ++R) {
+          for (let C = 0; C <= range.e.c; ++C) {
+            if (C !== 10) { // Selain JUMLAH_RT
+              const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+              if (worksheet[cellAddress]) {
+                worksheet[cellAddress].t = 's'; // Set type string
+                worksheet[cellAddress].z = '@'; // Set text format
+              }
+            }
           }
         }
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "MASTER_WILAYAH");
+
+        // Tulis file ke array buffer
+        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        // Trigger download via anchor element
+        const namaFile = `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.xlsx`;
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = namaFile;
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+
+      } catch (err) {
+        console.error("Gagal mendownload template Excel:", err);
+        alert("Gagal mendownload template Excel: " + err.message);
       }
-
-      worksheet['!cols'] = [
-        { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
-        { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
-        { wch: 25 }, { wch: 20 }, { wch: 12 }
-      ];
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "MASTER_WILAYAH");
-
-      const namaFile = `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.xlsx`;
-      XLSX.writeFile(workbook, namaFile);
     }
 
     // ========================================================
