@@ -237,7 +237,7 @@
   </div>
 
   <!-- ========================================================
-       3. HALAMAN KELOLA WILAYAH (ROLE-BASED & EXCEL IMPORT/EXPORT)
+       3. HALAMAN KELOLA WILAYAH (FORMAT KOLOM PENDEK)
        ======================================================== -->
   <div id="tampilan_kelola_wilayah" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
     <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-7 space-y-6">
@@ -279,24 +279,24 @@
             <input type="text" id="man_provinsi" required class="w-full p-2 border rounded-lg uppercase" placeholder="NUSA TENGGARA BARAT" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Provinsi (2 Digit) *</label>
-            <input type="text" id="man_kode_provinsi" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="52" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Prov (2 Digit) *</label>
+            <input type="text" id="man_kode_prov" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="52" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Kabupaten *</label>
             <input type="text" id="man_kabupaten" required class="w-full p-2 border rounded-lg uppercase" placeholder="LOMBOK BARAT" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kabupaten (2 Digit) *</label>
-            <input type="text" id="man_kode_kabupaten" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="01" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kab (2 Digit) *</label>
+            <input type="text" id="man_kode_kab" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="01" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Kecamatan *</label>
             <input type="text" id="man_kecamatan" required class="w-full p-2 border rounded-lg uppercase" placeholder="LEMBAR" />
           </div>
           <div>
-            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kecamatan (2 Digit) *</label>
-            <input type="text" id="man_kode_kecamatan" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="08" />
+            <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kec (2 Digit) *</label>
+            <input type="text" id="man_kode_kec" required maxlength="2" class="w-full p-2 border rounded-lg uppercase font-mono" placeholder="08" />
           </div>
           <div>
             <label class="block font-bold text-slate-600 uppercase mb-1">Desa / Kelurahan *</label>
@@ -342,7 +342,7 @@
                 <th class="p-3">DESA</th>
                 <th class="p-3 text-center">KD DESA</th>
                 <th class="p-3">DUSUN</th>
-                <th class="p-3 text-center">KD DUSUN (4 DIGIT)</th>
+                <th class="p-3 text-center">KD DUSUN</th>
                 <th class="p-3 text-center">JUMLAH RT</th>
                 <th class="p-3 text-center">AKSI</th>
               </tr>
@@ -409,8 +409,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROVINSI (2 DIGIT)</label>
-              <input type="text" id="kode_provinsi" readonly placeholder="OTOMATIS"
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROV (2 DIGIT)</label>
+              <input type="text" id="kode_prov" readonly placeholder="OTOMATIS"
                      class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
@@ -422,8 +422,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KABUPATEN (2 DIGIT)</label>
-              <input type="text" id="kode_kabupaten" readonly placeholder="OTOMATIS"
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KAB (2 DIGIT)</label>
+              <input type="text" id="kode_kab" readonly placeholder="OTOMATIS"
                      class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
@@ -435,8 +435,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KECAMATAN (2 DIGIT)</label>
-              <input type="text" id="kode_kecamatan" readonly placeholder="OTOMATIS"
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KEC (2 DIGIT)</label>
+              <input type="text" id="kode_kec" readonly placeholder="OTOMATIS"
                      class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
             </div>
 
@@ -699,11 +699,11 @@
       username: '',
       role: 'SUPER_ADMIN',
       provinsi: 'NUSA TENGGARA BARAT',
-      kode_provinsi: '52',
+      kode_prov: '52',
       kabupaten: 'LOMBOK BARAT',
-      kode_kabupaten: '01',
+      kode_kab: '01',
       kecamatan: 'LEMBAR',
-      kode_kecamatan: '08',
+      kode_kec: '08',
       desa: '',
       kode_desa: ''
     };
@@ -726,10 +726,14 @@
       const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.classList.remove('aktif');
+        if (el) {
+          el.classList.remove('aktif');
+        }
       });
       const target = document.getElementById(layarId);
-      if (target) target.classList.add('aktif');
+      if (target) {
+        target.classList.add('aktif');
+      }
       window.scrollTo(0, 0);
     }
 
@@ -759,11 +763,11 @@
           username: 'SUPER ADMINISTRATOR',
           role: 'SUPER_ADMIN',
           provinsi: 'NUSA TENGGARA BARAT',
-          kode_provinsi: '52',
+          kode_prov: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '01',
+          kode_kab: '01',
           kecamatan: '',
-          kode_kecamatan: '',
+          kode_kec: '',
           desa: '',
           kode_desa: ''
         };
@@ -772,11 +776,11 @@
           username: 'ADMIN KABUPATEN LOMBOK BARAT',
           role: 'ADMIN_KABUPATEN',
           provinsi: 'NUSA TENGGARA BARAT',
-          kode_provinsi: '52',
+          kode_prov: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '01',
+          kode_kab: '01',
           kecamatan: '',
-          kode_kecamatan: '',
+          kode_kec: '',
           desa: '',
           kode_desa: ''
         };
@@ -785,11 +789,11 @@
           username: 'ADMIN KECAMATAN LEMBAR',
           role: 'ADMIN_KECAMATAN',
           provinsi: 'NUSA TENGGARA BARAT',
-          kode_provinsi: '52',
+          kode_prov: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '01',
+          kode_kab: '01',
           kecamatan: 'LEMBAR',
-          kode_kecamatan: '08',
+          kode_kec: '08',
           desa: '',
           kode_desa: ''
         };
@@ -798,11 +802,11 @@
           username: user.toUpperCase(),
           role: 'USER_DESA',
           provinsi: 'NUSA TENGGARA BARAT',
-          kode_provinsi: '52',
+          kode_prov: '52',
           kabupaten: 'LOMBOK BARAT',
-          kode_kabupaten: '01',
+          kode_kab: '01',
           kecamatan: 'LEMBAR',
-          kode_kecamatan: '08',
+          kode_kec: '08',
           desa: 'LEMBAR',
           kode_desa: '2001'
         };
@@ -857,7 +861,7 @@
     }
 
     // ========================================================
-    // 6. LOGIKA KELOLA MASTER WILAYAH (MANUAL, EXCEL & ROLE)
+    // 6. LOGIKA KELOLA MASTER WILAYAH (FORMAT PENDEK BAKU)
     // ========================================================
     function bukaKelolaWilayah() {
       if (userAktif.role === 'USER_DESA') {
@@ -876,9 +880,9 @@
       if (userAktif.role === 'SUPER_ADMIN') {
         labelCakupan.innerText = "Cakupan Akses: SEMUA WILAYAH (PROVINSI & SUPER ADMIN)";
       } else if (userAktif.role === 'ADMIN_KABUPATEN') {
-        labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kabupaten})`;
+        labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kab})`;
       } else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (KODE: ${userAktif.kode_kecamatan}) - ${userAktif.kabupaten}`;
+        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (KODE: ${userAktif.kode_kec}) - ${userAktif.kabupaten}`;
       }
 
       resetMwForm();
@@ -891,11 +895,11 @@
       document.getElementById("man_jumlah_rt").value = "4";
 
       const pNama = document.getElementById("man_provinsi");
-      const pKode = document.getElementById("man_kode_provinsi");
+      const pKode = document.getElementById("man_kode_prov");
       const kNama = document.getElementById("man_kabupaten");
-      const kKode = document.getElementById("man_kode_kabupaten");
+      const kKode = document.getElementById("man_kode_kab");
       const kcNama = document.getElementById("man_kecamatan");
-      const kcKode = document.getElementById("man_kode_kecamatan");
+      const kcKode = document.getElementById("man_kode_kec");
       const dNama = document.getElementById("man_desa");
       const dKode = document.getElementById("man_kode_desa");
 
@@ -909,18 +913,18 @@
       };
 
       if (userAktif.role === 'ADMIN_KABUPATEN') {
-        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_provinsi);
-        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kabupaten);
+        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_prov);
+        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kab);
         setLock(kcNama, kcKode, false, "", "");
         setLock(dNama, dKode, false, "", "");
       } else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_provinsi);
-        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kabupaten);
-        setLock(kcNama, kcKode, true, userAktif.kecamatan, userAktif.kode_kecamatan);
+        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_prov);
+        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kab);
+        setLock(kcNama, kcKode, true, userAktif.kecamatan, userAktif.kode_kec);
         setLock(dNama, dKode, false, "", "");
       } else {
-        setLock(pNama, pKode, false, userAktif.provinsi, userAktif.kode_provinsi);
-        setLock(kNama, kKode, false, userAktif.kabupaten, userAktif.kode_kabupaten);
+        setLock(pNama, pKode, false, userAktif.provinsi, userAktif.kode_prov);
+        setLock(kNama, kKode, false, userAktif.kabupaten, userAktif.kode_kab);
         setLock(kcNama, kcKode, false, "", "");
         setLock(dNama, dKode, false, "", "");
       }
@@ -931,10 +935,10 @@
         return rawWilayahList;
       }
       if (userAktif.role === 'ADMIN_KABUPATEN') {
-        return rawWilayahList.filter(w => String(w.kode_kabupaten || w.kode_kab).padStart(2, '0') === userAktif.kode_kabupaten);
+        return rawWilayahList.filter(w => String(w.kode_kab || w.kode_kabupaten).padStart(2, '0') === userAktif.kode_kab);
       }
       if (userAktif.role === 'ADMIN_KECAMATAN') {
-        return rawWilayahList.filter(w => String(w.kode_kecamatan || w.kode_kec).padStart(2, '0') === userAktif.kode_kecamatan);
+        return rawWilayahList.filter(w => String(w.kode_kec || w.kode_kecamatan).padStart(2, '0') === userAktif.kode_kec);
       }
       return [];
     }
@@ -950,7 +954,7 @@
 
       let baris = '';
       dataSaring.forEach(item => {
-        const kdKec = String(item.kode_kecamatan || item.kode_kec || '').padStart(2, '0');
+        const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
         const kdDesa = String(item.kode_desa || '').padStart(4, '0');
         const kdDsn = String(item.kode_dusun || '').padStart(4, '0');
 
@@ -984,15 +988,15 @@
     }
 
     function validateRowScope(kdKab, kdKec, kdDesa) {
-      if ((userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kabupaten) {
-        if (String(kdKab).padStart(2, '0') !== String(userAktif.kode_kabupaten).padStart(2, '0')) {
-          return { valid: false, reason: `Kabupaten di luar wewenang (${kdKab} vs ${userAktif.kode_kabupaten})` };
+      if ((userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kab) {
+        if (String(kdKab).padStart(2, '0') !== String(userAktif.kode_kab).padStart(2, '0')) {
+          return { valid: false, reason: `Kabupaten di luar wewenang (${kdKab} vs ${userAktif.kode_kab})` };
         }
       }
 
-      if ((userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kecamatan) {
-        if (String(kdKec).padStart(2, '0') !== String(userAktif.kode_kecamatan).padStart(2, '0')) {
-          return { valid: false, reason: `Kecamatan di luar wewenang (${kdKec} vs ${userAktif.kode_kecamatan})` };
+      if ((userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kec) {
+        if (String(kdKec).padStart(2, '0') !== String(userAktif.kode_kec).padStart(2, '0')) {
+          return { valid: false, reason: `Kecamatan di luar wewenang (${kdKec} vs ${userAktif.kode_kec})` };
         }
       }
 
@@ -1010,9 +1014,9 @@
       btn.disabled = true;
       btn.innerText = "MENYIMPAN...";
 
-      const kdProv = document.getElementById('man_kode_provinsi').value.trim().padStart(2, '0');
-      const kdKab = document.getElementById('man_kode_kabupaten').value.trim().padStart(2, '0');
-      const kdKec = document.getElementById('man_kode_kecamatan').value.trim().padStart(2, '0');
+      const kdProv = document.getElementById('man_kode_prov').value.trim().padStart(2, '0');
+      const kdKab = document.getElementById('man_kode_kab').value.trim().padStart(2, '0');
+      const kdKec = document.getElementById('man_kode_kec').value.trim().padStart(2, '0');
       const kdDesa = document.getElementById('man_kode_desa').value.trim().padStart(4, '0');
       const kdDusun = document.getElementById('man_kode_dusun').value.trim().padStart(4, '0');
 
@@ -1024,15 +1028,13 @@
         return;
       }
 
+      // Payload Baku Sesuai Kolom Supabase
       const payload = {
         provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
-        kode_provinsi: kdProv,
         kode_prov: kdProv,
         kabupaten: document.getElementById('man_kabupaten').value.trim().toUpperCase(),
-        kode_kabupaten: kdKab,
         kode_kab: kdKab,
         kecamatan: document.getElementById('man_kecamatan').value.trim().toUpperCase(),
-        kode_kecamatan: kdKec,
         kode_kec: kdKec,
         desa: document.getElementById('man_desa').value.trim().toUpperCase(),
         kode_desa: kdDesa,
@@ -1045,7 +1047,7 @@
         if (supabaseClient) {
           const { error } = await supabaseClient
             .from('master_wilayah')
-            .upsert([payload], { onConflict: 'kode_kecamatan,kode_desa,kode_dusun' });
+            .upsert([payload], { onConflict: 'kode_kec,kode_desa,kode_dusun' });
 
           if (error) throw error;
         }
@@ -1121,16 +1123,16 @@
         }
 
         const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
-        const defaultKdProv = (userAktif.kode_provinsi || '52').padStart(2, '0');
+        const defaultKdProv = (userAktif.kode_prov || '52').padStart(2, '0');
         const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
-        const defaultKdKab = (userAktif.kode_kabupaten || '01').padStart(2, '0');
+        const defaultKdKab = (userAktif.kode_kab || '01').padStart(2, '0');
         const defaultKec = userAktif.kecamatan || 'LEMBAR';
-        const defaultKdKec = (userAktif.kode_kecamatan || '08').padStart(2, '0');
+        const defaultKdKec = (userAktif.kode_kec || '08').padStart(2, '0');
 
         const dataAOA = [
           [
-            "PROVINSI", "KODE_PROVINSI", "KABUPATEN", "KODE_KABUPATEN", 
-            "KECAMATAN", "KODE_KECAMATAN", "DESA", "KODE_DESA", 
+            "PROVINSI", "KODE_PROV", "KABUPATEN", "KODE_KAB", 
+            "KECAMATAN", "KODE_KEC", "DESA", "KODE_DESA", 
             "DUSUN", "KODE_DUSUN", "JUMLAH_RT"
           ],
           [
@@ -1235,13 +1237,13 @@
 
             rows.forEach((row, idx) => {
               const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
-              let kdProv = String(row.KODE_PROVINSI || row.kode_provinsi || row.kode_prov || '').trim().padStart(2, '0');
+              let kdProv = String(row.KODE_PROV || row.kode_prov || row.KODE_PROVINSI || row.kode_provinsi || '').trim().padStart(2, '0');
               
               const kab = String(row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
-              let kdKab = String(row.KODE_KABUPATEN || row.kode_kabupaten || row.kode_kab || '').trim().padStart(2, '0');
+              let kdKab = String(row.KODE_KAB || row.kode_kab || row.KODE_KABUPATEN || row.kode_kabupaten || '').trim().padStart(2, '0');
               
               const kec = String(row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
-              let kdKec = String(row.KODE_KECAMATAN || row.kode_kecamatan || row.kode_kec || '').trim().padStart(2, '0');
+              let kdKec = String(row.KODE_KEC || row.kode_kec || row.KODE_KECAMATAN || row.kode_kecamatan || '').trim().padStart(2, '0');
               
               const desa = String(row.DESA || row.desa || '').trim().toUpperCase();
               let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
@@ -1252,7 +1254,7 @@
 
               if (!desa || !dusun || !kdDusun) return;
 
-              // Validasi scope login
+              // Validasi batas kewenangan login
               const check = validateRowScope(kdKab, kdKec, kdDesa);
               if (!check.valid) {
                 unauthorizedRows.push(`Baris ${idx + 2}: Desa ${desa} - Dusun ${dusun} (${check.reason})`);
@@ -1265,15 +1267,13 @@
                 duplicateInFile++;
               }
 
+              // Payload Disesuaikan 100% Menggunakan Kolom Pendek
               payloadMap.set(uniqueCompositeKey, {
                 provinsi: prov || userAktif.provinsi,
-                kode_provinsi: kdProv,
                 kode_prov: kdProv,
                 kabupaten: kab || userAktif.kabupaten,
-                kode_kabupaten: kdKab,
                 kode_kab: kdKab,
                 kecamatan: kec || userAktif.kecamatan,
-                kode_kecamatan: kdKec,
                 kode_kec: kdKec,
                 desa: desa,
                 kode_desa: kdDesa,
@@ -1304,10 +1304,11 @@
               return;
             }
 
+            // Eksekusi Upsert ke Supabase dengan target komposit baku
             if (supabaseClient) {
               const { error } = await supabaseClient
                 .from('master_wilayah')
-                .upsert(payloadList, { onConflict: 'kode_kecamatan,kode_desa,kode_dusun' });
+                .upsert(payloadList, { onConflict: 'kode_kec,kode_desa,kode_dusun' });
 
               if (error) throw error;
             }
@@ -1376,9 +1377,9 @@
         dataDusun = {};
 
         rawWilayahList.forEach(r => {
-          let kdProv = String(r.kode_provinsi || r.kode_prov || '').padStart(2, '0');
-          let kdKab  = String(r.kode_kabupaten || r.kode_kab || '').padStart(2, '0');
-          let kdKec  = String(r.kode_kecamatan || r.kode_kec || '').padStart(2, '0');
+          let kdProv = String(r.kode_prov || r.kode_provinsi || '').padStart(2, '0');
+          let kdKab  = String(r.kode_kab || r.kode_kabupaten || '').padStart(2, '0');
+          let kdKec  = String(r.kode_kec || r.kode_kecamatan || '').padStart(2, '0');
           let kdDesa = String(r.kode_desa || '').padStart(4, '0');
           let kdDsn  = String(r.kode_dusun || '').padStart(4, '0');
 
@@ -1419,11 +1420,11 @@
 
     function updateFormKabupaten() {
       const kdProv = document.getElementById('provinsi').value;
-      document.getElementById('kode_provinsi').value = kdProv;
+      document.getElementById('kode_prov').value = kdProv;
 
       const elKab = document.getElementById('kabupaten');
       elKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
-      document.getElementById('kode_kabupaten').value = '';
+      document.getElementById('kode_kab').value = '';
       resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
 
       if (!kdProv || !dataKabupaten[kdProv]) { elKab.disabled = true; return; }
@@ -1436,11 +1437,11 @@
 
     function updateFormKecamatan() {
       const kdKab = document.getElementById('kabupaten').value;
-      document.getElementById('kode_kabupaten').value = kdKab;
+      document.getElementById('kode_kab').value = kdKab;
 
       const elKec = document.getElementById('kecamatan');
       elKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
-      document.getElementById('kode_kecamatan').value = '';
+      document.getElementById('kode_kec').value = '';
       resetFormDropdowns(['desa', 'dusun', 'rt']);
 
       if (!kdKab || !dataKecamatan[kdKab]) { elKec.disabled = true; return; }
@@ -1452,9 +1453,9 @@
     }
 
     function updateFormDesa() {
-      const kdKab = document.getElementById('kode_kabupaten').value;
+      const kdKab = document.getElementById('kode_kab').value;
       const kdKec = document.getElementById('kecamatan').value;
-      document.getElementById('kode_kecamatan').value = kdKec;
+      document.getElementById('kode_kec').value = kdKec;
 
       const elDesa = document.getElementById('desa');
       elDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
@@ -1471,8 +1472,8 @@
     }
 
     function updateFormDusun() {
-      const kdKab = document.getElementById('kode_kabupaten').value;
-      const kdKec = document.getElementById('kode_kecamatan').value;
+      const kdKab = document.getElementById('kode_kab').value;
+      const kdKec = document.getElementById('kode_kec').value;
       const kdDesa = document.getElementById('desa').value;
       document.getElementById('kode_desa').value = kdDesa;
 
@@ -1773,9 +1774,9 @@
 
       try {
         const noKK = document.getElementById('nomor_kk').value.trim();
-        const kdProv = document.getElementById('kode_provinsi').value.trim();
-        const kdKab = document.getElementById('kode_kabupaten').value.trim();
-        const kdKec = document.getElementById('kode_kecamatan').value.trim();
+        const kdProv = document.getElementById('kode_prov').value.trim();
+        const kdKab = document.getElementById('kode_kab').value.trim();
+        const kdKec = document.getElementById('kode_kec').value.trim();
         const kdDesa = document.getElementById('kode_desa').value.trim();
         const kdDusun = document.getElementById('kode_dusun').value.trim();
         const rt = document.getElementById('rt').value.trim();
@@ -1788,9 +1789,9 @@
         listHalAnggota.forEach((hal, idx) => {
           payloadAnggota.push({
             nomor_kk: noKK,
-            kode_provinsi: kdProv,
-            kode_kabupaten: kdKab,
-            kode_kecamatan: kdKec,
+            kode_prov: kdProv,
+            kode_kab: kdKab,
+            kode_kec: kdKec,
             kode_desa: kdDesa,
             kode_dusun: kdDusun,
             rt: rt,
