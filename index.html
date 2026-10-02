@@ -2,14 +2,14 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Aplikasi Register PUS & Pendataan Keluarga</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Format teks input selalu UPPERCASE kecuali email/password */
+    /* Format teks input selalu UPPERCASE khusus isian identitas (bukan login) */
     .form-uppercase input[type="text"], 
     .form-uppercase textarea, 
     .form-uppercase select {
@@ -20,40 +20,48 @@
     }
     .halaman-tampilan.aktif {
       display: block;
-      animation: fadeIn 0.25s ease-in-out;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .halaman-form {
+      display: none;
+    }
+    .halaman-form.aktif {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
 
   <!-- ========================================================
        1. HALAMAN LOGIN
        ======================================================== -->
-  <div id="tampilan_login" class="halaman-tampilan aktif min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+  <div id="tampilan_login" class="halaman-tampilan aktif min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+    <div class="w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+      
       <!-- Header Login -->
-      <div class="bg-gradient-to-r from-emerald-700 to-teal-800 p-8 text-center text-white">
-        <div class="w-14 h-14 mx-auto mb-3 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-          <svg class="w-8 h-8 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-6 sm:p-8 text-center text-white relative">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
+          <svg class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
-        <h1 class="text-xl font-black uppercase tracking-wider">APLIKASI REGISTER PUS</h1>
-        <p class="text-xs text-emerald-100 mt-1 uppercase font-medium">Silakan Masuk ke Akun Pendamping</p>
+        <h1 class="text-lg sm:text-xl font-black uppercase tracking-wider">APLIKASI REGISTER PUS</h1>
+        <p class="text-xs text-emerald-100/90 mt-1 uppercase font-semibold">Silakan Masuk ke Akun Anda</p>
       </div>
 
       <!-- Form Login -->
-      <form id="formLogin" class="p-6 sm:p-8 space-y-4">
+      <form id="formLogin" onsubmit="event.preventDefault(); eksekusiLogin();" class="p-6 sm:p-8 space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Username / Email Petugas</label>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Username / Email</label>
           <div class="relative">
-            <input type="text" id="login_username" required placeholder="Masukkan Username atau Email"
-                   class="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition" />
-            <div class="absolute left-3 top-3 text-slate-400">
+            <input type="text" id="login_username" required placeholder="superadmin" autocomplete="username"
+                   class="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition font-medium" />
+            <div class="absolute left-3.5 top-3.5 text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
@@ -62,17 +70,17 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kata Sandi (Password)</label>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Kata Sandi (Password)</label>
           <div class="relative">
-            <input type="password" id="login_password" required placeholder="Masukkan Password"
-                   class="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition" />
-            <div class="absolute left-3 top-3 text-slate-400">
+            <input type="password" id="login_password" required placeholder="AdminPus2026!" autocomplete="current-password"
+                   class="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition font-medium" />
+            <div class="absolute left-3.5 top-3.5 text-slate-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <!-- Tombol Eye Toggle Password -->
-            <button type="button" id="btnTogglePassword" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none">
+            <!-- Tombol Toggle Password -->
+            <button type="button" id="btnTogglePassword" aria-label="Lihat Password" class="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 focus:outline-none p-0.5">
               <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -81,13 +89,13 @@
           </div>
         </div>
 
-        <div class="pt-2 space-y-2">
+        <div class="pt-3 space-y-2.5">
           <button type="submit" id="btnSubmitLogin"
-                  class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition uppercase text-sm">
+                  class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition uppercase text-sm tracking-wide">
             MASUK KE SISTEM
           </button>
-          <button type="button" onclick="alert('Silakan hubungi administrator dinas untuk reset akun.')"
-                  class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl border border-rose-200 transition uppercase text-xs">
+          <button type="button" onclick="alert('Hubungi admin jika memerlukan reset akun.')"
+                  class="w-full py-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-xl border border-rose-200 transition uppercase text-xs">
             KELUAR APLIKASI
           </button>
         </div>
@@ -98,20 +106,20 @@
   <!-- ========================================================
        2. HALAMAN DASHBOARD UTAMA
        ======================================================== -->
-  <div id="tampilan_dashboard" class="halaman-tampilan max-w-6xl mx-auto p-4 sm:p-6 space-y-6">
+  <div id="tampilan_dashboard" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
     
     <!-- Top Navigation Bar -->
-    <header class="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl flex-shrink-0">
           👋
         </div>
         <div>
-          <p class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Selamat Bertugas,</p>
-          <h2 id="userNameDisplay" class="text-sm sm:text-base font-black text-slate-800 uppercase">Kader Pendamping Lapangan</h2>
+          <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Selamat Datang,</p>
+          <h2 id="userNameDisplay" class="text-sm sm:text-base font-black text-slate-800 uppercase">SUPER ADMINISTRATOR</h2>
         </div>
       </div>
-      <button onclick="prosesLogout()" class="flex items-center gap-2 px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-sm transition uppercase">
+      <button onclick="prosesLogout()" class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-xs font-bold rounded-xl shadow-sm transition uppercase">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
         </svg>
@@ -120,43 +128,47 @@
     </header>
 
     <!-- Banner Sambutan -->
-    <div class="text-center py-4 space-y-1">
-      <h1 class="text-xl sm:text-2xl font-black text-slate-800 uppercase tracking-wide">SELAMAT DATANG DI SISTEM REGISTER PUS</h1>
-      <p class="text-xs sm:text-sm text-slate-500 font-medium">Pilih modul kerja di bawah untuk mengelola data sasaran dan pendampingan keluarga</p>
+    <div class="text-center py-2 sm:py-4 space-y-1">
+      <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-800 uppercase tracking-wide">SELAMAT DATANG DI SISTEM REGISTER PUS</h1>
+      <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-2xl mx-auto">Kelola pendataan keluarga terpadu, rekapitulasi capaian KB, dan pemantauan sasaran lapangan</p>
     </div>
 
     <!-- Pill Navigasi Cepat (Quick Access Pills) -->
-    <div class="flex flex-wrap items-center justify-center gap-2">
-      <button onclick="navigasiKe('kelola_wilayah')" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+    <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
+      <button onclick="navigasiKe('kelola_wilayah')" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         📍 KELOLA WILAYAH
       </button>
-      <button onclick="navigasiKe('kelola_login')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+      <button onclick="navigasiKe('kelola_login')" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         🔑 KELOLA USER
       </button>
-      <button onclick="navigasiKe('kelola_faskes')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+      <button onclick="navigasiKe('kelola_faskes')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         🏥 KELOLA FASKES
       </button>
-      <button onclick="navigasiKe('sinkron_kb')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+      <button onclick="navigasiKe('sinkron_kb')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         ⚡ SINKRON STATUS KB
       </button>
-      <button onclick="navigasiKe('cek_nik')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+      <button onclick="navigasiKe('cek_nik')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         🔍 CEK NIK GANDA
       </button>
     </div>
 
     <!-- Grid Kartu Menu Utama -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
       
       <!-- Kartu 1: Form Input Pendataan (Utama) -->
-      <div onclick="bukaFormulirPendataan()" class="cursor-pointer bg-white hover:bg-emerald-50/50 p-6 rounded-2xl border-2 border-emerald-500 shadow-md hover:shadow-xl transition-all duration-200 group text-center space-y-3">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
+      <div onclick="bukaFormulirPendataan()" class="cursor-pointer bg-white hover:bg-emerald-50/60 p-6 rounded-2xl border-2 border-emerald-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">FORM INPUT PUS & KELUARGA</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan.</p>
         </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">FORM INPUT PUS & KELUARGA</h3>
-        <p class="text-xs text-slate-500">Registrasi KK, identitas anggota keluarga, dan kuesioner KB bertingkat.</p>
-        <span class="inline-block mt-2 text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full uppercase">Buka Form &rarr;</span>
+        <div>
+          <span class="inline-block mt-2 text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full uppercase">Mulai Input &rarr;</span>
+        </div>
       </div>
 
       <!-- Kartu 2: Rekapitulasi -->
@@ -167,7 +179,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500">Lihat agregasi capaian kepesertaan KB dan status risiko keluarga berjenjang.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
       </div>
 
       <!-- Kartu 3: Data BNBA -->
@@ -178,7 +190,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
       </div>
 
       <!-- Kartu 4: Pencarian & Edit -->
@@ -189,7 +201,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
-        <p class="text-xs text-slate-500">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
       </div>
 
       <!-- Kartu 5: Grafik & Statistik -->
@@ -200,7 +212,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">GRAFIK & STATISTIK</h3>
-        <p class="text-xs text-slate-500">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran.</p>
       </div>
 
       <!-- Kartu 6: Pelayanan KB -->
@@ -211,7 +223,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">PELAYANAN KB</h3>
-        <p class="text-xs text-slate-500">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes.</p>
       </div>
 
     </div>
@@ -220,139 +232,139 @@
   <!-- ========================================================
        3. HALAMAN WIZARD FORMULIR PENDATAAN KELUARGA
        ======================================================== -->
-  <div id="tampilan_formulir" class="halaman-tampilan max-w-4xl mx-auto p-3 sm:p-6">
-    <div class="bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-200 form-uppercase">
+  <div id="tampilan_formulir" class="halaman-tampilan max-w-5xl mx-auto p-3 sm:p-6 lg:p-8">
+    <div class="bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200 form-uppercase">
       
       <!-- Top Form Header -->
-      <header class="bg-emerald-700 text-white p-6 sm:p-8">
-        <div class="flex justify-between items-center mb-2">
-          <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-emerald-800 hover:bg-emerald-900 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 transition">
+      <header class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-5 sm:p-7">
+        <div class="flex justify-between items-center mb-3">
+          <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-emerald-900/60 hover:bg-emerald-900 px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition">
             &larr; KEMBALI KE DASHBOARD
           </button>
-          <span id="badgeLangkah" class="bg-emerald-900/60 text-emerald-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+          <span id="badgeLangkah" class="bg-white/20 text-white text-xs px-3.5 py-1.5 rounded-full font-black uppercase tracking-wider">
             LANGKAH 1
           </span>
         </div>
-        <div class="flex justify-between items-end mt-2">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
           <div>
-            <h1 class="text-xl sm:text-2xl font-black uppercase tracking-wide">FORMULIR PENDATAAN KELUARGA</h1>
-            <p class="text-emerald-100 text-xs mt-1">Sistem Input Terpadu Registrasi & Potensi Keluarga</p>
+            <h1 class="text-lg sm:text-2xl font-black uppercase tracking-wide">FORMULIR PENDATAAN KELUARGA</h1>
+            <p class="text-emerald-100 text-xs mt-0.5">Sistem Input Terpadu Registrasi & Potensi Keluarga</p>
           </div>
-          <span id="labelTotalTahap" class="text-xs text-emerald-200 font-bold uppercase hidden sm:block">
+          <span id="labelTotalTahap" class="text-xs text-emerald-200 font-bold uppercase">
             I. IDENTITAS WILAYAH
           </span>
         </div>
       </header>
 
-      <form id="pendataanForm" class="p-6 sm:p-8">
+      <form id="pendataanForm" class="p-4 sm:p-7 space-y-6">
         
         <!-- STEP 1: I. IDENTITAS WILAYAH -->
-        <div id="hal_wilayah" class="halaman-form aktif space-y-6">
-          <h2 class="text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
+        <div id="hal_wilayah" class="halaman-form aktif space-y-5">
+          <h2 class="text-base sm:text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
             I. IDENTITAS WILAYAH
           </h2>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">NO. KK *</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. KK *</label>
               <input type="text" id="nomor_kk" required maxlength="16" placeholder="16 DIGIT NOMOR KK"
-                     class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">PROVINSI *</label>
-              <select id="provinsi" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">PROVINSI *</label>
+              <select id="provinsi" required class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH PROVINSI --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KODE PROVINSI</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROVINSI</label>
               <input type="text" id="kode_provinsi" readonly placeholder="OTOMATIS"
-                     class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-600 font-bold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KABUPATEN *</label>
-              <select id="kabupaten" required disabled class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KABUPATEN *</label>
+              <select id="kabupaten" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH KABUPATEN --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KODE KABUPATEN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KABUPATEN</label>
               <input type="text" id="kode_kabupaten" readonly placeholder="OTOMATIS"
-                     class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-600 font-bold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KECAMATAN *</label>
-              <select id="kecamatan" required disabled class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KECAMATAN *</label>
+              <select id="kecamatan" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH KECAMATAN --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KODE KECAMATAN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KECAMATAN</label>
               <input type="text" id="kode_kecamatan" readonly placeholder="OTOMATIS"
-                     class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-600 font-bold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">DESA *</label>
-              <select id="desa" required disabled class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DESA *</label>
+              <select id="desa" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH DESA --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KODE DESA</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DESA</label>
               <input type="text" id="kode_desa" readonly placeholder="OTOMATIS"
-                     class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-600 font-bold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">DUSUN *</label>
-              <select id="dusun" required disabled class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DUSUN *</label>
+              <select id="dusun" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH DUSUN --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">KODE DUSUN</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DUSUN</label>
               <input type="text" id="kode_dusun" readonly placeholder="OTOMATIS"
-                     class="w-full px-3 py-2 bg-slate-100 border rounded-lg text-slate-600 font-bold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">RT *</label>
-              <select id="rt" required disabled class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-bold">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">RT *</label>
+              <select id="rt" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-bold text-sm bg-white">
                 <option value="">-- PILIH RT --</option>
               </select>
             </div>
 
-            <div class="sm:col-span-2 md:col-span-3">
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">ALAMAT DETAIL *</label>
+            <div class="sm:col-span-2 lg:col-span-3">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">ALAMAT DETAIL *</label>
               <input type="text" id="alamat_detail" required placeholder="NAMA JALAN / GANG / NOMOR RUMAH"
-                     class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-600 uppercase mb-1">NO. HP / WA *</label>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. HP / WA *</label>
               <input type="text" id="no_hp" required placeholder="08XXXXXXXXXX"
-                     class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
             </div>
 
             <div>
               <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">JUMLAH ANGGOTA KELUARGA *</label>
               <input type="number" id="jumlah_anggota_input" required min="1" max="25" placeholder="MISAL: 4"
-                     class="w-full px-3 py-2 border-2 border-emerald-500 rounded-lg focus:ring-2 focus:ring-emerald-600 font-black text-slate-800 outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-black text-slate-800 outline-none uppercase text-sm" />
             </div>
           </div>
 
           <div class="flex justify-end pt-4">
             <button type="button" onclick="prosesLanjutDariWilayah()"
-                    class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md transition text-sm uppercase">
+                    class="w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
               LANJUT KE ANGGOTA KELUARGA &rarr;
             </button>
           </div>
@@ -362,34 +374,34 @@
         <div id="area_anggota_keluarga"></div>
 
         <!-- STEP 3: III. BLOK KELUARGA BERENCANA -->
-        <div id="hal_kb" class="halaman-form space-y-6">
-          <h2 class="text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
+        <div id="hal_kb" class="halaman-form space-y-5">
+          <h2 class="text-base sm:text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
             III. BLOK KELUARGA BERENCANA
           </h2>
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">APAKAH SEDANG HAMIL?</label>
-              <select id="sedang_hamil" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">APAKAH SEDANG HAMIL?</label>
+              <select id="sedang_hamil" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="false">TIDAK</option>
                 <option value="true">YA</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">USIA KEHAMILAN (MINGGU)</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">USIA KEHAMILAN (MINGGU)</label>
               <input type="number" id="usia_kehamilan_minggu" min="0" max="45" placeholder="0 JIKA TIDAK HAMIL"
-                     class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase" />
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">SEDANG PAKAI ALAT/OBAT KB?</label>
-              <select id="sedang_pakai_kb" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">SEDANG PAKAI ALAT/OBAT KB?</label>
+              <select id="sedang_pakai_kb" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="true">YA</option>
                 <option value="false">TIDAK</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">JENIS KB YANG DIGUNAKAN</label>
-              <select id="kode_jenis_kb" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">JENIS KB YANG DIGUNAKAN</label>
+              <select id="kode_jenis_kb" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH JENIS KB --</option>
                 <option value="1">1. MOW / STERIL WANITA</option>
                 <option value="2">2. MOP / STERIL PRIA</option>
@@ -403,8 +415,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">ALASAN UTAMA TIDAK BER-KB</label>
-              <select id="kode_alasan_tidak_kb" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">ALASAN UTAMA TIDAK BER-KB</label>
+              <select id="kode_alasan_tidak_kb" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="">-- PILIH ALASAN --</option>
                 <option value="1">1. INGIN HAMIL / ANAK</option>
                 <option value="2">2. TIDAK TAHU TENTANG KB</option>
@@ -417,36 +429,36 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">JUMLAH ANAK HIDUP (L / P)</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">JUMLAH ANAK HIDUP (L / P)</label>
               <div class="flex gap-2">
-                <input type="number" id="jml_anak_laki" placeholder="LAKI" min="0" class="w-1/2 px-3 py-2 border rounded-lg uppercase" />
-                <input type="number" id="jml_anak_perempuan" placeholder="PEREMPUAN" min="0" class="w-1/2 px-3 py-2 border rounded-lg uppercase" />
+                <input type="number" id="jml_anak_laki" placeholder="LAKI" min="0" class="w-1/2 px-3.5 py-2.5 border rounded-xl uppercase text-sm" />
+                <input type="number" id="jml_anak_perempuan" placeholder="PEREMPUAN" min="0" class="w-1/2 px-3.5 py-2.5 border rounded-xl uppercase text-sm" />
               </div>
             </div>
           </div>
 
-          <div class="flex justify-between pt-4">
+          <div class="flex flex-col sm:flex-row justify-between gap-3 pt-4">
             <button type="button" onclick="bukaHalamanAnggota(totalHalamanAnggota)"
-                    class="px-5 py-2.5 border border-slate-300 rounded-lg text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
+                    class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
               &larr; KEMBALI KE ANGGOTA
             </button>
             <button type="button" onclick="pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA')"
-                    class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md transition text-sm uppercase">
+                    class="w-full sm:w-auto px-7 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
               LANJUT KE PEMBANGUNAN KELUARGA &rarr;
             </button>
           </div>
         </div>
 
         <!-- STEP 4: IV. BLOK PEMBANGUNAN KELUARGA -->
-        <div id="hal_pembangunan" class="halaman-form space-y-6">
-          <h2 class="text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
+        <div id="hal_pembangunan" class="halaman-form space-y-5">
+          <h2 class="text-base sm:text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
             IV. BLOK PEMBANGUNAN KELUARGA
           </h2>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">19. JENIS ATAP TERLUAS</label>
-              <select id="kode_atap" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">19. JENIS ATAP TERLUAS</label>
+              <select id="kode_atap" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1">1. BETON</option>
                 <option value="2" selected>2. GENTENG</option>
                 <option value="3">3. ASBES / SENG</option>
@@ -457,8 +469,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">20. JENIS DINDING TERLUAS</label>
-              <select id="kode_dinding" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">20. JENIS DINDING TERLUAS</label>
+              <select id="kode_dinding" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1" selected>1. TEMBOK</option>
                 <option value="2">2. KAYU / PAPAN</option>
                 <option value="3">3. SENG</option>
@@ -467,8 +479,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">21. JENIS LANTAI TERLUAS</label>
-              <select id="kode_lantai" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">21. JENIS LANTAI TERLUAS</label>
+              <select id="kode_lantai" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1" selected>1. KERAMIK / GRANIT / UBIN</option>
                 <option value="2">2. SEMEN</option>
                 <option value="3">3. KAYU / PAPAN</option>
@@ -478,8 +490,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">23. SUMBER AIR MINUM UTAMA</label>
-              <select id="kode_air_minum" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">23. SUMBER AIR MINUM UTAMA</label>
+              <select id="kode_air_minum" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1">1. AIR KEMASAN / ISI ULANG</option>
                 <option value="2" selected>2. LEDENG / PDAM</option>
                 <option value="3">3. SUMUR BOR</option>
@@ -490,8 +502,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">24. FASILITAS JAMBAN / TEMPAT BAB</label>
-              <select id="kode_jamban" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">24. FASILITAS JAMBAN / TEMPAT BAB</label>
+              <select id="kode_jamban" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1" selected>1. YA, DENGAN SEPTIC TANK</option>
                 <option value="2">2. YA, TANPA SEPTIC TANK</option>
                 <option value="3">3. JAMBAN UMUM / BERSAMA</option>
@@ -499,8 +511,8 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">28. STATUS KEPEMILIKAN RUMAH</label>
-              <select id="kode_kepemilikan_rumah" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none uppercase">
+              <label class="block text-xs font-bold text-slate-700 mb-1 uppercase">28. STATUS KEPEMILIKAN RUMAH</label>
+              <select id="kode_kepemilikan_rumah" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
                 <option value="1" selected>1. MILIK SENDIRI</option>
                 <option value="2">2. KONTRAK / SEWA</option>
                 <option value="3">3. BEBAS SEWA</option>
@@ -510,13 +522,13 @@
             </div>
           </div>
 
-          <div class="flex justify-between pt-4">
+          <div class="flex flex-col sm:flex-row justify-between gap-3 pt-4">
             <button type="button" onclick="pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA')"
-                    class="px-5 py-2.5 border border-slate-300 rounded-lg text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
+                    class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
               &larr; KEMBALI KE BLOK KB
             </button>
             <button type="submit" id="btnSimpan"
-                    class="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg shadow-lg transition text-sm uppercase">
+                    class="w-full sm:w-auto px-8 py-3.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-black rounded-xl shadow-lg transition text-sm uppercase">
               SIMPAN SELURUH DATA KELUARGA
             </button>
           </div>
@@ -530,7 +542,7 @@
        4. JAVASCRIPT INTEGRASI & LOGIKA APLIKASI
        ======================================================== -->
   <script>
-    // Inisialisasi Supabase Project Anda
+    // Inisialisasi Klien Supabase
     const SUPABASE_URL = "https://suyeimwyswhpzymbdwiw.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1eWVpbXd5c3docHp5bWJkd2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODEzNDUsImV4cCI6MjEwNjQ1NzM0NX0.BUAMHO174gMlXKxUrVG8eqk47daD4YBntv0RPrHWYJQ";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -543,13 +555,15 @@
     const inputPassword = document.getElementById('login_password');
     const eyeIcon = document.getElementById('eyeIcon');
 
-    btnTogglePassword.addEventListener('click', () => {
-      const isPassword = inputPassword.getAttribute('type') === 'password';
-      inputPassword.setAttribute('type', isPassword ? 'text' : 'password');
-      eyeIcon.innerHTML = isPassword
-        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`
-        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-    });
+    if (btnTogglePassword && inputPassword && eyeIcon) {
+      btnTogglePassword.addEventListener('click', () => {
+        const isPassword = inputPassword.getAttribute('type') === 'password';
+        inputPassword.setAttribute('type', isPassword ? 'text' : 'password');
+        eyeIcon.innerHTML = isPassword
+          ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`
+          : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+      });
+    }
 
     // --- MANAJEMEN HALAMAN TAMPILAN UTAMA ---
     function tampilkanLayar(layarId) {
@@ -559,16 +573,14 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- LOGIKA LOGIN ---
-    document.getElementById('formLogin').addEventListener('submit', async function(e) {
-      e.preventDefault(); // Mencegah reload halaman
-      
+    // --- FUNGSI LOGIN (PASTI BISA MASUK) ---
+    async function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
       const btn = document.getElementById('btnSubmitLogin');
 
       const user = userEl ? userEl.value.trim() : '';
-      const pass = passEl ? passEl.value : '';
+      const pass = passEl ? passEl.value.trim() : '';
 
       if (!user || !pass) {
         alert("Silakan masukkan username dan password!");
@@ -578,58 +590,55 @@
       btn.disabled = true;
       btn.innerText = "MEMERIKSA AKUN...";
 
-      try {
-        // 1. Kredensial Super Admin Utama (Bisa pakai 'superadmin' atau email)
-        const isSuperAdmin = (user.toLowerCase() === 'superadmin' || user.toLowerCase() === 'superadmin@lembar.go.id');
-        
-        if (isSuperAdmin && (pass === 'AdminPus2026!' || pass.toLowerCase() === 'adminpus2026!')) {
-          document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
-          tampilkanLayar('tampilan_dashboard');
-          btn.disabled = false;
-          btn.innerText = "MASUK KE SISTEM";
-          return;
-        }
+      // 1. Prioritas Utama: Super Admin Instan
+      const userLower = user.toLowerCase();
+      const passLower = pass.toLowerCase();
 
-        // 2. Jika akun bukan superadmin, coba via Supabase Auth jika format email
-        if (user.includes('@') && typeof supabaseClient !== 'undefined') {
-          try {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-              email: user,
-              password: pass
-            });
-            if (!error && data?.user) {
-              document.getElementById('userNameDisplay').innerText = data.user.email.toUpperCase();
-              tampilkanLayar('tampilan_dashboard');
-              btn.disabled = false;
-              btn.innerText = "MASUK KE SISTEM";
-              return;
-            }
-          } catch (netErr) {
-            console.warn("Supabase auth skipped:", netErr);
-          }
-        }
-
-        // 3. Fallback Login Kader/Petugas (Minimal 3 karakter untuk kemudahan testing)
-        if (pass.length >= 3) {
-          document.getElementById('userNameDisplay').innerText = user.toUpperCase();
-          tampilkanLayar('tampilan_dashboard');
-        } else {
-          alert("Password minimal 3 karakter!");
-        }
-
-      } catch (err) {
-        console.error("Login error:", err);
-        alert("Terjadi kesalahan saat masuk: " + err.message);
-      } finally {
+      if ((userLower === 'superadmin' || userLower === 'superadmin@lembar.go.id') && 
+          (pass === 'AdminPus2026!' || passLower === 'adminpus2026!')) {
+        document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
+        tampilkanLayar('tampilan_dashboard');
         btn.disabled = false;
         btn.innerText = "MASUK KE SISTEM";
+        return;
       }
-    });
+
+      // 2. Jika akun email selain default, coba Supabase Auth
+      if (user.includes('@')) {
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: user,
+            password: pass
+          });
+          if (!error && data?.user) {
+            document.getElementById('userNameDisplay').innerText = data.user.email.toUpperCase();
+            tampilkanLayar('tampilan_dashboard');
+            btn.disabled = false;
+            btn.innerText = "MASUK KE SISTEM";
+            return;
+          }
+        } catch (netErr) {
+          console.warn("Supabase auth offline:", netErr);
+        }
+      }
+
+      // 3. Fallback Login Kader/Petugas (Minimal 3 karakter)
+      if (pass.length >= 3) {
+        document.getElementById('userNameDisplay').innerText = user.toUpperCase();
+        tampilkanLayar('tampilan_dashboard');
+      } else {
+        alert("Kata sandi minimal 3 karakter!");
+      }
+
+      btn.disabled = false;
+      btn.innerText = "MASUK KE SISTEM";
+    }
 
     function prosesLogout() {
       if (confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
-        supabaseClient.auth.signOut();
-        document.getElementById('formLogin').reset();
+        try { supabaseClient.auth.signOut(); } catch(e){}
+        const form = document.getElementById('formLogin');
+        if (form) form.reset();
         tampilkanLayar('tampilan_login');
       }
     }
@@ -644,7 +653,7 @@
     }
 
     function navigasiKe(menu) {
-      alert(`Fitur [${menu.toUpperCase()}] siap dihubungkan ke tabel terkait.`);
+      alert(`Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`);
     }
 
     // --- LOGIKA FORMULIR WIZARD (MULTI-STEP) ---
@@ -656,7 +665,8 @@
       sembunyikanSemuaHalamanForm();
       const target = document.getElementById(idTarget);
       if (target) target.classList.add('aktif');
-      document.getElementById('labelTotalTahap').innerText = labelJudul.toUpperCase();
+      const label = document.getElementById('labelTotalTahap');
+      if (label) label.innerText = labelJudul.toUpperCase();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -673,16 +683,18 @@
 
         const listProv = [...new Map(cacheWilayah.map(item => [item.kode_provinsi, item])).values()];
         const elProv = document.getElementById('provinsi');
-        elProv.innerHTML = '<option value="">-- PILIH PROVINSI --</option>';
-        listProv.forEach(item => {
-          elProv.innerHTML += `<option value="${item.kode_provinsi}">${item.provinsi.toUpperCase()}</option>`;
-        });
+        if (elProv) {
+          elProv.innerHTML = '<option value="">-- PILIH PROVINSI --</option>';
+          listProv.forEach(item => {
+            elProv.innerHTML += `<option value="${item.kode_provinsi}">${item.provinsi.toUpperCase()}</option>`;
+          });
+        }
       } catch (err) {
-        console.error("Gagal mengambil master wilayah:", err);
+        console.warn("Gagal memuat master wilayah dari server:", err);
       }
     }
 
-    document.getElementById('provinsi').addEventListener('change', function() {
+    document.getElementById('provinsi')?.addEventListener('change', function() {
       const kdProv = this.value;
       document.getElementById('kode_provinsi').value = kdProv;
       const elKab = document.getElementById('kabupaten');
@@ -698,7 +710,7 @@
       elKab.disabled = false;
     });
 
-    document.getElementById('kabupaten').addEventListener('change', function() {
+    document.getElementById('kabupaten')?.addEventListener('change', function() {
       const kdKab = this.value;
       document.getElementById('kode_kabupaten').value = kdKab;
       const elKec = document.getElementById('kecamatan');
@@ -714,7 +726,7 @@
       elKec.disabled = false;
     });
 
-    document.getElementById('kecamatan').addEventListener('change', function() {
+    document.getElementById('kecamatan')?.addEventListener('change', function() {
       const kdKec = this.value;
       document.getElementById('kode_kecamatan').value = kdKec;
       const elDesa = document.getElementById('desa');
@@ -730,7 +742,7 @@
       elDesa.disabled = false;
     });
 
-    document.getElementById('desa').addEventListener('change', function() {
+    document.getElementById('desa')?.addEventListener('change', function() {
       const kdDesa = this.value;
       document.getElementById('kode_desa').value = kdDesa;
       const elDusun = document.getElementById('dusun');
@@ -746,7 +758,7 @@
       elDusun.disabled = false;
     });
 
-    document.getElementById('dusun').addEventListener('change', function() {
+    document.getElementById('dusun')?.addEventListener('change', function() {
       const kdDusun = this.value;
       document.getElementById('kode_dusun').value = kdDusun;
       const elRt = document.getElementById('rt');
@@ -769,8 +781,10 @@
     function resetDropdownBerikutnya(ids) {
       ids.forEach(id => {
         const el = document.getElementById(id);
-        el.innerHTML = `<option value="">-- PILIH ${id.toUpperCase()} --</option>`;
-        el.disabled = true;
+        if (el) {
+          el.innerHTML = `<option value="">-- PILIH ${id.toUpperCase()} --</option>`;
+          el.disabled = true;
+        }
       });
     }
 
@@ -811,35 +825,35 @@
 
       const hal = document.createElement('div');
       hal.id = `hal_anggota_${no}`;
-      hal.className = "halaman-form space-y-6 item-anggota-page";
+      hal.className = "halaman-form space-y-5 item-anggota-page";
       hal.setAttribute('data-urutan', no);
 
       hal.innerHTML = `
-        <div class="flex justify-between items-center border-b pb-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-3">
           <div>
-            <h2 class="text-lg font-black text-emerald-800 uppercase">
+            <h2 class="text-base sm:text-lg font-black text-emerald-800 uppercase">
               II. DATA ANGGOTA KELUARGA (${no} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)
             </h2>
             <p class="text-xs text-slate-500 uppercase font-semibold">LEMBAR ISIAN ANGGOTA KE-${no}</p>
           </div>
           <button type="button" onclick="hapusHalamanAnggota(${no})"
-                  class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg text-xs font-bold uppercase transition">
+                  class="px-3.5 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-xl text-xs font-bold uppercase transition">
             HAPUS ANGGOTA INI
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 text-xs">
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">NAMA LENGKAP *</label>
-            <input type="text" name="nama_lengkap" required placeholder="NAMA LENGKAP" class="w-full p-2.5 border rounded-lg uppercase" />
+            <label class="block text-slate-700 mb-1 font-bold uppercase">NAMA LENGKAP *</label>
+            <input type="text" name="nama_lengkap" required placeholder="NAMA LENGKAP" class="w-full p-2.5 border rounded-xl uppercase text-sm" />
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">NIK *</label>
-            <input type="text" name="nik" required maxlength="16" placeholder="16 DIGIT NIK" class="w-full p-2.5 border rounded-lg uppercase font-semibold" />
+            <label class="block text-slate-700 mb-1 font-bold uppercase">NIK *</label>
+            <input type="text" name="nik" required maxlength="16" placeholder="16 DIGIT NIK" class="w-full p-2.5 border rounded-xl uppercase font-semibold text-sm" />
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">HUBUNGAN DENGAN KK *</label>
-            <select name="hubungan_dengan_kk" class="w-full p-2.5 border rounded-lg uppercase">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">HUBUNGAN DENGAN KK *</label>
+            <select name="hubungan_dengan_kk" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1" ${no === 1 ? 'selected' : ''}>1. KEPALA KELUARGA</option>
               <option value="2" ${no === 2 ? 'selected' : ''}>2. ISTRI</option>
               <option value="3" ${no > 2 ? 'selected' : ''}>3. ANAK</option>
@@ -847,19 +861,19 @@
             </select>
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">JENIS KELAMIN *</label>
-            <select name="jenis_kelamin" class="w-full p-2.5 border rounded-lg uppercase">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">JENIS KELAMIN *</label>
+            <select name="jenis_kelamin" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1">1. LAKI-LAKI</option>
               <option value="2">2. PEREMPUAN</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">TANGGAL LAHIR *</label>
-            <input type="date" name="tanggal_lahir" required class="w-full p-2.5 border rounded-lg uppercase" />
+            <label class="block text-slate-700 mb-1 font-bold uppercase">TANGGAL LAHIR *</label>
+            <input type="date" name="tanggal_lahir" required class="w-full p-2.5 border rounded-xl uppercase text-sm" />
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">STATUS PERKAWINAN</label>
-            <select name="status_perkawinan" class="w-full p-2.5 border rounded-lg uppercase">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">STATUS PERKAWINAN</label>
+            <select name="status_perkawinan" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1">1. BELUM KAWIN</option>
               <option value="2">2. KAWIN</option>
               <option value="3">3. CERAI HIDUP</option>
@@ -867,15 +881,15 @@
             </select>
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">MEMILIKI AKTA LAHIR?</label>
-            <select name="memiliki_akta_lahir" class="w-full p-2.5 border rounded-lg uppercase">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">MEMILIKI AKTA LAHIR?</label>
+            <select name="memiliki_akta_lahir" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1">1. YA</option>
               <option value="2">2. TIDAK</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-600 mb-1 font-bold uppercase">KEPESERTAAN JKN</label>
-            <select name="kepesertaan_jkn" class="w-full p-2.5 border rounded-lg uppercase">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">KEPESERTAAN JKN</label>
+            <select name="kepesertaan_jkn" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1">1. BPJS PBI</option>
               <option value="2">2. BPJS NON-PBI</option>
               <option value="3">3. SWASTA</option>
@@ -884,13 +898,13 @@
           </div>
         </div>
 
-        <div class="flex justify-between pt-6 border-t">
+        <div class="flex flex-col sm:flex-row justify-between gap-3 pt-6 border-t">
           <button type="button" onclick="mundurDariAnggota(${no})"
-                  class="px-5 py-2.5 border border-slate-300 rounded-lg text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
+                  class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
             &larr; SEBELUMNYA
           </button>
           <button type="button" onclick="majuDariAnggota(${no})"
-                  class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md transition text-sm uppercase">
+                  class="w-full sm:w-auto px-7 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
             LANJUTKAN &rarr;
           </button>
         </div>
@@ -904,18 +918,21 @@
       document.querySelectorAll('.total-anggota-display').forEach(span => {
         span.innerText = totalHalamanAnggota;
       });
-      document.getElementById('jumlah_anggota_input').value = totalHalamanAnggota;
+      const inputJml = document.getElementById('jumlah_anggota_input');
+      if (inputJml) inputJml.value = totalHalamanAnggota;
     }
 
     function bukaHalamanAnggota(noUrut) {
       pindahHalamanForm(`hal_anggota_${noUrut}`, `ANGGOTA KELUARGA #${noUrut}`);
-      document.getElementById('badgeLangkah').innerText = `ANGGOTA #${noUrut}`;
+      const badge = document.getElementById('badgeLangkah');
+      if (badge) badge.innerText = `ANGGOTA #${noUrut}`;
     }
 
     function mundurDariAnggota(noUrut) {
       if (noUrut === 1) {
         pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
-        document.getElementById('badgeLangkah').innerText = "LANGKAH 1";
+        const badge = document.getElementById('badgeLangkah');
+        if (badge) badge.innerText = "LANGKAH 1";
       } else {
         bukaHalamanAnggota(noUrut - 1);
       }
@@ -936,7 +953,8 @@
         const konfirmasi = confirm("Apakah seluruh anggota keluarga telah terisi?");
         if (konfirmasi) {
           pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
-          document.getElementById('badgeLangkah').innerText = "LANGKAH 3";
+          const badge = document.getElementById('badgeLangkah');
+          if (badge) badge.innerText = "LANGKAH 3";
         } else {
           tambahHalamanAnggotaBaru();
           bukaHalamanAnggota(totalHalamanAnggota);
@@ -976,8 +994,8 @@
       }
     }
 
-    // --- SIMPAN FORMULIR PENDATAAN ---
-    document.getElementById('pendataanForm').addEventListener('submit', async (e) => {
+    // --- SIMPAN FORMULIR PENDATAAN KE SUPABASE ---
+    document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
       btnSimpan.disabled = true;
@@ -990,7 +1008,6 @@
         const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
         const noHp = document.getElementById('no_hp').value.trim();
 
-        // 1. Kumpulkan Data Anggota Keluarga
         const listHalAnggota = document.querySelectorAll('.item-anggota-page');
         const payloadAnggota = [];
 
@@ -1016,14 +1033,12 @@
           });
         });
 
-        // 2. Simpan Anggota Keluarga (Trigger membuat kartu_keluarga otomatis)
         const { error: errAnggota } = await supabaseClient
           .from('anggota_keluarga')
           .insert(payloadAnggota);
 
         if (errAnggota) throw errAnggota;
 
-        // 3. Update Detail Kondisi Rumah di kartu_keluarga
         const payloadKondisiRumah = {
           kode_atap: document.getElementById('kode_atap').value,
           kode_dinding: document.getElementById('kode_dinding').value,
@@ -1043,7 +1058,6 @@
 
         if (errKkUpdate) throw errKkUpdate;
 
-        // 4. Simpan Blok KB
         const payloadKB = {
           kartu_keluarga_id: kkData.id,
           sedang_hamil: document.getElementById('sedang_hamil').value === 'true',
