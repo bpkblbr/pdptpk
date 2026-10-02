@@ -570,7 +570,14 @@
       btn.innerText = "MEMERIKSA AKUN...";
 
       try {
-        // Coba Login menggunakan Supabase Auth jika email valid
+        // 1. Cek Kredensial Super Admin Default
+        if ((user.toLowerCase() === 'superadmin' || user.toLowerCase() === 'superadmin@lembar.go.id') && pass === 'AdminPus2026!') {
+          document.getElementById('userNameDisplay').innerText = "SUPER ADMINISTRATOR";
+          tampilkanLayar('tampilan_dashboard');
+          return;
+        }
+
+        // 2. Coba Login via Supabase Auth jika format email
         if (user.includes('@')) {
           const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: user,
@@ -583,12 +590,12 @@
           }
         }
 
-        // Login Fleksibel untuk Kader Lapangan / Pengujian
+        // 3. Fallback Login Kader Biasa
         if (user && pass.length >= 3) {
           document.getElementById('userNameDisplay').innerText = user.toUpperCase();
           tampilkanLayar('tampilan_dashboard');
         } else {
-          alert('Username atau password tidak boleh kosong!');
+          alert('Username atau password salah!');
         }
       } catch (err) {
         console.error(err);
