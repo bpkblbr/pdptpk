@@ -660,6 +660,36 @@
   </div>
   
   <script>
+    const SUPABASE_URL = "https://suyeimwyswhpzymbdwiw.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1eWVpbXd5c3docHp5bWJkd2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODEzNDUsImV4cCI6MjEwNjQ1NzM0NX0.BUAMHO174gMlXKxUrVG8eqk47daD4YBntv0RPrHWYJQ";
+    
+    let supabaseClient = null;
+    try {
+      if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(e) {
+      console.warn("Inisialisasi Supabase:", e);
+    }
+
+    function bukaFormulirPendataan() {
+      tampilkanLayar('tampilan_formulir');
+      pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+    }
+
+    function sembunyikanSemuaHalamanForm() {
+      document.querySelectorAll('.halaman-form').forEach(el => el.classList.remove('aktif'));
+    }
+
+    function pindahHalamanForm(idTarget, labelJudul) {
+      sembunyikanSemuaHalamanForm();
+      const target = document.getElementById(idTarget);
+      if (target) target.classList.add('aktif');
+      const label = document.getElementById('labelTotalTahap');
+      if (label) label.innerText = labelJudul.toUpperCase();
+      window.scrollTo(0, 0);
+    }
+    
     function tampilkanLayar(layarId) {
       const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
       layarList.forEach(id => {
@@ -790,7 +820,7 @@
         confirmButtonColor: '#059669'
       });
     }
-    
+
     async function loadMasterWilayahFromDB() {
       if (!supabaseClient) return;
       try {
