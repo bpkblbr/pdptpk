@@ -17,13 +17,15 @@
     .form-uppercase textarea, 
     .form-uppercase select {
       text-transform: uppercase;
-    }
     .halaman-tampilan {
       display: none !important;
     }
     .halaman-tampilan.aktif {
       display: block !important;
       animation: fadeIn 0.2s ease-in-out;
+    }    
+    #tampilan_login.halaman-tampilan.aktif {
+      display: flex !important;
     }
     .halaman-form {
       display: none !important;
@@ -46,7 +48,6 @@
   <div id="tampilan_login" class="halaman-tampilan aktif min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
     <div class="w-full max-w-sm sm:max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
       
-      <!-- Header Login -->
       <div class="bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 p-6 sm:p-8 text-center text-white">
         <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
           <svg class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +58,6 @@
         <p class="text-xs text-emerald-100/90 mt-1 uppercase font-semibold">Silakan Masuk ke Akun Anda</p>
       </div>
 
-      <!-- Form Login -->
       <form id="formLogin" onsubmit="event.preventDefault(); eksekusiLogin();" class="p-6 sm:p-8 space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Username / Email</label>
@@ -111,8 +111,6 @@
        2. HALAMAN DASHBOARD UTAMA
        ======================================================== -->
   <div id="tampilan_dashboard" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-    
-    <!-- Top Navigation Bar -->
     <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center gap-3 w-full sm:w-auto">
         <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl flex-shrink-0">
@@ -134,13 +132,11 @@
       </button>
     </header>
 
-    <!-- Banner Sambutan -->
     <div class="text-center py-2 sm:py-4 space-y-1">
       <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-800 uppercase tracking-wide">SELAMAT DATANG DI SISTEM REGISTER PUS</h1>
       <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-2xl mx-auto">Kelola pendataan keluarga terpadu, rekapitulasi capaian KB, dan pemantauan sasaran lapangan</p>
     </div>
 
-    <!-- Pill Navigasi Cepat -->
     <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto">
       <button id="btnPillKelolaWilayah" onclick="bukaKelolaWilayah()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         📍 KELOLA WILAYAH
@@ -159,10 +155,8 @@
       </button>
     </div>
 
-    <!-- Grid Kartu Menu Utama -->
+    <!-- Grid Menu Dashboard -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-      
-      <!-- Kartu 1: Form Input Pendataan -->
       <div onclick="bukaFormulirPendataan()" class="cursor-pointer bg-white hover:bg-emerald-50/60 p-6 rounded-2xl border-2 border-emerald-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
         <div class="space-y-3">
           <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
@@ -171,14 +165,13 @@
             </svg>
           </div>
           <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">FORM INPUT PUS & KELUARGA</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan[cite: 4].</p>
+          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan.</p>
         </div>
         <div>
           <span class="inline-block mt-2 text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full uppercase">Mulai Input &rarr;</span>
         </div>
       </div>
 
-      <!-- Kartu 2: Rekapitulasi -->
       <div onclick="Swal.fire('Informasi', 'Modul Rekapitulasi sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,10 +179,9 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang[cite: 4].</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
       </div>
 
-      <!-- Kartu 3: Data BNBA -->
       <div onclick="Swal.fire('Informasi', 'Modul Data BNBA sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,10 +189,9 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun[cite: 4].</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
       </div>
 
-      <!-- Kartu 4: Pencarian & Edit -->
       <div onclick="Swal.fire('Informasi', 'Modul Pencarian & Edit data sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,31 +199,8 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK[cite: 4].</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
       </div>
-
-      <!-- Kartu 5: Grafik & Statistik -->
-      <div onclick="Swal.fire('Informasi', 'Modul Grafik Visualisasi sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-          </svg>
-        </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">GRAFIK & STATISTIK</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran[cite: 4].</p>
-      </div>
-
-      <!-- Kartu 6: Pelayanan KB -->
-      <div onclick="Swal.fire('Informasi', 'Modul Pelayanan KB Faskes sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-          </svg>
-        </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">PELAYANAN KB</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes[cite: 4].</p>
-      </div>
-
     </div>
   </div>
 
@@ -242,7 +210,6 @@
   <div id="tampilan_kelola_wilayah" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
     <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-7 space-y-6">
       
-      <!-- Top Action Bar -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
         <div>
           <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-2 transition">
@@ -254,7 +221,6 @@
           </p>
         </div>
 
-        <!-- Tombol Download Template & Upload Excel (.xlsx) -->
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="unduhTemplateWilayahExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
             📥 DOWNLOAD TEMPLATE EXCEL (.XLSX)
@@ -267,7 +233,7 @@
         </div>
       </div>
 
-      <!-- Form Input Manual Wilayah -->
+      <!-- Form Tambah Manual Wilayah -->
       <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4 form-uppercase">
         <h2 class="text-sm font-black text-emerald-800 uppercase flex items-center gap-2">
           <span>➕ TAMBAH DATA WILAYAH SECARA MANUAL</span>
@@ -326,7 +292,7 @@
         </form>
       </div>
 
-      <!-- Tabel Data Master Wilayah Terkini -->
+      <!-- Tabel Wilayah -->
       <div class="space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h2 class="text-sm font-black text-slate-800 uppercase">DAFTAR MASTER WILAYAH TERDAFTAR</h2>
@@ -365,7 +331,6 @@
   <div id="tampilan_formulir" class="halaman-tampilan max-w-5xl mx-auto p-3 sm:p-6 lg:p-8">
     <div class="bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200 form-uppercase">
       
-      <!-- Top Form Header -->
       <header class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-5 sm:p-7">
         <div class="flex justify-between items-center mb-3">
           <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-emerald-900/60 hover:bg-emerald-900 px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition">
@@ -473,7 +438,6 @@
               </select>
             </div>
 
-            <!-- FIELD BARU SETELAH RT: KODE RUMAH & NO. URUT KELUARGA -->
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE RUMAH (3 DIGIT) *</label>
               <input type="text" id="kode_rumah" required maxlength="3" placeholder="001"
@@ -498,7 +462,7 @@
                      class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm" />
             </div>
 
-            <!-- STATUS KELUARGA (DITAMBAHKAN SEBELUM JUMLAH ANGGOTA KELUARGA) -->
+            <!-- STATUS KELUARGA -->
             <div class="sm:col-span-2 lg:col-span-2">
               <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">STATUS KELUARGA *</label>
               <select id="status_keluarga" required onchange="evaluasiStatusKeluarga()" class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-bold text-sm bg-white outline-none uppercase">
@@ -511,7 +475,6 @@
               </select>
             </div>
 
-            <!-- JUMLAH ANGGOTA KELUARGA -->
             <div id="wrapper_jumlah_anggota">
               <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">JUMLAH ANGGOTA KELUARGA *</label>
               <input type="number" id="jumlah_anggota_input" required min="1" max="25" placeholder="MISAL: 4"
@@ -527,7 +490,7 @@
           </div>
         </div>
 
-        <!-- STEP 2: II. DATA ANGGOTA KELUARGA (HALAMAN PER ORANG) -->
+        <!-- STEP 2: II. DATA ANGGOTA KELUARGA SESUAI LAMPIRAN FORMULIR AK -->
         <div id="area_anggota_keluarga"></div>
 
         <!-- STEP 3: III. BLOK KELUARGA BERENCANA -->
@@ -696,855 +659,21 @@
   </div>
 
   <!-- ========================================================
-       5. JAVASCRIPT LOGIKA UTAMA & ROLE SYSTEM
+       5. LOGIKA FORMULIR ANGGOTA KELUARGA (17 KOLOM)
        ======================================================== -->
   <script>
-    const SUPABASE_URL = "https://suyeimwyswhpzymbdwiw.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1eWVpbXd5c3docHp5bWJkd2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4ODEzNDUsImV4cCI6MjEwNjQ1NzM0NX0.BUAMHO174gMlXKxUrVG8eqk47daD4YBntv0RPrHWYJQ";
-    
-    let supabaseClient = null;
-    try {
-      if (typeof supabase !== 'undefined') {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-    } catch(e) {
-      console.warn("Inisialisasi Supabase:", e);
-    }
-
-    let dataProvinsi = {};
-    let dataKabupaten = {};
-    let dataKecamatan = {};
-    let dataDesa = {};
-    let dataDusun = {};
-    let rawWilayahList = [];
-
-    let totalHalamanAnggota = 0;
-
-    let userAktif = {
-      username: '',
-      role: 'SUPER_ADMIN',
-      provinsi: 'NUSA TENGGARA BARAT',
-      kode_prov: '52',
-      kabupaten: 'LOMBOK BARAT',
-      kode_kab: '01',
-      kecamatan: 'LEMBAR',
-      kode_kec: '08',
-      desa: '',
-      kode_desa: ''
-    };
-
-    function togglePasswordEye() {
-      const inputPass = document.getElementById('login_password');
-      const eyeIcon = document.getElementById('eyeIcon');
-      if (!inputPass || !eyeIcon) return;
-
-      const isPass = inputPass.getAttribute('type') === 'password';
-      inputPass.setAttribute('type', isPass ? 'text' : 'password');
-      eyeIcon.innerHTML = isPass
-        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />`
-        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
-    }
-
-    function tampilkanLayar(layarId) {
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
-      layarList.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('aktif');
-      });
-      const target = document.getElementById(layarId);
-      if (target) target.classList.add('aktif');
-      window.scrollTo(0, 0);
-    }
-
-    function eksekusiLogin() {
-      const userEl = document.getElementById('login_username');
-      const passEl = document.getElementById('login_password');
-
-      const user = userEl ? userEl.value.trim() : '';
-      const pass = passEl ? passEl.value.trim() : '';
-
-      if (!user || !pass) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Perhatian',
-          text: 'Silakan masukkan username dan password terlebih dahulu!',
-          confirmButtonColor: '#059669'
-        });
-        return;
-      }
-
-      const uLow = user.toLowerCase();
-
-      if (uLow.includes('superadmin')) {
-        userAktif = {
-          username: 'SUPER ADMINISTRATOR',
-          role: 'SUPER_ADMIN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: '',
-          kode_kec: '',
-          desa: '',
-          kode_desa: ''
-        };
-      } else if (uLow.includes('kab')) {
-        userAktif = {
-          username: 'ADMIN KABUPATEN LOMBOK BARAT',
-          role: 'ADMIN_KABUPATEN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: '',
-          kode_kec: '',
-          desa: '',
-          kode_desa: ''
-        };
-      } else if (uLow.includes('kec')) {
-        userAktif = {
-          username: 'ADMIN KECAMATAN LEMBAR',
-          role: 'ADMIN_KECAMATAN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: 'LEMBAR',
-          kode_kec: '08',
-          desa: '',
-          kode_desa: ''
-        };
-      } else {
-        userAktif = {
-          username: user.toUpperCase(),
-          role: 'USER_DESA',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: 'LEMBAR',
-          kode_kec: '08',
-          desa: 'LEMBAR',
-          kode_desa: '2001'
-        };
-      }
-
-      document.getElementById('userNameDisplay').innerText = userAktif.username;
-      const roleBadge = document.getElementById('roleBadge');
-      roleBadge.innerText = userAktif.role.replace('_', ' ');
-
-      const btnPill = document.getElementById('btnPillKelolaWilayah');
-      if (userAktif.role === 'USER_DESA') {
-        btnPill.style.display = 'none';
-      } else {
-        btnPill.style.display = 'flex';
-      }
-
-      tampilkanLayar('tampilan_dashboard');
-      loadMasterWilayahFromDB();
-    }
-
-    function prosesLogout() {
-      Swal.fire({
-        title: 'Konfirmasi Keluar',
-        text: 'Apakah Anda yakin ingin keluar dari sistem?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Keluar',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const form = document.getElementById('formLogin');
-          if (form) form.reset();
-          tampilkanLayar('tampilan_login');
-        }
-      });
-    }
-
-    function kembaliKeDashboard() {
-      tampilkanLayar('tampilan_dashboard');
-    }
-
-    function navigasiKe(menu) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Menu Terpilih',
-        text: `Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`,
-        confirmButtonColor: '#059669'
-      });
-    }
-
-    // ========================================================
-    // 6. LOGIKA KELOLA MASTER WILAYAH
-    // ========================================================
-    function bukaKelolaWilayah() {
-      if (userAktif.role === 'USER_DESA') {
-        Swal.fire({
-          icon: 'error',
-          title: 'Akses Ditolak',
-          text: 'User Desa tidak memiliki hak akses ke modul Kelola Wilayah!',
-          confirmButtonColor: '#e11d48'
-        });
-        return;
-      }
-
-      tampilkanLayar('tampilan_kelola_wilayah');
-      
-      const labelCakupan = document.getElementById('labelCakupanWilayah');
-      if (userAktif.role === 'SUPER_ADMIN') {
-        labelCakupan.innerText = "Cakupan Akses: SEMUA WILAYAH (PROVINSI & SUPER ADMIN)";
-      } else if (userAktif.role === 'ADMIN_KABUPATEN') {
-        labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kab})`;
-      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (KODE: ${userAktif.kode_kec}) - ${userAktif.kabupaten}`;
-      }
-
-      resetMwForm();
-      tampilkanTabelMasterWilayah();
-    }
-
-    function resetMwForm() {
-      document.getElementById("man_dusun").value = "";
-      document.getElementById("man_kode_dusun").value = "";
-      document.getElementById("man_jumlah_rt").value = "4";
-
-      const pNama = document.getElementById("man_provinsi");
-      const pKode = document.getElementById("man_kode_prov");
-      const kNama = document.getElementById("man_kabupaten");
-      const kKode = document.getElementById("man_kode_kab");
-      const kcNama = document.getElementById("man_kecamatan");
-      const kcKode = document.getElementById("man_kode_kec");
-      const dNama = document.getElementById("man_desa");
-      const dKode = document.getElementById("man_kode_desa");
-
-      const setLock = (elNama, elKode, isLocked, valNama = "", valKode = "") => {
-        elNama.value = isLocked ? valNama : elNama.value;
-        elKode.value = isLocked ? valKode : elKode.value;
-        elNama.readOnly = isLocked;
-        elKode.readOnly = isLocked;
-        elNama.style.backgroundColor = isLocked ? "#e9ecef" : "#ffffff";
-        elKode.style.backgroundColor = isLocked ? "#e9ecef" : "#ffffff";
-      };
-
-      if (userAktif.role === 'ADMIN_KABUPATEN') {
-        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_prov);
-        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kab);
-        setLock(kcNama, kcKode, false, "", "");
-        setLock(dNama, dKode, false, "", "");
-      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        setLock(pNama, pKode, true, userAktif.provinsi, userAktif.kode_prov);
-        setLock(kNama, kKode, true, userAktif.kabupaten, userAktif.kode_kab);
-        setLock(kcNama, kcKode, true, userAktif.kecamatan, userAktif.kode_kec);
-        setLock(dNama, dKode, false, "", "");
-      } else {
-        setLock(pNama, pKode, false, userAktif.provinsi, userAktif.kode_prov);
-        setLock(kNama, kKode, false, userAktif.kabupaten, userAktif.kode_kab);
-        setLock(kcNama, kcKode, false, "", "");
-        setLock(dNama, dKode, false, "", "");
-      }
-    }
-
-    function getWilayahTersaringSesuaiRole() {
-      if (userAktif.role === 'SUPER_ADMIN') {
-        return rawWilayahList;
-      }
-      if (userAktif.role === 'ADMIN_KABUPATEN') {
-        return rawWilayahList.filter(w => String(w.kode_kab || w.kode_kabupaten).padStart(2, '0') === userAktif.kode_kab);
-      }
-      if (userAktif.role === 'ADMIN_KECAMATAN') {
-        return rawWilayahList.filter(w => String(w.kode_kec || w.kode_kecamatan).padStart(2, '0') === userAktif.kode_kec);
-      }
-      return [];
-    }
-
-    function tampilkanTabelMasterWilayah() {
-      const tbody = document.getElementById('tbodyMasterWilayah');
-      const dataSaring = getWilayahTersaringSesuaiRole();
-
-      if (!dataSaring || dataSaring.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah di cakupan Anda.</td></tr>`;
-        return;
-      }
-
-      let baris = '';
-      dataSaring.forEach(item => {
-        const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
-        const kdDesa = String(item.kode_desa || '').padStart(4, '0');
-        const kdDsn = String(item.kode_dusun || '').padStart(4, '0');
-
-        baris += `
-          <tr class="hover:bg-slate-50 transition border-b">
-            <td class="p-3 font-semibold">${(item.kecamatan || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdKec}</td>
-            <td class="p-3 font-semibold text-emerald-800">${(item.desa || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdDesa}</td>
-            <td class="p-3 font-bold">${(item.dusun || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-600 font-bold">${kdDsn}</td>
-            <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
-            <td class="p-3 text-center">
-              <button onclick="hapusWilayah('${item.id}', '${item.dusun}')" class="text-rose-600 hover:text-rose-800 font-bold uppercase text-[11px]">
-                Hapus
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = baris;
-    }
-
-    function filterTabelWilayah() {
-      const keyword = document.getElementById('cariTabelWilayah').value.toLowerCase();
-      const trList = document.querySelectorAll('#tbodyMasterWilayah tr');
-      trList.forEach(tr => {
-        const text = tr.innerText.toLowerCase();
-        tr.style.display = text.includes(keyword) ? '' : 'none';
-      });
-    }
-
-    function validateRowScope(kdKab, kdKec, kdDesa) {
-      if ((userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kab) {
-        if (String(kdKab).padStart(2, '0') !== String(userAktif.kode_kab).padStart(2, '0')) {
-          return { valid: false, reason: `Kabupaten di luar wewenang (${kdKab} vs ${userAktif.kode_kab})` };
-        }
-      }
-
-      if ((userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') && userAktif.kode_kec) {
-        if (String(kdKec).padStart(2, '0') !== String(userAktif.kode_kec).padStart(2, '0')) {
-          return { valid: false, reason: `Kecamatan di luar wewenang (${kdKec} vs ${userAktif.kode_kec})` };
-        }
-      }
-
-      if (userAktif.role === 'USER_DESA' && userAktif.kode_desa) {
-        if (kdDesa && String(kdDesa).padStart(4, '0') !== String(userAktif.kode_desa).padStart(4, '0')) {
-          return { valid: false, reason: `Desa di luar wewenang (${kdDesa} vs ${userAktif.kode_desa})` };
-        }
-      }
-
-      return { valid: true };
-    }
-
-    async function simpanWilayahManual() {
-      const btn = document.getElementById('btnSimpanManualWilayah');
-      btn.disabled = true;
-      btn.innerText = "MENYIMPAN...";
-
-      const kdProv = document.getElementById('man_kode_prov').value.trim().padStart(2, '0');
-      const kdKab = document.getElementById('man_kode_kab').value.trim().padStart(2, '0');
-      const kdKec = document.getElementById('man_kode_kec').value.trim().padStart(2, '0');
-      const kdDesa = document.getElementById('man_kode_desa').value.trim().padStart(4, '0');
-      const kdDusun = document.getElementById('man_kode_dusun').value.trim().padStart(4, '0');
-
-      const check = validateRowScope(kdKab, kdKec, kdDesa);
-      if (!check.valid) {
-        btn.disabled = false;
-        btn.innerText = "SIMPAN WILAYAH";
-        Swal.fire('Akses Ditolak', check.reason, 'error');
-        return;
-      }
-
-      const payload = {
-        provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
-        kode_prov: kdProv,
-        kabupaten: document.getElementById('man_kabupaten').value.trim().toUpperCase(),
-        kode_kab: kdKab,
-        kecamatan: document.getElementById('man_kecamatan').value.trim().toUpperCase(),
-        kode_kec: kdKec,
-        desa: document.getElementById('man_desa').value.trim().toUpperCase(),
-        kode_desa: kdDesa,
-        dusun: document.getElementById('man_dusun').value.trim().toUpperCase(),
-        kode_dusun: kdDusun,
-        jumlah_rt: parseInt(document.getElementById('man_jumlah_rt').value, 10) || 1
-      };
-
-      try {
-        if (supabaseClient) {
-          const { error } = await supabaseClient
-            .from('master_wilayah')
-            .upsert([payload], { onConflict: 'kode_kec,kode_desa,kode_dusun' });
-
-          if (error) throw error;
-        }
-
-        Swal.fire({
-          icon: 'success',
-          title: 'BERHASIL DISIMPAN',
-          text: `Wilayah dusun [${payload.dusun}] dengan kode [${payload.kode_dusun}] berhasil dicatat!`,
-          confirmButtonColor: '#059669'
-        });
-
-        document.getElementById('man_dusun').value = '';
-        document.getElementById('man_kode_dusun').value = '';
-        document.getElementById('man_jumlah_rt').value = '4';
-
-        await loadMasterWilayahFromDB();
-        tampilkanTabelMasterWilayah();
-
-      } catch (err) {
-        console.error(err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Gagal Menyimpan',
-          text: err.message || 'Terjadi kesalahan sistem.',
-          confirmButtonColor: '#e11d48'
-        });
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "SIMPAN WILAYAH";
-      }
-    }
-
-    async function hapusWilayah(id, namaDusun) {
-      Swal.fire({
-        title: 'Konfirmasi Hapus',
-        text: `Yakin ingin menghapus data dusun ${namaDusun}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            if (supabaseClient) {
-              const { error } = await supabaseClient
-                .from('master_wilayah')
-                .delete()
-                .eq('id', id);
-
-              if (error) throw error;
-            }
-
-            Swal.fire('Terhapus!', `Dusun ${namaDusun} telah dihapus.`, 'success');
-            await loadMasterWilayahFromDB();
-            tampilkanTabelMasterWilayah();
-          } catch (err) {
-            Swal.fire('Gagal Menghapus', err.message, 'error');
-          }
-        }
-      });
-    }
-
-    function unduhTemplateWilayahExcel() {
-      try {
-        if (typeof XLSX === 'undefined') {
-          Swal.fire('Gagal', 'Pustaka Excel belum siap. Cek koneksi Anda dan refresh.', 'error');
-          return;
-        }
-
-        const defaultProv = userAktif.provinsi || 'NUSA TENGGARA BARAT';
-        const defaultKdProv = (userAktif.kode_prov || '52').padStart(2, '0');
-        const defaultKab = userAktif.kabupaten || 'LOMBOK BARAT';
-        const defaultKdKab = (userAktif.kode_kab || '01').padStart(2, '0');
-        const defaultKec = userAktif.kecamatan || 'LEMBAR';
-        const defaultKdKec = (userAktif.kode_kec || '08').padStart(2, '0');
-
-        const dataAOA = [
-          [
-            "PROVINSI", "KODE_PROV", "KABUPATEN", "KODE_KAB", 
-            "KECAMATAN", "KODE_KEC", "DESA", "KODE_DESA", 
-            "DUSUN", "KODE_DUSUN", "JUMLAH_RT"
-          ],
-          [
-            defaultProv, defaultKdProv, defaultKab, defaultKdKab,
-            defaultKec, defaultKdKec, "LEMBAR", "2001",
-            "SELAMPANG", "0100", 4
-          ],
-          [
-            defaultProv, defaultKdProv, defaultKab, defaultKdKab,
-            defaultKec, defaultKdKec, "LEMBAR", "2001",
-            "PELEPOK", "0200", 3
-          ]
-        ];
-
-        const worksheet = XLSX.utils.aoa_to_sheet(dataAOA);
-
-        worksheet['!cols'] = [
-          { wch: 25 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
-          { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 16 },
-          { wch: 25 }, { wch: 18 }, { wch: 12 }
-        ];
-
-        const range = XLSX.utils.decode_range(worksheet['!ref']);
-        for (let R = 1; R <= range.e.r; ++R) {
-          for (let C = 0; C <= range.e.c; ++C) {
-            if (C !== 10) {
-              const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-              if (worksheet[cellAddress]) {
-                worksheet[cellAddress].t = 's';
-                worksheet[cellAddress].z = '@';
-              }
-            }
-          }
-        }
-
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "MASTER_WILAYAH");
-
-        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-        const namaFile = `TEMPLATE_MASTER_WILAYAH_${userAktif.role}.xlsx`;
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = namaFile;
-        document.body.appendChild(a);
-        a.click();
-        
-        setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 100);
-
-      } catch (err) {
-        console.error(err);
-        Swal.fire('Error', 'Gagal download template: ' + err.message, 'error');
-      }
-    }
-
-    function unggahFileWilayahExcel(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      Swal.fire({
-        title: 'Konfirmasi Upload',
-        text: `Import data master wilayah dari file Excel "${file.name}"?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#4f46e5',
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Proses Upload',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (!result.isConfirmed) {
-          event.target.value = '';
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array', raw: false });
-            
-            const sheetPertama = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetPertama];
-            const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-            if (!rows || rows.length === 0) {
-              Swal.fire('File Kosong', 'File Excel tidak memiliki baris data!', 'warning');
-              event.target.value = '';
-              return;
-            }
-
-            const payloadMap = new Map();
-            const unauthorizedRows = [];
-            let duplicateInFile = 0;
-
-            rows.forEach((row, idx) => {
-              const prov = String(row.PROVINSI || row.provinsi || '').trim().toUpperCase();
-              let kdProv = String(row.KODE_PROV || row.kode_prov || row.KODE_PROVINSI || row.kode_provinsi || '').trim().padStart(2, '0');
-              
-              const kab = String(row.KABUPATEN || row.kabupaten || '').trim().toUpperCase();
-              let kdKab = String(row.KODE_KAB || row.kode_kab || row.KODE_KABUPATEN || row.kode_kabupaten || '').trim().padStart(2, '0');
-              
-              const kec = String(row.KECAMATAN || row.kecamatan || '').trim().toUpperCase();
-              let kdKec = String(row.KODE_KEC || row.kode_kec || row.KODE_KECAMATAN || row.kode_kecamatan || '').trim().padStart(2, '0');
-              
-              const desa = String(row.DESA || row.desa || '').trim().toUpperCase();
-              let kdDesa = String(row.KODE_DESA || row.kode_desa || '').trim().padStart(4, '0');
-              
-              const dusun = String(row.DUSUN || row.dusun || '').trim().toUpperCase();
-              let kdDusun = String(row.KODE_DUSUN || row.kode_dusun || '').trim().padStart(4, '0');
-              const jmlRt = Math.max(1, parseInt(row.JUMLAH_RT || row.jumlah_rt, 10) || 1);
-
-              if (!desa || !dusun || !kdDusun) return;
-
-              const check = validateRowScope(kdKab, kdKec, kdDesa);
-              if (!check.valid) {
-                unauthorizedRows.push(`Baris ${idx + 2}: Desa ${desa} - Dusun ${dusun} (${check.reason})`);
-                return;
-              }
-
-              const uniqueCompositeKey = `${kdKec}_${kdDesa}_${kdDusun}`;
-              if (payloadMap.has(uniqueCompositeKey)) {
-                duplicateInFile++;
-              }
-
-              payloadMap.set(uniqueCompositeKey, {
-                provinsi: prov || userAktif.provinsi,
-                kode_prov: kdProv,
-                kabupaten: kab || userAktif.kabupaten,
-                kode_kab: kdKab,
-                kecamatan: kec || userAktif.kecamatan,
-                kode_kec: kdKec,
-                desa: desa,
-                kode_desa: kdDesa,
-                dusun: dusun,
-                kode_dusun: kdDusun,
-                jumlah_rt: jmlRt
-              });
-            });
-
-            if (unauthorizedRows.length > 0) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Akses Upload Ditolak!',
-                html: `<div style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">
-                  Ditemukan baris wilayah di luar kewenangan akun Anda:<br><br>
-                  ${unauthorizedRows.slice(0, 8).join('<br>')}
-                  ${unauthorizedRows.length > 8 ? `<br>...dan ${unauthorizedRows.length - 8} baris lainnya.` : ''}
-                </div>`
-              });
-              event.target.value = '';
-              return;
-            }
-
-            const payloadList = Array.from(payloadMap.values());
-            if (payloadList.length === 0) {
-              Swal.fire('Data Ditolak', 'Tidak ada data wilayah yang valid untuk disimpan!', 'error');
-              event.target.value = '';
-              return;
-            }
-
-            if (supabaseClient) {
-              const { error } = await supabaseClient
-                .from('master_wilayah')
-                .upsert(payloadList, { onConflict: 'kode_kec,kode_desa,kode_dusun' });
-
-              if (error) throw error;
-            }
-
-            let pesanInfo = `Berhasil upload <b>${payloadList.length}</b> data wilayah!`;
-            if (duplicateInFile > 0) pesanInfo += `<br><small style="color: #d97706;">(${duplicateInFile} baris ganda di file otomatis digabungkan)</small>`;
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Upload Selesai',
-              html: pesanInfo,
-              confirmButtonColor: '#059669'
-            });
-
-            await loadMasterWilayahFromDB();
-            tampilkanTabelMasterWilayah();
-
-          } catch (err) {
-            console.error("Gagal membaca Excel:", err);
-            Swal.fire('Error', 'Terjadi kesalahan saat memproses file Excel: ' + err.message, 'error');
-          } finally {
-            event.target.value = '';
-          }
-        };
-
-        reader.readAsArrayBuffer(file);
-      });
-    }
-
-    // ========================================================
-    // 7. FORMULIR PENDATAAN HIERARKI KOMPOSIT
-    // ========================================================
-    function bukaFormulirPendataan() {
-      tampilkanLayar('tampilan_formulir');
-      pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
-    }
-
-    function sembunyikanSemuaHalamanForm() {
-      document.querySelectorAll('.halaman-form').forEach(el => el.classList.remove('aktif'));
-    }
-
-    function pindahHalamanForm(idTarget, labelJudul) {
-      sembunyikanSemuaHalamanForm();
-      const target = document.getElementById(idTarget);
-      if (target) target.classList.add('aktif');
-      const label = document.getElementById('labelTotalTahap');
-      if (label) label.innerText = labelJudul.toUpperCase();
-      window.scrollTo(0, 0);
-    }
-
-    async function loadMasterWilayahFromDB() {
-      if (!supabaseClient) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('master_wilayah')
-          .select('*')
-          .order('desa', { ascending: true });
-
-        if (error) throw error;
-        rawWilayahList = data || [];
-
-        dataProvinsi = {}; 
-        dataKabupaten = {}; 
-        dataKecamatan = {}; 
-        dataDesa = {}; 
-        dataDusun = {};
-
-        rawWilayahList.forEach(r => {
-          let kdProv = String(r.kode_prov || r.kode_provinsi || '').padStart(2, '0');
-          let kdKab  = String(r.kode_kab || r.kode_kabupaten || '').padStart(2, '0');
-          let kdKec  = String(r.kode_kec || r.kode_kecamatan || '').padStart(2, '0');
-          let kdDesa = String(r.kode_desa || '').padStart(4, '0');
-          let kdDsn  = String(r.kode_dusun || '').padStart(4, '0');
-
-          dataProvinsi[kdProv] = r.provinsi;
-          
-          if (!dataKabupaten[kdProv]) dataKabupaten[kdProv] = {};
-          dataKabupaten[kdProv][kdKab] = r.kabupaten;
-
-          if (!dataKecamatan[kdKab]) dataKecamatan[kdKab] = {};
-          dataKecamatan[kdKab][kdKec] = r.kecamatan;
-          
-          let desaKey = kdKab + "_" + kdKec;
-          if (!dataDesa[desaKey]) dataDesa[desaKey] = {};
-          dataDesa[desaKey][kdDesa] = r.desa;      
-          
-          let dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
-          if (!dataDusun[dsnKey]) dataDusun[dsnKey] = {};
-          dataDusun[dsnKey][kdDsn] = { 
-            nama: r.dusun, 
-            jumlah_rt: parseInt(r.jumlah_rt, 10) || 1 
-          };
-        });
-
-        populateFormProvinsi();
-      } catch (err) {
-        console.warn("Gagal mengambil master wilayah:", err);
-      }
-    }
-
-    function populateFormProvinsi() {
-      const elProv = document.getElementById('provinsi');
-      if (!elProv) return;
-      elProv.innerHTML = '<option value="">-- PILIH PROVINSI --</option>';
-      for (let kd in dataProvinsi) {
-        elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
-      }
-    }
-
-    function updateFormKabupaten() {
-      const kdProv = document.getElementById('provinsi').value;
-      document.getElementById('kode_prov').value = kdProv;
-
-      const elKab = document.getElementById('kabupaten');
-      elKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
-      document.getElementById('kode_kab').value = '';
-      resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
-
-      if (!kdProv || !dataKabupaten[kdProv]) { elKab.disabled = true; return; }
-
-      for (let kd in dataKabupaten[kdProv]) {
-        elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
-      }
-      elKab.disabled = false;
-    }
-
-    function updateFormKecamatan() {
-      const kdKab = document.getElementById('kabupaten').value;
-      document.getElementById('kode_kab').value = kdKab;
-
-      const elKec = document.getElementById('kecamatan');
-      elKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
-      document.getElementById('kode_kec').value = '';
-      resetFormDropdowns(['desa', 'dusun', 'rt']);
-
-      if (!kdKab || !dataKecamatan[kdKab]) { elKec.disabled = true; return; }
-
-      for (let kd in dataKecamatan[kdKab]) {
-        elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
-      }
-      elKec.disabled = false;
-    }
-
-    function updateFormDesa() {
-      const kdKab = document.getElementById('kode_kab').value;
-      const kdKec = document.getElementById('kecamatan').value;
-      document.getElementById('kode_kec').value = kdKec;
-
-      const elDesa = document.getElementById('desa');
-      elDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
-      document.getElementById('kode_desa').value = '';
-      resetFormDropdowns(['dusun', 'rt']);
-
-      const desaKey = kdKab + "_" + kdKec;
-      if (!kdKec || !dataDesa[desaKey]) { elDesa.disabled = true; return; }
-
-      for (let kd in dataDesa[desaKey]) {
-        elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
-      }
-      elDesa.disabled = false;
-    }
-
-    function updateFormDusun() {
-      const kdKab = document.getElementById('kode_kab').value;
-      const kdKec = document.getElementById('kode_kec').value;
-      const kdDesa = document.getElementById('desa').value;
-      document.getElementById('kode_desa').value = kdDesa;
-
-      const elDusun = document.getElementById('dusun');
-      elDusun.innerHTML = '<option value="">-- PILIH DUSUN --</option>';
-      document.getElementById('kode_dusun').value = '';
-      resetFormDropdowns(['rt']);
-
-      const dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
-      if (!kdDesa || !dataDusun[dsnKey]) { elDusun.disabled = true; return; }
-
-      for (let kd in dataDusun[dsnKey]) {
-        const item = dataDusun[dsnKey][kd];
-        const opt = new Option(`${item.nama.toUpperCase()} (${kd})`, kd);
-        opt.setAttribute('data-rt', item.jumlah_rt || 1);
-        elDusun.add(opt);
-      }
-      elDusun.disabled = false;
-    }
-
-    function updateFormRT() {
-      const kdDusun = document.getElementById('dusun').value;
-      document.getElementById('kode_dusun').value = kdDusun;
-
-      const elRt = document.getElementById('rt');
-      elRt.innerHTML = '<option value="">-- PILIH RT --</option>';
-
-      if (!kdDusun) { elRt.disabled = true; return; }
-
-      const selectedOpt = document.getElementById('dusun').selectedOptions[0];
-      const jumlahRt = parseInt(selectedOpt?.getAttribute('data-rt'), 10) || 1;
-
-      for (let i = 1; i <= jumlahRt; i++) {
-        const strRt = String(i).padStart(3, '0');
-        elRt.add(new Option("RT " + strRt, strRt));
-      }
-      elRt.disabled = false;
-    }
-
-    function resetFormDropdowns(ids) {
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.innerHTML = `<option value="">-- PILIH ${id.toUpperCase()} --</option>`;
-          el.disabled = true;
-        }
-      });
-    }
-
-    // ========================================================
-    // 8. LOGIKA STATUS KELUARGA & PERCABANGAN FORMULIR
-    // ========================================================
     function evaluasiStatusKeluarga() {
       const status = document.getElementById('status_keluarga').value;
       const wrapperJml = document.getElementById('wrapper_jumlah_anggota');
       const inputJml = document.getElementById('jumlah_anggota_input');
       const btnAksi = document.getElementById('btnAksiWilayah');
 
-      // 1. ADA atau 6. KELUARGA BARU -> LANJUT PENDATAAN LENGKAP
       if (status === '1' || status === '6') {
         wrapperJml.style.display = 'block';
         inputJml.required = true;
         btnAksi.className = "w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase";
         btnAksi.innerHTML = "LANJUT KE ANGGOTA KELUARGA &rarr;";
       } else {
-        // 2, 3, 4, 5 -> SELESAIKAN PENDATAAN DI LEMBAR WILAYAH
         wrapperJml.style.display = 'none';
         inputJml.required = false;
         inputJml.value = '';
@@ -1556,7 +685,6 @@
     async function prosesAksiWilayah() {
       const status = document.getElementById('status_keluarga').value;
 
-      // Ambil seluruh identitas wilayah
       const noKK = document.getElementById('nomor_kk').value.trim();
       const kdProv = document.getElementById('kode_prov').value.trim();
       const kdKab = document.getElementById('kode_kab').value.trim();
@@ -1579,11 +707,9 @@
         return;
       }
 
-      // Format pad 3 digit
       document.getElementById('kode_rumah').value = kodeRumah;
       document.getElementById('no_urut_keluarga').value = noUrutKel;
 
-      // Percabangan 1 & 6: Lanjut ke Anggota Keluarga
       if (status === '1' || status === '6') {
         const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value, 10) || 0;
         if (jmlAnggota < 1) {
@@ -1607,7 +733,6 @@
         bukaHalamanAnggota(1);
 
       } else {
-        // Percabangan 2, 3, 4, 5: Langsung Simpan Data Kartu Keluarga
         const textStatus = document.getElementById('status_keluarga').selectedOptions[0].text;
         
         Swal.fire({
@@ -1666,6 +791,7 @@
       }
     }
 
+    // GENERATE HALAMAN ANGGOTA KELUARGA DENGAN SELURUH KOLOM 1-17 FORMULIR
     function tambahHalamanAnggotaBaru() {
       totalHalamanAnggota++;
       const no = totalHalamanAnggota;
@@ -1680,7 +806,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-3">
           <div>
             <h2 class="text-base sm:text-lg font-black text-emerald-800 uppercase">
-              II. DATA ANGGOTA KELUARGA (${no} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)
+              II. DATA ANGGOTA KELUARGA (NO. URUT ${no} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)
             </h2>
             <p class="text-xs text-slate-500 uppercase font-semibold">LEMBAR ISIAN ANGGOTA KE-${no}</p>
           </div>
@@ -1690,17 +816,65 @@
           </button>
         </div>
 
+        <input type="hidden" name="nomor_anggota_keluarga" value="${no}" />
+
+        <!-- Grid 17 Kolom Sesuai Lampiran Formulir AK -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 text-xs">
+          
+          <!-- 2. NAMA ANGGOTA KELUARGA & NIK -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">NAMA LENGKAP *</label>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">2. NAMA LENGKAP *</label>
             <input type="text" name="nama_lengkap" required placeholder="NAMA LENGKAP" class="w-full p-2.5 border rounded-xl uppercase text-sm" />
           </div>
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">NIK *</label>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">2. NIK (16 DIGIT) *</label>
             <input type="text" name="nik" required maxlength="16" placeholder="16 DIGIT NIK" class="w-full p-2.5 border rounded-xl uppercase font-semibold text-sm" />
           </div>
+
+          <!-- 3. JENIS KELAMIN -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">HUBUNGAN DENGAN KK *</label>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">3. JENIS KELAMIN *</label>
+            <select name="jenis_kelamin" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. LAKI-LAKI</option>
+              <option value="2">2. PEREMPUAN</option>
+            </select>
+          </div>
+
+          <!-- 4. TANGGAL LAHIR -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">4. TANGGAL LAHIR *</label>
+            <input type="date" name="tanggal_lahir" required class="w-full p-2.5 border rounded-xl uppercase text-sm" />
+          </div>
+
+          <!-- 5. STATUS PERKAWINAN -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">5. STATUS PERKAWINAN *</label>
+            <select name="status_perkawinan" onchange="evaluasiUsiaKawin(this, ${no})" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. BELUM KAWIN</option>
+              <option value="2" ${no <= 2 ? 'selected' : ''}>2. KAWIN</option>
+              <option value="3">3. CERAI HIDUP</option>
+              <option value="4">4. CERAI MATI</option>
+            </select>
+          </div>
+
+          <!-- 6. USIA KAWIN PERTAMA -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">6. USIA KAWIN PERTAMA</label>
+            <input type="number" name="usia_kawin_pertama" min="10" max="70" placeholder="UMUR (TAHUN)" class="w-full p-2.5 border rounded-xl uppercase text-sm" />
+          </div>
+
+          <!-- 7. MEMILIKI AKTA LAHIR -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">7. MEMILIKI AKTA LAHIR?</label>
+            <select name="memiliki_akta_lahir" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. YA</option>
+              <option value="2">2. TIDAK</option>
+            </select>
+          </div>
+
+          <!-- 8. HUBUNGAN DENGAN KEPALA KELUARGA -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">8. HUBUNGAN DENGAN KK *</label>
             <select name="hubungan_dengan_kk" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
               <option value="1" ${no === 1 ? 'selected' : ''}>1. KEPALA KELUARGA</option>
               <option value="2" ${no === 2 ? 'selected' : ''}>2. ISTRI</option>
@@ -1708,42 +882,120 @@
               <option value="4">4. LAINNYA</option>
             </select>
           </div>
+
+          <!-- 9. KODE IBU KANDUNG -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">JENIS KELAMIN *</label>
-            <select name="jenis_kelamin" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. LAKI-LAKI</option>
-              <option value="2">2. PEREMPUAN</option>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">9. KODE IBU KANDUNG (NO URUT)</label>
+            <input type="text" name="kode_ibu_kandung" maxlength="2" placeholder="CONTOH: 02 (ATAU 00)" class="w-full p-2.5 border rounded-xl uppercase font-mono text-sm" value="${no > 2 ? '02' : '00'}" />
+          </div>
+
+          <!-- 10. AGAMA -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">10. AGAMA</label>
+            <select name="agama" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1" selected>1. ISLAM</option>
+              <option value="2">2. KRISTEN</option>
+              <option value="3">3. KATOLIK</option>
+              <option value="4">4. HINDU</option>
+              <option value="5">5. BUDHA</option>
+              <option value="6">6. KHONGHUCU</option>
+              <option value="7">7. PENGHAYAT KEPERCAYAAN</option>
             </select>
           </div>
+
+          <!-- 11. JENIS PEKERJAAN -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">TANGGAL LAHIR *</label>
-            <input type="date" name="tanggal_lahir" required class="w-full p-2.5 border rounded-xl uppercase text-sm" />
-          </div>
-          <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">STATUS PERKAWINAN</label>
-            <select name="status_perkawinan" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. BELUM KAWIN</option>
-              <option value="2">2. KAWIN</option>
-              <option value="3">3. CERAI HIDUP</option>
-              <option value="4">4. CERAI MATI</option>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">11. JENIS PEKERJAAN</label>
+            <select name="jenis_pekerjaan" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. TIDAK/BELUM BEKERJA</option>
+              <option value="2">2. PETANI</option>
+              <option value="3">3. NELAYAN</option>
+              <option value="4">4. PEDAGANG</option>
+              <option value="5">5. PEJABAT NEGARA / KEPALA WILAYAH</option>
+              <option value="6">6. PNS/TNI/POLRI</option>
+              <option value="7">7. SWASTA SEKTOR PERTANIAN</option>
+              <option value="8">8. SWASTA SEKTOR INDUSTRI</option>
+              <option value="9" selected>9. SWASTA SEKTOR JASA</option>
+              <option value="10">10. PENSIUNAN</option>
+              <option value="11">11. PEKERJA LEPAS</option>
             </select>
           </div>
+
+          <!-- 12. STATUS PEKERJAAN -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">MEMILIKI AKTA LAHIR?</label>
-            <select name="memiliki_akta_lahir" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. YA</option>
-              <option value="2">2. TIDAK</option>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">12. STATUS PEKERJAAN</label>
+            <select name="status_pekerjaan" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. BERUSAHA SENDIRI</option>
+              <option value="2">2. BERUSAHA DIBANTU BURUH TIDAK TETAP</option>
+              <option value="3">3. BERUSAHA DIBANTU BURUH TETAP</option>
+              <option value="4" selected>4. BURUH/KARYAWAN/PEGAWAI</option>
+              <option value="5">5. PEKERJA BEBAS</option>
+              <option value="6">6. PEKERJA KELUARGA/TIDAK DIBAYAR</option>
             </select>
           </div>
+
+          <!-- 13. PENDIDIKAN -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">KEPESERTAAN JKN</label>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">13. PENDIDIKAN</label>
+            <select name="pendidikan" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1">1. TIDAK/BELUM SEKOLAH</option>
+              <option value="2">2. TDK TAMAT SD/SEDERAJAT</option>
+              <option value="3">3. MASIH SD/SEDERAJAT</option>
+              <option value="4">4. TAMAT SD/SEDERAJAT</option>
+              <option value="5">5. MASIH SLTP/SEDERAJAT</option>
+              <option value="6">6. TAMAT SLTP/SEDERAJAT</option>
+              <option value="7">7. MASIH SLTA/SEDERAJAT</option>
+              <option value="8" selected>8. TAMAT SLTA/SEDERAJAT</option>
+              <option value="9">9. MASIH PT/AKADEMI</option>
+              <option value="10">10. TAMAT PT/AKADEMI</option>
+            </select>
+          </div>
+
+          <!-- 14. KEPESERTAAN JKN -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">14. KEPESERTAAN JKN</label>
             <select name="kepesertaan_jkn" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. BPJS PBI</option>
-              <option value="2">2. BPJS NON-PBI</option>
+              <option value="1" selected>1. BPJS-PBI / JAMKESMAS</option>
+              <option value="2">2. BPJS-NON PBI</option>
               <option value="3">3. SWASTA</option>
               <option value="4">4. TIDAK MEMILIKI</option>
             </select>
           </div>
+
+          <!-- 15. MUTASI ANGGOTA KELUARGA -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">15. MUTASI ANGGOTA</label>
+            <select name="mutasi_anggota" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="0" selected>0. TETAP / TIDAK ADA</option>
+              <option value="1">1. MENIKAH</option>
+              <option value="2">2. MENINGGAL DUNIA</option>
+              <option value="3">3. ANGGOTA BARU</option>
+            </select>
+          </div>
+
+          <!-- 16. MENGALAMI GANGGUAN FUNGSIONAL (DISABILITAS) -->
+          <div>
+            <label class="block text-slate-700 mb-1 font-bold uppercase">16. GANGGUAN FUNGSIONAL</label>
+            <select name="gangguan_fungsional" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="5" selected>5. TIDAK</option>
+              <option value="1">1. FISIK</option>
+              <option value="2">2. SENSORIK</option>
+              <option value="3">3. MENTAL</option>
+              <option value="4">4. INTELEKTUAL</option>
+            </select>
+          </div>
+
+          <!-- 17. KEMAMPUAN MENGURUS DIRI SENDIRI -->
+          <div class="sm:col-span-2 lg:col-span-4">
+            <label class="block text-slate-700 mb-1 font-bold uppercase">17. KEMAMPUAN MENGURUS DIRI SENDIRI</label>
+            <select name="kemampuan_mengurus_diri" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="4" selected>4. TIDAK MENGALAMI KESULITAN</option>
+              <option value="1">1. TIDAK DAPAT MENGURUS DIRI SENDIRI</option>
+              <option value="2">2. BANYAK MENGALAMI KESULITAN</option>
+              <option value="3">3. SEDIKIT MENGALAMI KESULITAN</option>
+            </select>
+          </div>
+
         </div>
 
         <div class="flex flex-col sm:flex-row justify-between gap-3 pt-6 border-t">
@@ -1760,6 +1012,24 @@
 
       container.appendChild(hal);
       perbaruiLabelTotalAnggota();
+
+      const selectPerkawinan = hal.querySelector('[name="status_perkawinan"]');
+      evaluasiUsiaKawin(selectPerkawinan, no);
+    }
+
+    function evaluasiUsiaKawin(elSelect, noUrut) {
+      const hal = document.getElementById(`hal_anggota_${noUrut}`);
+      const inputUsiaKawin = hal.querySelector('[name="usia_kawin_pertama"]');
+      if (elSelect.value === '1') {
+        inputUsiaKawin.value = '';
+        inputUsiaKawin.disabled = true;
+        inputUsiaKawin.classList.add('bg-slate-100');
+        inputUsiaKawin.required = false;
+      } else {
+        inputUsiaKawin.disabled = false;
+        inputUsiaKawin.classList.remove('bg-slate-100');
+        inputUsiaKawin.required = true;
+      }
     }
 
     function perbaruiLabelTotalAnggota() {
@@ -1791,12 +1061,24 @@
       const nama = pageEl.querySelector('[name="nama_lengkap"]').value.trim();
       const nik = pageEl.querySelector('[name="nik"]').value.trim();
       const tgl = pageEl.querySelector('[name="tanggal_lahir"]').value;
+      const statusKawin = pageEl.querySelector('[name="status_perkawinan"]').value;
+      const usiaKawin = pageEl.querySelector('[name="usia_kawin_pertama"]').value;
 
       if (!nama || !nik || !tgl) {
         Swal.fire({
           icon: 'warning',
           title: 'Isian Wajib',
           text: 'Lengkapi Nama, NIK, dan Tanggal Lahir pada anggota ini terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
+        return;
+      }
+
+      if (statusKawin !== '1' && !usiaKawin) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Usia Kawin Pertama',
+          text: 'Untuk yang berstatus Kawin/Cerai, Usia Kawin Pertama wajib diisi!',
           confirmButtonColor: '#059669'
         });
         return;
@@ -1854,7 +1136,8 @@
             const indexBaru = idx + 1;
             hal.id = `hal_anggota_${indexBaru}`;
             hal.setAttribute('data-urutan', indexBaru);
-            hal.querySelector('h2').innerHTML = `II. DATA ANGGOTA KELUARGA (${indexBaru} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)`;
+            hal.querySelector('[name="nomor_anggota_keluarga"]').value = indexBaru;
+            hal.querySelector('h2').innerHTML = `II. DATA ANGGOTA KELUARGA (NO. URUT ${indexBaru} DARI <span class="total-anggota-display">${totalHalamanAnggota}</span>)`;
             hal.querySelector('p').innerText = `LEMBAR ISIAN ANGGOTA KE-${indexBaru}`;
             hal.querySelector('button[onclick*="hapusHalamanAnggota"]').setAttribute('onclick', `hapusHalamanAnggota(${indexBaru})`);
             hal.querySelector('button[onclick*="mundurDariAnggota"]').setAttribute('onclick', `mundurDariAnggota(${indexBaru})`);
@@ -1868,7 +1151,7 @@
       });
     }
 
-    // --- SUBMIT FORMULIR PENDATAAN LENGKAP (STATUS 1 & 6) ---
+    // --- SUBMIT PENUH KE DATABASE (MENCAKUP 17 KOLOM) ---
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
@@ -1903,35 +1186,48 @@
             rt: rt,
             kode_rumah: kodeRumah,
             no_urut_keluarga: noUrutKel,
-            alamat_detail: alamat,
-            nomor_urut_anggota: idx + 1,
+            nomor_anggota_keluarga: idx + 1,
             nama_lengkap: hal.querySelector('[name="nama_lengkap"]').value.trim().toUpperCase(),
             nik: hal.querySelector('[name="nik"]').value.trim(),
             jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]').value,
             tanggal_lahir: hal.querySelector('[name="tanggal_lahir"]').value,
             status_perkawinan: hal.querySelector('[name="status_perkawinan"]').value,
+            usia_kawin_pertama: parseInt(hal.querySelector('[name="usia_kawin_pertama"]').value, 10) || null,
             memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]').value,
             hubungan_dengan_kk: hal.querySelector('[name="hubungan_dengan_kk"]').value,
-            agama: '1',
-            status_pekerjaan: '1',
-            pendidikan_terakhir: '4',
+            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]').value.trim(),
+            agama: hal.querySelector('[name="agama"]').value,
+            jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]').value,
+            status_pekerjaan: hal.querySelector('[name="status_pekerjaan"]').value,
+            pendidikan: hal.querySelector('[name="pendidikan"]').value,
             kepesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]').value,
-            keberadaan_anggota: '1'
+            mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]').value,
+            gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]').value,
+            kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]').value
           });
         });
 
-        // 1. Simpan Anggota Keluarga (Trigger membuat baris di kartu_keluarga secara otomatis)
+        // 1. Simpan Seluruh Anggota Keluarga
         const { error: errAnggota } = await supabaseClient
           .from('anggota_keluarga')
           .insert(payloadAnggota);
 
         if (errAnggota) throw errAnggota;
 
-        // 2. Update Detail Kondisi Rumah, Kode Rumah, No Urut Keluarga & Status Keluarga di kartu_keluarga
+        // 2. Update Kondisi Rumah & Header KK
         const payloadKondisiRumah = {
+          nomor_kk: noKK,
+          kode_prov: kdProv,
+          kode_kab: kdKab,
+          kode_kec: kdKec,
+          kode_desa: kdDesa,
+          kode_dusun: kdDusun,
+          rt: rt,
           kode_rumah: kodeRumah,
           no_urut_keluarga: noUrutKel,
           status_keluarga: statusKeluarga,
+          alamat_detail: alamat,
+          no_hp: noHp,
           kode_atap: document.getElementById('kode_atap').value,
           kode_dinding: document.getElementById('kode_dinding').value,
           kode_lantai: document.getElementById('kode_lantai').value,
@@ -1943,8 +1239,7 @@
 
         const { data: kkData, error: errKkUpdate } = await supabaseClient
           .from('kartu_keluarga')
-          .update(payloadKondisiRumah)
-          .eq('nomor_kk', noKK)
+          .upsert([payloadKondisiRumah], { onConflict: 'nomor_kk' })
           .select('id')
           .single();
 
@@ -1971,7 +1266,7 @@
         Swal.fire({
           icon: 'success',
           title: 'BERHASIL DISIMPAN!',
-          text: 'Seluruh data keluarga dan instrumen pendataan telah tersimpan ke database.',
+          text: 'Seluruh data keluarga dan 17 indikator anggota keluarga telah tersimpan.',
           confirmButtonColor: '#059669'
         }).then(() => {
           document.getElementById('pendataanForm').reset();
