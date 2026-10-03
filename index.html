@@ -171,7 +171,7 @@
             </svg>
           </div>
           <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">FORM INPUT PUS & KELUARGA</h3>
-          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan.</p>
+          <p class="text-xs text-slate-500 leading-relaxed">Registrasi KK, identitas anggota keluarga, blok KB bertingkat, dan kondisi lingkungan[cite: 4].</p>
         </div>
         <div>
           <span class="inline-block mt-2 text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1.5 rounded-full uppercase">Mulai Input &rarr;</span>
@@ -186,7 +186,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang[cite: 4].</p>
       </div>
 
       <!-- Kartu 3: Data BNBA -->
@@ -197,7 +197,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun[cite: 4].</p>
       </div>
 
       <!-- Kartu 4: Pencarian & Edit -->
@@ -208,7 +208,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK[cite: 4].</p>
       </div>
 
       <!-- Kartu 5: Grafik & Statistik -->
@@ -219,7 +219,7 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">GRAFIK & STATISTIK</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Visualisasi capaian KB Modern, Unmet Need, dan sebaran balita sasaran[cite: 4].</p>
       </div>
 
       <!-- Kartu 6: Pelayanan KB -->
@@ -230,14 +230,14 @@
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">PELAYANAN KB</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Pencatatan calon akseptor baru dan realisasi tindakan kontrasepsi di faskes[cite: 4].</p>
       </div>
 
     </div>
   </div>
 
   <!-- ========================================================
-       3. HALAMAN KELOLA WILAYAH (FORMAT KOLOM PENDEK)
+       3. HALAMAN KELOLA WILAYAH
        ======================================================== -->
   <div id="tampilan_kelola_wilayah" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
     <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 sm:p-7 space-y-6">
@@ -473,19 +473,46 @@
               </select>
             </div>
 
+            <!-- FIELD BARU SETELAH RT: KODE RUMAH & NO. URUT KELUARGA -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE RUMAH (3 DIGIT) *</label>
+              <input type="text" id="kode_rumah" required maxlength="3" placeholder="001"
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono font-bold outline-none uppercase text-sm" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. URUT KELUARGA (3 DIGIT) *</label>
+              <input type="text" id="no_urut_keluarga" required maxlength="3" placeholder="001"
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono font-bold outline-none uppercase text-sm" />
+            </div>
+
+            <div class="sm:col-span-2 lg:col-span-1">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. HP / WA *</label>
+              <input type="text" id="no_hp" required placeholder="08XXXXXXXXXX"
+                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
+            </div>
+
             <div class="sm:col-span-2 lg:col-span-3">
               <label class="block text-xs font-bold text-slate-700 uppercase mb-1">ALAMAT DETAIL *</label>
               <input type="text" id="alamat_detail" required placeholder="NAMA JALAN / GANG / NOMOR RUMAH"
                      class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm" />
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. HP / WA *</label>
-              <input type="text" id="no_hp" required placeholder="08XXXXXXXXXX"
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
+            <!-- STATUS KELUARGA (DITAMBAHKAN SEBELUM JUMLAH ANGGOTA KELUARGA) -->
+            <div class="sm:col-span-2 lg:col-span-2">
+              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">STATUS KELUARGA *</label>
+              <select id="status_keluarga" required onchange="evaluasiStatusKeluarga()" class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-bold text-sm bg-white outline-none uppercase">
+                <option value="1" selected>1. ADA</option>
+                <option value="2">2. PINDAH</option>
+                <option value="3">3. SELURUH ANGGOTA MENINGGAL DUNIA</option>
+                <option value="4">4. TIDAK DITEMUKAN</option>
+                <option value="5">5. KELUARGA BERCERAI</option>
+                <option value="6">6. KELUARGA BARU</option>
+              </select>
             </div>
 
-            <div>
+            <!-- JUMLAH ANGGOTA KELUARGA -->
+            <div id="wrapper_jumlah_anggota">
               <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">JUMLAH ANGGOTA KELUARGA *</label>
               <input type="number" id="jumlah_anggota_input" required min="1" max="25" placeholder="MISAL: 4"
                      class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-black text-slate-800 outline-none uppercase text-sm" />
@@ -493,7 +520,7 @@
           </div>
 
           <div class="flex justify-end pt-4">
-            <button type="button" onclick="prosesLanjutDariWilayah()"
+            <button type="button" id="btnAksiWilayah" onclick="prosesAksiWilayah()"
                     class="w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
               LANJUT KE ANGGOTA KELUARGA &rarr;
             </button>
@@ -684,7 +711,6 @@
       console.warn("Inisialisasi Supabase:", e);
     }
 
-    // Cache Wilayah Mengikuti Arsitektur Komposit index_kab.html
     let dataProvinsi = {};
     let dataKabupaten = {};
     let dataKecamatan = {};
@@ -694,7 +720,6 @@
 
     let totalHalamanAnggota = 0;
 
-    // Sesi aktif pengguna (Prov: 2 digit, Kab: 2 digit, Kec: 2 digit, Desa: 4 digit, Dusun: 4 digit)
     let userAktif = {
       username: '',
       role: 'SUPER_ADMIN',
@@ -708,7 +733,6 @@
       kode_desa: ''
     };
 
-    // --- TOGGLE PASSWORD EYE ---
     function togglePasswordEye() {
       const inputPass = document.getElementById('login_password');
       const eyeIcon = document.getElementById('eyeIcon');
@@ -721,23 +745,17 @@
         : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
     }
 
-    // --- NAVIGASI LAYAR UTAMA ---
     function tampilkanLayar(layarId) {
       const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
-          el.classList.remove('aktif');
-        }
+        if (el) el.classList.remove('aktif');
       });
       const target = document.getElementById(layarId);
-      if (target) {
-        target.classList.add('aktif');
-      }
+      if (target) target.classList.add('aktif');
       window.scrollTo(0, 0);
     }
 
-    // --- FUNGSI LOGIN & SET ROLE PENGGUNA ---
     function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
@@ -757,7 +775,6 @@
 
       const uLow = user.toLowerCase();
 
-      // Penentuan Role & Wilayah Berjenjang
       if (uLow.includes('superadmin')) {
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
@@ -816,7 +833,6 @@
       const roleBadge = document.getElementById('roleBadge');
       roleBadge.innerText = userAktif.role.replace('_', ' ');
 
-      // Sembunyikan Kelola Wilayah untuk User Desa
       const btnPill = document.getElementById('btnPillKelolaWilayah');
       if (userAktif.role === 'USER_DESA') {
         btnPill.style.display = 'none';
@@ -861,7 +877,7 @@
     }
 
     // ========================================================
-    // 6. LOGIKA KELOLA MASTER WILAYAH (FORMAT PENDEK BAKU)
+    // 6. LOGIKA KELOLA MASTER WILAYAH
     // ========================================================
     function bukaKelolaWilayah() {
       if (userAktif.role === 'USER_DESA') {
@@ -1028,7 +1044,6 @@
         return;
       }
 
-      // Payload Baku Sesuai Kolom Supabase
       const payload = {
         provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
         kode_prov: kdProv,
@@ -1112,9 +1127,6 @@
       });
     }
 
-    // ========================================================
-    // DOWNLOAD TEMPLATE FILE EXCEL (.XLSX)
-    // ========================================================
     function unduhTemplateWilayahExcel() {
       try {
         if (typeof XLSX === 'undefined') {
@@ -1193,9 +1205,6 @@
       }
     }
 
-    // ========================================================
-    // UPLOAD & BATCH IMPORT FILE EXCEL (.XLSX / .XLS)
-    // ========================================================
     function unggahFileWilayahExcel(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1254,20 +1263,17 @@
 
               if (!desa || !dusun || !kdDusun) return;
 
-              // Validasi batas kewenangan login
               const check = validateRowScope(kdKab, kdKec, kdDesa);
               if (!check.valid) {
                 unauthorizedRows.push(`Baris ${idx + 2}: Desa ${desa} - Dusun ${dusun} (${check.reason})`);
                 return;
               }
 
-              // Kunci Komposit Bebas Konflik: kdKec + kdDesa + kdDusun
               const uniqueCompositeKey = `${kdKec}_${kdDesa}_${kdDusun}`;
               if (payloadMap.has(uniqueCompositeKey)) {
                 duplicateInFile++;
               }
 
-              // Payload Disesuaikan 100% Menggunakan Kolom Pendek
               payloadMap.set(uniqueCompositeKey, {
                 provinsi: prov || userAktif.provinsi,
                 kode_prov: kdProv,
@@ -1304,7 +1310,6 @@
               return;
             }
 
-            // Eksekusi Upsert ke Supabase dengan target komposit baku
             if (supabaseClient) {
               const { error } = await supabaseClient
                 .from('master_wilayah')
@@ -1339,7 +1344,7 @@
     }
 
     // ========================================================
-    // 7. FORMULIR PENDATAAN HIERARKI KOMPOSIT (SINKRON INDEX_KAB)
+    // 7. FORMULIR PENDATAAN HIERARKI KOMPOSIT
     // ========================================================
     function bukaFormulirPendataan() {
       tampilkanLayar('tampilan_formulir');
@@ -1523,44 +1528,142 @@
       });
     }
 
-    // --- HALAMAN ANGGOTA KELUARGA DINAMIS ---
-    function prosesLanjutDariWilayah() {
+    // ========================================================
+    // 8. LOGIKA STATUS KELUARGA & PERCABANGAN FORMULIR
+    // ========================================================
+    function evaluasiStatusKeluarga() {
+      const status = document.getElementById('status_keluarga').value;
+      const wrapperJml = document.getElementById('wrapper_jumlah_anggota');
+      const inputJml = document.getElementById('jumlah_anggota_input');
+      const btnAksi = document.getElementById('btnAksiWilayah');
+
+      // 1. ADA atau 6. KELUARGA BARU -> LANJUT PENDATAAN LENGKAP
+      if (status === '1' || status === '6') {
+        wrapperJml.style.display = 'block';
+        inputJml.required = true;
+        btnAksi.className = "w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase";
+        btnAksi.innerHTML = "LANJUT KE ANGGOTA KELUARGA &rarr;";
+      } else {
+        // 2, 3, 4, 5 -> SELESAIKAN PENDATAAN DI LEMBAR WILAYAH
+        wrapperJml.style.display = 'none';
+        inputJml.required = false;
+        inputJml.value = '';
+        btnAksi.className = "w-full sm:w-auto px-7 py-3.5 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase";
+        btnAksi.innerHTML = "💾 SELESAIKAN & SIMPAN PENDATAAN";
+      }
+    }
+
+    async function prosesAksiWilayah() {
+      const status = document.getElementById('status_keluarga').value;
+
+      // Ambil seluruh identitas wilayah
       const noKK = document.getElementById('nomor_kk').value.trim();
+      const kdProv = document.getElementById('kode_prov').value.trim();
+      const kdKab = document.getElementById('kode_kab').value.trim();
+      const kdKec = document.getElementById('kode_kec').value.trim();
+      const kdDesa = document.getElementById('kode_desa').value.trim();
       const kdDusun = document.getElementById('kode_dusun').value.trim();
       const rt = document.getElementById('rt').value.trim();
-      const alamat = document.getElementById('alamat_detail').value.trim();
+      const kodeRumah = document.getElementById('kode_rumah').value.trim().padStart(3, '0');
+      const noUrutKel = document.getElementById('no_urut_keluarga').value.trim().padStart(3, '0');
+      const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
       const noHp = document.getElementById('no_hp').value.trim();
-      const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value, 10) || 0;
 
-      if (!noKK || !kdDusun || !rt || !alamat || !noHp) {
+      if (!noKK || !kdDusun || !rt || !kodeRumah || !noUrutKel || !alamat || !noHp) {
         Swal.fire({
           icon: 'warning',
           title: 'Data Belum Lengkap',
-          text: 'Mohon lengkapi seluruh isian Identitas Wilayah terlebih dahulu!',
+          text: 'Mohon lengkapi seluruh isian Identitas Wilayah, Kode Rumah, dan No. Urut Keluarga terlebih dahulu!',
           confirmButtonColor: '#059669'
         });
         return;
       }
 
-      if (jmlAnggota < 1) {
+      // Format pad 3 digit
+      document.getElementById('kode_rumah').value = kodeRumah;
+      document.getElementById('no_urut_keluarga').value = noUrutKel;
+
+      // Percabangan 1 & 6: Lanjut ke Anggota Keluarga
+      if (status === '1' || status === '6') {
+        const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value, 10) || 0;
+        if (jmlAnggota < 1) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Jumlah Anggota',
+            text: 'Jumlah anggota keluarga minimal 1 orang!',
+            confirmButtonColor: '#059669'
+          });
+          return;
+        }
+
+        const container = document.getElementById('area_anggota_keluarga');
+        container.innerHTML = '';
+        totalHalamanAnggota = 0;
+
+        for (let i = 1; i <= jmlAnggota; i++) {
+          tambahHalamanAnggotaBaru();
+        }
+
+        bukaHalamanAnggota(1);
+
+      } else {
+        // Percabangan 2, 3, 4, 5: Langsung Simpan Data Kartu Keluarga
+        const textStatus = document.getElementById('status_keluarga').selectedOptions[0].text;
+        
         Swal.fire({
-          icon: 'warning',
-          title: 'Jumlah Anggota',
-          text: 'Jumlah anggota keluarga minimal 1 orang!',
-          confirmButtonColor: '#059669'
+          title: 'Selesaikan Pendataan?',
+          html: `Status keluarga ini adalah: <b>${textStatus}</b>.<br>Pendataan akan langsung disimpan ke sistem tanpa pengisian anggota keluarga.`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#e11d48',
+          cancelButtonColor: '#64748b',
+          confirmButtonText: 'Ya, Simpan & Selesaikan',
+          cancelButtonText: 'Batal'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+              const payloadKKNonAktif = {
+                nomor_kk: noKK,
+                kode_prov: kdProv,
+                kode_kab: kdKab,
+                kode_kec: kdKec,
+                kode_desa: kdDesa,
+                kode_dusun: kdDusun,
+                rt: rt,
+                kode_rumah: kodeRumah,
+                no_urut_keluarga: noUrutKel,
+                alamat_detail: alamat,
+                no_hp: noHp,
+                status_keluarga: status,
+                diperbarui_pada: new Date()
+              };
+
+              const { error: errUpsertKK } = await supabaseClient
+                .from('kartu_keluarga')
+                .upsert([payloadKKNonAktif], { onConflict: 'nomor_kk' });
+
+              if (errUpsertKK) throw errUpsertKK;
+
+              Swal.fire({
+                icon: 'success',
+                title: 'PENDATAAN SELESAI',
+                text: `Data KK dengan status "${textStatus}" berhasil disimpan ke sistem!`,
+                confirmButtonColor: '#059669'
+              }).then(() => {
+                document.getElementById('pendataanForm').reset();
+                evaluasiStatusKeluarga();
+                kembaliKeDashboard();
+              });
+
+            } catch (err) {
+              console.error(err);
+              Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.', 'error');
+            }
+          }
         });
-        return;
       }
-
-      const container = document.getElementById('area_anggota_keluarga');
-      container.innerHTML = '';
-      totalHalamanAnggota = 0;
-
-      for (let i = 1; i <= jmlAnggota; i++) {
-        tambahHalamanAnggotaBaru();
-      }
-
-      bukaHalamanAnggota(1);
     }
 
     function tambahHalamanAnggotaBaru() {
@@ -1765,7 +1868,7 @@
       });
     }
 
-    // --- SUBMIT FORMULIR PENDATAAN KE SUPABASE ---
+    // --- SUBMIT FORMULIR PENDATAAN LENGKAP (STATUS 1 & 6) ---
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
@@ -1780,6 +1883,9 @@
         const kdDesa = document.getElementById('kode_desa').value.trim();
         const kdDusun = document.getElementById('kode_dusun').value.trim();
         const rt = document.getElementById('rt').value.trim();
+        const kodeRumah = document.getElementById('kode_rumah').value.trim().padStart(3, '0');
+        const noUrutKel = document.getElementById('no_urut_keluarga').value.trim().padStart(3, '0');
+        const statusKeluarga = document.getElementById('status_keluarga').value;
         const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
         const noHp = document.getElementById('no_hp').value.trim();
 
@@ -1795,6 +1901,8 @@
             kode_desa: kdDesa,
             kode_dusun: kdDusun,
             rt: rt,
+            kode_rumah: kodeRumah,
+            no_urut_keluarga: noUrutKel,
             alamat_detail: alamat,
             nomor_urut_anggota: idx + 1,
             nama_lengkap: hal.querySelector('[name="nama_lengkap"]').value.trim().toUpperCase(),
@@ -1812,13 +1920,18 @@
           });
         });
 
+        // 1. Simpan Anggota Keluarga (Trigger membuat baris di kartu_keluarga secara otomatis)
         const { error: errAnggota } = await supabaseClient
           .from('anggota_keluarga')
           .insert(payloadAnggota);
 
         if (errAnggota) throw errAnggota;
 
+        // 2. Update Detail Kondisi Rumah, Kode Rumah, No Urut Keluarga & Status Keluarga di kartu_keluarga
         const payloadKondisiRumah = {
+          kode_rumah: kodeRumah,
+          no_urut_keluarga: noUrutKel,
+          status_keluarga: statusKeluarga,
           kode_atap: document.getElementById('kode_atap').value,
           kode_dinding: document.getElementById('kode_dinding').value,
           kode_lantai: document.getElementById('kode_lantai').value,
@@ -1837,6 +1950,7 @@
 
         if (errKkUpdate) throw errKkUpdate;
 
+        // 3. Simpan Blok KB
         const payloadKB = {
           kartu_keluarga_id: kkData.id,
           sedang_hamil: document.getElementById('sedang_hamil').value === 'true',
@@ -1861,6 +1975,7 @@
           confirmButtonColor: '#059669'
         }).then(() => {
           document.getElementById('pendataanForm').reset();
+          evaluasiStatusKeluarga();
           kembaliKeDashboard();
         });
 
@@ -1878,7 +1993,10 @@
       }
     });
 
-    window.addEventListener('DOMContentLoaded', loadMasterWilayahFromDB);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadMasterWilayahFromDB();
+      evaluasiStatusKeluarga();
+    });
   </script>
 </body>
 </html>
