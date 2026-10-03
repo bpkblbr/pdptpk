@@ -1173,6 +1173,7 @@
 
       const uLow = user.toLowerCase();
 
+      // Penentuan Role & Wilayah Berjenjang
       if (uLow.includes('superadmin')) {
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
@@ -1227,6 +1228,17 @@
         };
       }
 
+      // SIMPAN SESI KE LOCALSTORAGE
+      localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
+
+      // Terapkan UI Akun
+      terapkanDataSesiUser();
+
+      tampilkanLayar('tampilan_dashboard');
+      loadMasterWilayahFromDB();
+    }
+
+    function terapkanDataSesiUser() {
       const userDisplay = document.getElementById('userNameDisplay');
       if (userDisplay) userDisplay.innerText = userAktif.username;
 
@@ -1237,9 +1249,6 @@
       if (btnPill) {
         btnPill.style.display = (userAktif.role === 'USER_DESA') ? 'none' : 'flex';
       }
-
-      tampilkanLayar('tampilan_dashboard');
-      loadMasterWilayahFromDB();
     }
 
     function prosesLogout() {
@@ -1254,8 +1263,13 @@
         cancelButtonText: 'Batal'
       }).then((result) => {
         if (result.isConfirmed) {
+          // HAPUS SESI DARI LOCALSTORAGE
+          localStorage.removeItem('pus_app_session');
+
+          // Reset formulir login
           const form = document.getElementById('formLogin');
           if (form) form.reset();
+
           tampilkanLayar('tampilan_login');
         }
       });
@@ -2238,7 +2252,22 @@
       }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', () => {      
+      const sesiTersimpan = localStorage.getItem('pus_app_session');
+      if (sesiTersimpan) {
+        try {
+          userAktif = JSON.parse(sesiTersimpan);
+          terapkanDataSesiUser();
+          tampilkanLayar('tampilan_dashboard');
+        } catch (e) {
+          console.error("Gagal membaca sesi tersimpan:", e);
+          localStorage.removeItem('pus_app_session');
+          tampilkanLayar('tampilan_login');
+        }
+      } else {
+        tampilkanLayar('tampilan_login');
+      }
+
       loadMasterWilayahFromDB();
       evaluasiStatusKeluarga();
       evaluasiAlurKB();
