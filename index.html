@@ -2313,10 +2313,7 @@
               Edit Data &rarr;
             </button>
           </div>
-        `;
-
-        hubungan_dengan_kk: (idx === 0) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3'),
-        kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
+        `;        
       });
       document.getElementById('review_konten_anggota').innerHTML = htmlAnggota || '<p class="text-slate-400 italic">Tidak ada anggota keluarga terisi.</p>';
 
@@ -2397,8 +2394,8 @@
             status_perkawinan: hal.querySelector('[name="status_perkawinan"]').value,
             usia_kawin_pertama: parseInt(hal.querySelector('[name="usia_kawin_pertama"]').value, 10) || null,
             memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]').value,
-            hubungan_dengan_kk: hal.querySelector('[name="hubungan_dengan_kk"]').value,
-            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]').value.trim(),
+            hubungan_dengan_kk: (idx === 0) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3'),
+            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',            
             agama: hal.querySelector('[name="agama"]').value,
             jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]').value,
             status_pekerjaan: hal.querySelector('[name="status_pekerjaan"]').value,
