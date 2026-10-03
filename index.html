@@ -17,6 +17,7 @@
     .form-uppercase textarea, 
     .form-uppercase select {
       text-transform: uppercase;
+    }
     .halaman-tampilan {
       display: none !important;
     }
@@ -662,6 +663,170 @@
        5. LOGIKA FORMULIR ANGGOTA KELUARGA (17 KOLOM)
        ======================================================== -->
   <script>
+    async function loadMasterWilayahFromDB() {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('master_wilayah')
+          .select('*')
+          .order('desa', { ascending: true });
+
+        if (error) throw error;
+        rawWilayahList = data || [];
+
+        dataProvinsi = {}; 
+        dataKabupaten = {}; 
+        dataKecamatan = {}; 
+        dataDesa = {}; 
+        dataDusun = {};
+
+        rawWilayahList.forEach(r => {
+          let kdProv = String(r.kode_prov || r.kode_provinsi || '').padStart(2, '0');
+          let kdKab  = String(r.kode_kab || r.kode_kabupaten || '').padStart(2, '0');
+          let kdKec  = String(r.kode_kec || r.kode_kecamatan || '').padStart(2, '0');
+          let kdDesa = String(r.kode_desa || '').padStart(4, '0');
+          let kdDsn  = String(r.kode_dusun || '').padStart(4, '0');
+
+          dataProvinsi[kdProv] = r.provinsi;
+          
+          if (!dataKabupaten[kdProv]) dataKabupaten[kdProv] = {};
+          dataKabupaten[kdProv][kdKab] = r.kabupaten;
+
+          if (!dataKecamatan[kdKab]) dataKecamatan[kdKab] = {};
+          dataKecamatan[kdKab][kdKec] = r.kecamatan;
+          
+          let desaKey = kdKab + "_" + kdKec;
+          if (!dataDesa[desaKey]) dataDesa[desaKey] = {};
+          dataDesa[desaKey][kdDesa] = r.desa;      
+          
+          let dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
+          if (!dataDusun[dsnKey]) dataDusun[dsnKey] = {};
+          dataDusun[dsnKey][kdDsn] = { 
+            nama: r.dusun, 
+            jumlah_rt: parseInt(r.jumlah_rt, 10) || 1 
+          };
+        });
+
+        populateFormProvinsi();
+      } catch (err) {
+        console.warn("Gagal mengambil master wilayah:", err);
+      }
+    }
+
+    function populateFormProvinsi() {
+      const elProv = document.getElementById('provinsi');
+      if (!elProv) return;
+      elProv.innerHTML = '<option value="">-- PILIH PROVINSI --</option>';
+      for (let kd in dataProvinsi) {
+        elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
+      }
+    }
+
+    function updateFormKabupaten() {
+      const kdProv = document.getElementById('provinsi').value;
+      document.getElementById('kode_prov').value = kdProv;
+
+      const elKab = document.getElementById('kabupaten');
+      elKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
+      document.getElementById('kode_kab').value = '';
+      resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
+
+      if (!kdProv || !dataKabupaten[kdProv]) { elKab.disabled = true; return; }
+
+      for (let kd in dataKabupaten[kdProv]) {
+        elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
+      }
+      elKab.disabled = false;
+    }
+
+    function updateFormKecamatan() {
+      const kdKab = document.getElementById('kabupaten').value;
+      document.getElementById('kode_kab').value = kdKab;
+
+      const elKec = document.getElementById('kecamatan');
+      elKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
+      document.getElementById('kode_kec').value = '';
+      resetFormDropdowns(['desa', 'dusun', 'rt']);
+
+      if (!kdKab || !dataKecamatan[kdKab]) { elKec.disabled = true; return; }
+
+      for (let kd in dataKecamatan[kdKab]) {
+        elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
+      }
+      elKec.disabled = false;
+    }
+
+    function updateFormDesa() {
+      const kdKab = document.getElementById('kode_kab').value;
+      const kdKec = document.getElementById('kecamatan').value;
+      document.getElementById('kode_kec').value = kdKec;
+
+      const elDesa = document.getElementById('desa');
+      elDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
+      document.getElementById('kode_desa').value = '';
+      resetFormDropdowns(['dusun', 'rt']);
+
+      const desaKey = kdKab + "_" + kdKec;
+      if (!kdKec || !dataDesa[desaKey]) { elDesa.disabled = true; return; }
+
+      for (let kd in dataDesa[desaKey]) {
+        elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
+      }
+      elDesa.disabled = false;
+    }
+
+    function updateFormDusun() {
+      const kdKab = document.getElementById('kode_kab').value;
+      const kdKec = document.getElementById('kode_kec').value;
+      const kdDesa = document.getElementById('desa').value;
+      document.getElementById('kode_desa').value = kdDesa;
+
+      const elDusun = document.getElementById('dusun');
+      elDusun.innerHTML = '<option value="">-- PILIH DUSUN --</option>';
+      document.getElementById('kode_dusun').value = '';
+      resetFormDropdowns(['rt']);
+
+      const dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
+      if (!kdDesa || !dataDusun[dsnKey]) { elDusun.disabled = true; return; }
+
+      for (let kd in dataDusun[dsnKey]) {
+        const item = dataDusun[dsnKey][kd];
+        const opt = new Option(`${item.nama.toUpperCase()} (${kd})`, kd);
+        opt.setAttribute('data-rt', item.jumlah_rt || 1);
+        elDusun.add(opt);
+      }
+      elDusun.disabled = false;
+    }
+
+    function updateFormRT() {
+      const kdDusun = document.getElementById('dusun').value;
+      document.getElementById('kode_dusun').value = kdDusun;
+
+      const elRt = document.getElementById('rt');
+      elRt.innerHTML = '<option value="">-- PILIH RT --</option>';
+
+      if (!kdDusun) { elRt.disabled = true; return; }
+
+      const selectedOpt = document.getElementById('dusun').selectedOptions[0];
+      const jumlahRt = parseInt(selectedOpt?.getAttribute('data-rt'), 10) || 1;
+
+      for (let i = 1; i <= jumlahRt; i++) {
+        const strRt = String(i).padStart(3, '0');
+        elRt.add(new Option("RT " + strRt, strRt));
+      }
+      elRt.disabled = false;
+    }
+
+    function resetFormDropdowns(ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = `<option value="">-- PILIH ${id.toUpperCase()} --</option>`;
+          el.disabled = true;
+        }
+      });
+    }
+    
     function evaluasiStatusKeluarga() {
       const status = document.getElementById('status_keluarga').value;
       const wrapperJml = document.getElementById('wrapper_jumlah_anggota');
