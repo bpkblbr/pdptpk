@@ -1665,6 +1665,38 @@
       const no = totalHalamanAnggota;
       const container = document.getElementById('area_anggota_keluarga');
 
+      // Deteksi kondisi Kepala Keluarga (Anggota ke-1)
+      let defaultJk = "1";
+      let defaultKawin = "1";
+      let defaultHubungan = "3"; // default anak jika urutan > 2
+
+      if (no === 1) {
+        defaultJk = "1";        // Laki-laki
+        defaultKawin = "2";     // Kawin
+        defaultHubungan = "1";  // Kepala Keluarga
+      } else if (no === 2) {
+        // Ambil data anggota ke-1 (Kepala Keluarga)
+        const hal1 = document.getElementById('hal_anggota_1');
+        const jkKK = hal1 ? hal1.querySelector('[name="jenis_kelamin"]')?.value : "1";
+        const kawinKK = hal1 ? hal1.querySelector('[name="status_perkawinan"]')?.value : "2";
+
+        // Jika KK adalah LAKI-LAKI (1) dan KAWIN (2), maka anggota ke-2 otomatis PEREMPUAN (2), KAWIN (2), ISTRI (2)
+        if (jkKK === "1" && kawinKK === "2") {
+          defaultJk = "2";        // Perempuan
+          defaultKawin = "2";     // Kawin
+          defaultHubungan = "2";  // Istri
+        } else if (jkKK === "2" && kawinKK === "2") {
+          // Jika KK adalah Perempuan dan Kawin, pasangannya otomatis Laki-laki (Suami)
+          defaultJk = "1";
+          defaultKawin = "2";
+          defaultHubungan = "4"; // Lainnya / Suami
+        } else {
+          defaultJk = "2";
+          defaultKawin = "1";
+          defaultHubungan = "3"; // Anak / Lainnya
+        }
+      }
+
       const hal = document.createElement('div');
       hal.id = `hal_anggota_${no}`;
       hal.className = "halaman-form space-y-5 item-anggota-page";
@@ -1678,10 +1710,14 @@
             </h2>
             <p class="text-xs text-slate-500 uppercase font-semibold">LEMBAR ISIAN ANGGOTA KE-${no}</p>
           </div>
+          ${no > 1 ? `
           <button type="button" onclick="hapusHalamanAnggota(${no})"
                   class="px-3.5 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-xl text-xs font-bold uppercase transition">
             HAPUS ANGGOTA INI
-          </button>
+          </button>` : `
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-bold uppercase">
+            KEPALA KELUARGA
+          </span>`}
         </div>
 
         <input type="hidden" name="nomor_anggota_keluarga" value="${no}" />
@@ -1692,7 +1728,7 @@
           <!-- 2. NAMA ANGGOTA KELUARGA & NIK -->
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">2. NAMA LENGKAP *</label>
-            <input type="text" name="nama_lengkap" required placeholder="NAMA LENGKAP" class="w-full p-2.5 border rounded-xl uppercase text-sm" />
+            <input type="text" name="nama_lengkap" required oninput="perbaruiSemuaOpsiIbuKandung()" placeholder="NAMA LENGKAP" class="w-full p-2.5 border rounded-xl uppercase text-sm" />
           </div>
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">2. NIK (16 DIGIT) *</label>
@@ -1702,9 +1738,9 @@
           <!-- 3. JENIS KELAMIN -->
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">3. JENIS KELAMIN *</label>
-            <select name="jenis_kelamin" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. LAKI-LAKI</option>
-              <option value="2">2. PEREMPUAN</option>
+            <select name="jenis_kelamin" onchange="sinkronisasiPasanganKK(${no})" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1" ${defaultJk === "1" ? 'selected' : ''}>1. LAKI-LAKI</option>
+              <option value="2" ${defaultJk === "2" ? 'selected' : ''}>2. PEREMPUAN</option>
             </select>
           </div>
 
@@ -1717,11 +1753,11 @@
           <!-- 5. STATUS PERKAWINAN -->
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">5. STATUS PERKAWINAN *</label>
-            <select name="status_perkawinan" onchange="evaluasiUsiaKawin(this, ${no})" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1">1. BELUM KAWIN</option>
-              <option value="2" ${no <= 2 ? 'selected' : ''}>2. KAWIN</option>
-              <option value="3">3. CERAI HIDUP</option>
-              <option value="4">4. CERAI MATI</option>
+            <select name="status_perkawinan" onchange="evaluasiUsiaKawin(this, ${no}); sinkronisasiPasanganKK(${no});" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
+              <option value="1" ${defaultKawin === "1" ? 'selected' : ''}>1. BELUM KAWIN</option>
+              <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. KAWIN</option>
+              <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. CERAI HIDUP</option>
+              <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. CERAI MATI</option>
             </select>
           </div>
 
@@ -1743,18 +1779,20 @@
           <!-- 8. HUBUNGAN DENGAN KEPALA KELUARGA -->
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">8. HUBUNGAN DENGAN KK *</label>
-            <select name="hubungan_dengan_kk" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1" ${no === 1 ? 'selected' : ''}>1. KEPALA KELUARGA</option>
-              <option value="2" ${no === 2 ? 'selected' : ''}>2. ISTRI</option>
-              <option value="3" ${no > 2 ? 'selected' : ''}>3. ANAK</option>
-              <option value="4">4. LAINNYA</option>
+            <select name="hubungan_dengan_kk" onchange="sinkronisasiPasanganKK(${no}); perbaruiSemuaOpsiIbuKandung();" ${no === 1 ? 'disabled' : ''} class="w-full p-2.5 border rounded-xl uppercase text-sm ${no === 1 ? 'bg-slate-100 font-bold' : 'bg-white'}">
+              <option value="1" ${defaultHubungan === "1" ? 'selected' : ''}>1. KEPALA KELUARGA</option>
+              <option value="2" ${defaultHubungan === "2" ? 'selected' : ''}>2. ISTRI</option>
+              <option value="3" ${defaultHubungan === "3" ? 'selected' : ''}>3. ANAK</option>
+              <option value="4" ${defaultHubungan === "4" ? 'selected' : ''}>4. LAINNYA</option>
             </select>
           </div>
 
           <!-- 9. KODE IBU KANDUNG -->
           <div>
-            <label class="block text-slate-700 mb-1 font-bold uppercase">9. KODE IBU KANDUNG (NO URUT)</label>
-            <input type="text" name="kode_ibu_kandung" maxlength="2" placeholder="CONTOH: 02 (ATAU 00)" class="w-full p-2.5 border rounded-xl uppercase font-mono text-sm" value="${no > 2 ? '02' : '00'}" />
+            <label class="block text-slate-700 mb-1 font-bold uppercase">9. KODE IBU KANDUNG *</label>
+            <select name="kode_ibu_kandung" class="w-full p-2.5 border rounded-xl font-bold uppercase text-sm bg-white">
+              <option value="00">00. LAINNYA</option>
+            </select>
           </div>
 
           <!-- 10. AGAMA -->
@@ -1823,8 +1861,8 @@
           <div>
             <label class="block text-slate-700 mb-1 font-bold uppercase">14. KEPESERTAAN JKN</label>
             <select name="kepesertaan_jkn" class="w-full p-2.5 border rounded-xl uppercase text-sm bg-white">
-              <option value="1" selected>1. PBI</option>
-              <option value="2">2. BUKAN PBI</option>
+              <option value="1" selected>1. BPJS-PBI / JAMKESMAS</option>
+              <option value="2">2. BPJS-NON PBI</option>
               <option value="3">3. SWASTA</option>
               <option value="4">4. TIDAK MEMILIKI</option>
             </select>
@@ -1883,6 +1921,8 @@
 
       const selectPerkawinan = hal.querySelector('[name="status_perkawinan"]');
       evaluasiUsiaKawin(selectPerkawinan, no);
+
+      perbaruiSemuaOpsiIbuKandung();
     }
 
     function evaluasiUsiaKawin(elSelect, noUrut) {
@@ -1898,6 +1938,91 @@
         inputUsiaKawin.classList.remove('bg-slate-100');
         inputUsiaKawin.required = true;
       }
+    }
+
+    function sinkronisasiPasanganKK(noUrut) {
+      if (noUrut !== 1) return; // Hanya merespons perubahan di lembar Kepala Keluarga
+
+      const hal1 = document.getElementById('hal_anggota_1');
+      const hal2 = document.getElementById('hal_anggota_2');
+      if (!hal1 || !hal2) return;
+
+      const jkKK = hal1.querySelector('[name="jenis_kelamin"]')?.value;
+      const kawinKK = hal1.querySelector('[name="status_perkawinan"]')?.value;
+
+      const selectJk2 = hal2.querySelector('[name="jenis_kelamin"]');
+      const selectKawin2 = hal2.querySelector('[name="status_perkawinan"]');
+      const selectHub2 = hal2.querySelector('[name="hubungan_dengan_kk"]');
+
+      // Jika KK Laki-laki & Kawin -> Anggota ke-2 dipastikan Perempuan, Kawin, Istri
+      if (jkKK === "1" && kawinKK === "2") {
+        if (selectJk2) selectJk2.value = "2";
+        if (selectKawin2) {
+          selectKawin2.value = "2";
+          evaluasiUsiaKawin(selectKawin2, 2);
+        }
+        if (selectHub2) selectHub2.value = "2";
+      }
+    }
+
+    function perbaruiSemuaOpsiIbuKandung() {
+      const listHal = document.querySelectorAll('.item-anggota-page');
+      
+      // 1. Cari apakah ada anggota yang berperan sebagai ISTRI (Kode Hubungan = '2')
+      let nomorIstri = null;
+      let namaIstri = '';
+
+      listHal.forEach((hal, idx) => {
+        const noUrut = idx + 1;
+        // Lembar ke-1 adalah Kepala Keluarga ('1'), lembar lainnya dibaca dari dropdown
+        const hubungan = (noUrut === 1) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '');
+        if (hubungan === '2') {
+          nomorIstri = String(noUrut).padStart(2, '0');
+          namaIstri = hal.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() || 'ISTRI';
+        }
+      });
+
+      // 2. Terapkan aturan lock dan dropdown pada seluruh lembar anggota
+      listHal.forEach((hal, idx) => {
+        const noUrut = idx + 1;
+        const hubungan = (noUrut === 1) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '');
+        const selectIbu = hal.querySelector('[name="kode_ibu_kandung"]');
+        if (!selectIbu) return;
+
+        // JIKA KEPALA KELUARGA (1) ATAU ISTRI (2): KUNCI (LOCK) & SET KE '00'
+        if (hubungan === '1' || hubungan === '2') {
+          selectIbu.innerHTML = `<option value="00" selected>00. LAINNYA</option>`;
+          selectIbu.disabled = true;
+          selectIbu.classList.add('bg-slate-100', 'text-slate-500');
+          selectIbu.classList.remove('bg-white');
+        } else {
+          // UNTUK ANAK ATAU ANGGOTA LAINNYA: BUKA LOCK
+          selectIbu.disabled = false;
+          selectIbu.classList.remove('bg-slate-100', 'text-slate-500');
+          selectIbu.classList.add('bg-white');
+
+          const nilaiSebelumnya = selectIbu.value;
+          selectIbu.innerHTML = '';
+
+          // Opsi 1: 00 LAINNYA
+          selectIbu.add(new Option("00. LAINNYA", "00"));
+
+          // Opsi 2: Kode nomor urut disambung Nama Istri (jika ada Istri)
+          if (nomorIstri) {
+            const labelIstri = `${nomorIstri}. ${namaIstri} (ISTRI)`;
+            selectIbu.add(new Option(labelIstri, nomorIstri));
+          }
+
+          // Pertahankan pilihan sebelumnya jika masih valid, atau default ke istri jika baru
+          if (nilaiSebelumnya && (nilaiSebelumnya === "00" || nilaiSebelumnya === nomorIstri)) {
+            selectIbu.value = nilaiSebelumnya;
+          } else if (nomorIstri) {
+            selectIbu.value = nomorIstri;
+          } else {
+            selectIbu.value = "00";
+          }
+        }
+      });
     }
 
     function perbaruiLabelTotalAnggota() {
@@ -2013,6 +2138,7 @@
           });
 
           perbaruiLabelTotalAnggota();
+          perbaruiSemuaOpsiIbuKandung();
           const targetBuka = noUrut > totalHalamanAnggota ? totalHalamanAnggota : noUrut;
           bukaHalamanAnggota(targetBuka);
         }
@@ -2188,6 +2314,9 @@
             </button>
           </div>
         `;
+
+        hubungan_dengan_kk: (idx === 0) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3'),
+        kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
       });
       document.getElementById('review_konten_anggota').innerHTML = htmlAnggota || '<p class="text-slate-400 italic">Tidak ada anggota keluarga terisi.</p>';
 
