@@ -658,11 +658,139 @@
       </form>
     </div>
   </div>
-
-  <!-- ========================================================
-       5. LOGIKA FORMULIR ANGGOTA KELUARGA (17 KOLOM)
-       ======================================================== -->
+  
   <script>
+    function tampilkanLayar(layarId) {
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
+      layarList.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('aktif');
+      });
+      const target = document.getElementById(layarId);
+      if (target) target.classList.add('aktif');
+      window.scrollTo(0, 0);
+    }
+
+    function eksekusiLogin() {
+      const userEl = document.getElementById('login_username');
+      const passEl = document.getElementById('login_password');
+
+      const user = userEl ? userEl.value.trim() : '';
+      const pass = passEl ? passEl.value.trim() : '';
+
+      if (!user || !pass) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Silakan masukkan username dan password terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
+        return;
+      }
+
+      const uLow = user.toLowerCase();
+
+      if (uLow.includes('superadmin')) {
+        userAktif = {
+          username: 'SUPER ADMINISTRATOR',
+          role: 'SUPER_ADMIN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_prov: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kab: '01',
+          kecamatan: '',
+          kode_kec: '',
+          desa: '',
+          kode_desa: ''
+        };
+      } else if (uLow.includes('kab')) {
+        userAktif = {
+          username: 'ADMIN KABUPATEN LOMBOK BARAT',
+          role: 'ADMIN_KABUPATEN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_prov: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kab: '01',
+          kecamatan: '',
+          kode_kec: '',
+          desa: '',
+          kode_desa: ''
+        };
+      } else if (uLow.includes('kec')) {
+        userAktif = {
+          username: 'ADMIN KECAMATAN LEMBAR',
+          role: 'ADMIN_KECAMATAN',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_prov: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kab: '01',
+          kecamatan: 'LEMBAR',
+          kode_kec: '08',
+          desa: '',
+          kode_desa: ''
+        };
+      } else {
+        userAktif = {
+          username: user.toUpperCase(),
+          role: 'USER_DESA',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_prov: '52',
+          kabupaten: 'LOMBOK BARAT',
+          kode_kab: '01',
+          kecamatan: 'LEMBAR',
+          kode_kec: '08',
+          desa: 'LEMBAR',
+          kode_desa: '2001'
+        };
+      }
+
+      const userDisplay = document.getElementById('userNameDisplay');
+      if (userDisplay) userDisplay.innerText = userAktif.username;
+
+      const roleBadge = document.getElementById('roleBadge');
+      if (roleBadge) roleBadge.innerText = userAktif.role.replace('_', ' ');
+
+      const btnPill = document.getElementById('btnPillKelolaWilayah');
+      if (btnPill) {
+        btnPill.style.display = (userAktif.role === 'USER_DESA') ? 'none' : 'flex';
+      }
+
+      tampilkanLayar('tampilan_dashboard');
+      loadMasterWilayahFromDB();
+    }
+
+    function prosesLogout() {
+      Swal.fire({
+        title: 'Konfirmasi Keluar',
+        text: 'Apakah Anda yakin ingin keluar dari sistem?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const form = document.getElementById('formLogin');
+          if (form) form.reset();
+          tampilkanLayar('tampilan_login');
+        }
+      });
+    }
+
+    function kembaliKeDashboard() {
+      tampilkanLayar('tampilan_dashboard');
+    }
+
+    function navigasiKe(menu) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Menu Terpilih',
+        text: `Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`,
+        confirmButtonColor: '#059669'
+      });
+    }
+    
     async function loadMasterWilayahFromDB() {
       if (!supabaseClient) return;
       try {
@@ -826,7 +954,7 @@
         }
       });
     }
-    
+
     function evaluasiStatusKeluarga() {
       const status = document.getElementById('status_keluarga').value;
       const wrapperJml = document.getElementById('wrapper_jumlah_anggota');
