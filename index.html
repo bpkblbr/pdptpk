@@ -599,79 +599,103 @@
         </div>
 
         <!-- STEP 5: V. REVIEW RINGKASAN DATA KELUARGA -->
-        <div id="hal_review" class="halaman-form space-y-6">
-          <div class="border-l-4 border-emerald-600 pl-3">
-            <h2 class="text-base sm:text-lg font-black text-emerald-800 uppercase">
-              V. REVIEW & KONFIRMASI DATA KELUARGA
-            </h2>
-            <p class="text-xs text-slate-500 font-semibold uppercase">Periksa kembali kebenaran data dari Blok I sampai Blok IV sebelum disimpan</p>
+        <div id="hal_review" class="halaman-form space-y-4 text-xs sm:text-sm">
+          
+          <div class="border-b pb-2">
+            <h2 class="text-base font-bold text-slate-800">Form Pratinjau</h2>
           </div>
 
-          <!-- KARTU 1: IDENTITAS WILAYAH -->
-          <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-            <div class="flex justify-between items-center border-b pb-2">
-              <h3 class="text-xs font-black text-emerald-800 uppercase flex items-center gap-1.5">
-                <span>📍 I. IDENTITAS WILAYAH & STATUS KELUARGA</span>
-              </h3>
-              <button type="button" onclick="pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH')"
-                      class="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 rounded-lg text-[11px] font-bold uppercase transition">
-                ✏️ Edit Wilayah
+          <!-- KARTU LOKASI PENDATAAN (GPS) -->
+          <div class="space-y-1 pt-1">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5 font-bold text-slate-800 text-sm">
+                <span>📍</span>
+                <span>Lokasi Pendataan</span>
+              </div>
+              <button type="button" onclick="ambilGeolokasiOtomatis()" title="Perbarui Lokasi"
+                      class="w-8 h-8 flex items-center justify-center border border-slate-300 rounded-lg bg-white hover:bg-slate-50 active:scale-95 text-slate-600 transition shadow-sm">
+                🔄
               </button>
             </div>
-            <div id="review_konten_wilayah" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs text-slate-700"></div>
+            <p class="text-slate-800 font-semibold text-xs sm:text-sm">
+              Latitude: <span id="review_lat" class="font-bold">-8.7034414</span>
+            </p>
+            <p class="text-slate-800 font-semibold text-xs sm:text-sm">
+              Longitude: <span id="review_lng" class="font-bold">116.0927055</span>
+            </p>
           </div>
 
-          <!-- KARTU 2: ANGGOTA KELUARGA -->
-          <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-            <div class="flex justify-between items-center border-b pb-2">
-              <h3 class="text-xs font-black text-emerald-800 uppercase flex items-center gap-1.5">
-                <span>👨‍👩‍👧‍👦 II. DATA ANGGOTA KELUARGA (<span id="review_total_anggota_label">0</span> ORANG)</span>
-              </h3>
-              <button type="button" onclick="bukaHalamanAnggota(1)"
-                      class="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 rounded-lg text-[11px] font-bold uppercase transition">
-                ✏️ Edit Anggota
-              </button>
+          <!-- ACCORDION 1: KARTU WILAYAH -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            <button type="button" onclick="toggleAccordion('konten_preview_wilayah', 'icon_acc_wilayah')"
+                    class="w-full px-4 py-3 bg-white hover:bg-slate-50 flex justify-between items-center text-left font-bold text-slate-800 text-sm transition">
+              <span>Wilayah</span>
+              <span id="icon_acc_wilayah" class="text-xs text-slate-400">▲</span>
+            </button>
+            <div id="konten_preview_wilayah" class="p-4 bg-slate-50/50 border-t border-slate-100 space-y-3.5">
+              <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Provinsi</p>
+                  <p id="prev_wil_prov" class="font-bold text-slate-900 leading-snug">NUSA TENGGARA BARAT</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Kabupaten</p>
+                  <p id="prev_wil_kab" class="font-bold text-slate-900 leading-snug">LOMBOK BARAT</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Kecamatan</p>
+                  <p id="prev_wil_kec" class="font-bold text-slate-900 leading-snug">LEMBAR</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Kelurahan</p>
+                  <p id="prev_wil_desa" class="font-bold text-slate-900 leading-snug">EYAT MAYANG</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">RW</p>
+                  <p id="prev_wil_rw" class="font-bold text-slate-900 leading-snug">HUBBAL KHAIR</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">RT</p>
+                  <p id="prev_wil_rt" class="font-bold text-slate-900 leading-snug">001</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Nomor KK</p>
+                  <p id="prev_wil_kk" class="font-bold font-mono text-slate-900 leading-snug">5201132408200007</p>
+                </div>
+                <div>
+                  <p class="text-slate-500 font-medium mb-0.5 text-xs">Jumlah Keluarga</p>
+                  <p id="prev_wil_jml" class="font-bold text-slate-900 leading-snug">4</p>
+                </div>
+              </div>
+              <div class="border-t border-slate-200 pt-2">
+                <p class="text-slate-500 font-medium mb-0.5 text-xs">Status Keluarga</p>
+                <p id="prev_wil_status" class="font-bold text-slate-900 leading-snug">1. Ada</p>
+              </div>
             </div>
-            <div id="review_konten_anggota" class="space-y-2 text-xs"></div>
           </div>
 
-          <!-- KARTU 3: KELUARGA BERENCANA -->
-          <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-            <div class="flex justify-between items-center border-b pb-2">
-              <h3 class="text-xs font-black text-emerald-800 uppercase flex items-center gap-1.5">
-                <span>💉 III. BLOK KELUARGA BERENCANA</span>
-              </h3>
-              <button type="button" onclick="pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA')"
-                      class="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 rounded-lg text-[11px] font-bold uppercase transition">
-                ✏️ Edit Blok KB
-              </button>
+          <!-- ACCORDION 2: KARTU ANGGOTA KELUARGA -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            <button type="button" onclick="toggleAccordion('konten_preview_keluarga', 'icon_acc_keluarga')"
+                    class="w-full px-4 py-3 bg-white hover:bg-slate-50 flex justify-between items-center text-left font-bold text-slate-800 text-sm transition">
+              <span>Keluarga</span>
+              <span id="icon_acc_keluarga" class="text-xs text-slate-400">▲</span>
+            </button>
+            <div id="konten_preview_keluarga" class="divide-y divide-slate-200 border-t border-slate-100 bg-white">
+              <!-- Item anggota keluarga dirender dinamis di sini -->
             </div>
-            <div id="review_konten_kb" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs text-slate-700"></div>
           </div>
 
-          <!-- KARTU 4: PEMBANGUNAN KELUARGA -->
-          <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-            <div class="flex justify-between items-center border-b pb-2">
-              <h3 class="text-xs font-black text-emerald-800 uppercase flex items-center gap-1.5">
-                <span>🏠 IV. BLOK PEMBANGUNAN KELUARGA</span>
-              </h3>
-              <button type="button" onclick="pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA')"
-                      class="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 rounded-lg text-[11px] font-bold uppercase transition">
-                ✏️ Edit Pembangunan
-              </button>
-            </div>
-            <div id="review_konten_pk" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 text-xs text-slate-700"></div>
-          </div>
-
-          <!-- TOMBOL AKSI AKHIR -->
-          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-4 border-t">
-            <button type="button" onclick="pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA')"
-                    class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
-              &larr; KEMBALI KE BLOK PEMBANGUNAN
+          <!-- TOMBOL AKSI BAWAH PERSIS SEPERTI GAMBAR KRS -->
+          <div class="flex justify-between items-center gap-3 pt-6 border-t mt-4">
+            <button type="button" onclick="mundurDariReview()"
+                    class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+              <span>← Sebelumnya</span>
             </button>
             <button type="submit" id="btnSimpan"
-                    class="w-full sm:w-auto px-10 py-4 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-black rounded-xl shadow-xl transition text-sm uppercase flex items-center justify-center gap-2">
-              <span>💾 SIMPAN SELURUH DATA KELUARGA KE DATABASE</span>
+                    class="px-6 py-2.5 bg-[#00897b] hover:bg-[#00796b] active:scale-95 text-white font-bold rounded-lg shadow-md transition text-xs sm:text-sm flex items-center gap-1.5">
+              <span>Simpan</span>
+              <span>💾</span>
             </button>
           </div>
         </div>
@@ -2874,82 +2898,170 @@
       }
     }
 
+    function toggleAccordion(kontenId, iconId) {
+      const el = document.getElementById(kontenId);
+      const icon = document.getElementById(iconId);
+      if (!el) return;
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        if (icon) icon.innerText = '▲';
+      } else {
+        el.classList.add('hidden');
+        if (icon) icon.innerText = '▼';
+      }
+    }
+
+    function ambilGeolokasiOtomatis() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            document.getElementById('review_lat').innerText = pos.coords.latitude.toFixed(7);
+            document.getElementById('review_lng').innerText = pos.coords.longitude.toFixed(7);
+          },
+          (err) => {
+            console.warn("Gps default digunakan:", err.message);
+          },
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      }
+    }
+
     function bukaHalamanReview() {
-      // 1. Ekstrak Data Identitas Wilayah
-      const getTeks = (id) => {
+      // 1. Ambil Geolokasi
+      ambilGeolokasiOtomatis();
+
+      // 2. Ekstrak Data Wilayah
+      const getOptTeks = (id) => {
         const el = document.getElementById(id);
         return el ? (el.tagName === 'SELECT' ? el.options[el.selectedIndex]?.text || '-' : el.value || '-') : '-';
       };
 
-      const htmlWilayah = `
-        <div><span class="text-slate-400 font-bold">NO. KK:</span> <span class="font-bold text-slate-800">${getTeks('nomor_kk')}</span></div>
-        <div><span class="text-slate-400 font-bold">STATUS KELUARGA:</span> <span class="font-bold text-emerald-700">${getTeks('status_keluarga')}</span></div>
-        <div><span class="text-slate-400 font-bold">KODE RUMAH / URUT:</span> <span class="font-mono font-bold">${getTeks('kode_rumah')} / ${getTeks('no_urut_keluarga')}</span></div>
-        <div><span class="text-slate-400 font-bold">KECAMATAN:</span> ${getTeks('kecamatan')} (${getTeks('kode_kec')})</div>
-        <div><span class="text-slate-400 font-bold">DESA:</span> ${getTeks('desa')} (${getTeks('kode_desa')})</div>
-        <div><span class="text-slate-400 font-bold">DUSUN / RT:</span> ${getTeks('dusun')} / RT ${getTeks('rt')}</div>
-        <div class="sm:col-span-2"><span class="text-slate-400 font-bold">ALAMAT DETAIL:</span> ${getTeks('alamat_detail')}</div>
-        <div><span class="text-slate-400 font-bold">NO. HP:</span> ${getTeks('no_hp')}</div>
-      `;
-      document.getElementById('review_konten_wilayah').innerHTML = htmlWilayah;
-
-      // 2. Ekstrak Data Anggota Keluarga
-      const listHalAnggota = document.querySelectorAll('.item-anggota-page');
-      document.getElementById('review_total_anggota_label').innerText = listHalAnggota.length;
+      document.getElementById('prev_wil_prov').innerText = getOptTeks('provinsi').replace(/^\d+\.\s*/, '');
+      document.getElementById('prev_wil_kab').innerText = getOptTeks('kabupaten').replace(/^\d+\.\s*/, '');
+      document.getElementById('prev_wil_kec').innerText = getOptTeks('kecamatan').replace(/^\d+\.\s*/, '');
+      document.getElementById('prev_wil_desa').innerText = getOptTeks('desa').replace(/^\d+\.\s*/, '');
       
+      const rawDusun = getOptTeks('dusun');
+      document.getElementById('prev_wil_rw').innerText = rawDusun.includes('-') ? rawDusun.split('-')[1].trim() : rawDusun;
+      
+      const rawRt = getOptTeks('rt');
+      document.getElementById('prev_wil_rt').innerText = rawRt.includes('-') ? rawRt.split('-')[0].trim() : rawRt;
+
+      document.getElementById('prev_wil_kk').innerText = document.getElementById('nomor_kk')?.value || '-';
+      document.getElementById('prev_wil_jml').innerText = totalHalamanAnggota;
+      document.getElementById('prev_wil_status').innerText = getOptTeks('status_keluarga');
+
+      // 3. Ekstrak Data Anggota Keluarga Sesuai Format KRS
+      const listHalAnggota = document.querySelectorAll('.item-anggota-page');
+      const kontainerKeluarga = document.getElementById('konten_preview_keluarga');
       let htmlAnggota = '';
+
       listHalAnggota.forEach((hal, idx) => {
+        const noUrut = idx + 1;
         const getVal = (name) => hal.querySelector(`[name="${name}"]`)?.value || '-';
-        const getOptTeks = (name) => {
+        const getTeksSelect = (name) => {
           const s = hal.querySelector(`[name="${name}"]`);
-          return s ? s.options[s.selectedIndex]?.text || '-' : '-';
+          return s ? (s.options[s.selectedIndex]?.text || '-') : '-';
         };
 
+        const nama = getVal('nama_lengkap').toUpperCase();
+        const nik = getVal('nik');
+        const jk = getTeksSelect('jenis_kelamin');
+        const tgl = getVal('tanggal_lahir');
+        const usia = hal.querySelector('[name="display_usia"]')?.value || '-';
+        const hub = (noUrut === 1) ? '1. Kepala Keluarga' : getTeksSelect('hubungan_dengan_kk');
+        const ibu = getTeksSelect('kode_ibu_kandung');
+        const kawin = getTeksSelect('status_perkawinan');
+        const kerja = getTeksSelect('jenis_pekerjaan');
+        const statusKerja = getTeksSelect('status_pekerjaan');
+        const didik = getTeksSelect('pendidikan');
+        const disabilitas = getTeksSelect('gangguan_fungsional');
+        const urusDiri = getTeksSelect('kemampuan_mengurus_diri');
+        const luarNegeri = getTeksSelect('mutasi_anggota');
+
         htmlAnggota += `
-          <div class="p-3 bg-slate-50 border rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div class="p-4 space-y-2.5">
+            <p class="text-xs font-semibold text-slate-500">No. Urut: <span class="font-bold text-slate-800">${noUrut}</span></p>
+            
             <div>
-              <div class="font-bold text-slate-800 text-xs">
-                ${idx + 1}. ${getVal('nama_lengkap').toUpperCase()} 
-                <span class="text-slate-500 font-mono">(${getVal('nik')})</span>
-                <span class="ml-1.5 px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">${getOptTeks('hubungan_dengan_kk')}</span>
+              <p class="text-xs text-slate-500 font-medium">Nama</p>
+              <p class="font-bold text-slate-900 text-sm tracking-wide">${nama}</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-2 pt-1 text-xs">
+              <div>
+                <p class="text-slate-500 font-medium">NIK</p>
+                <p class="font-bold font-mono text-slate-800">${nik}</p>
               </div>
-              <div class="text-[11px] text-slate-500 mt-0.5">
-                JK: ${getOptTeks('jenis_kelamin')} | Tgl Lahir: ${getVal('tanggal_lahir')} | Kawin: ${getOptTeks('status_perkawinan')} | Pekerjaan: ${getOptTeks('jenis_pekerjaan')}
+              <div>
+                <p class="text-slate-500 font-medium">Jenis Kelamin</p>
+                <p class="font-bold text-slate-800">${jk}</p>
+              </div>
+
+              <div>
+                <p class="text-slate-500 font-medium">Tanggal Lahir</p>
+                <p class="font-bold text-slate-800">${tgl}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-medium">Usia</p>
+                <p class="font-bold text-slate-800">${usia}</p>
+              </div>
+
+              <div>
+                <p class="text-slate-500 font-medium">Status Hubungan</p>
+                <p class="font-bold text-slate-800">${hub}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-medium">Kode Ibu Kandung</p>
+                <p class="font-bold text-slate-800">${ibu}</p>
+              </div>
+
+              <div>
+                <p class="text-slate-500 font-medium">Status Perkawinan</p>
+                <p class="font-bold text-slate-800">${kawin}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-medium">Jenis Pekerjaan</p>
+                <p class="font-bold text-slate-800">${kerja}</p>
+              </div>
+
+              <div>
+                <p class="text-slate-500 font-medium">Status Pekerjaan</p>
+                <p class="font-bold text-slate-800">${statusKerja}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-medium">Pendidikan</p>
+                <p class="font-bold text-slate-800">${didik}</p>
+              </div>
+
+              <div>
+                <p class="text-slate-500 font-medium">Mengalami Kesulitan Fungsional</p>
+                <p class="font-bold text-slate-800">${disabilitas}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-medium">Kemampuan Mengurus Diri Sendiri</p>
+                <p class="font-bold text-slate-800">${urusDiri}</p>
+              </div>
+
+              <div class="col-span-2">
+                <p class="text-slate-500 font-medium">Bekerja di Luar Negeri</p>
+                <p class="font-bold text-slate-800">${luarNegeri}</p>
               </div>
             </div>
-            <button type="button" onclick="bukaHalamanAnggota(${idx + 1})" class="text-xs text-amber-600 hover:underline font-bold self-end sm:self-center">
-              Edit Data &rarr;
-            </button>
           </div>
-        `;        
+        `;
       });
-      document.getElementById('review_konten_anggota').innerHTML = htmlAnggota || '<p class="text-slate-400 italic">Tidak ada anggota keluarga terisi.</p>';
 
-      // 3. Ekstrak Data Blok KB
-      const htmlKB = `
-        <div><span class="text-slate-400 font-bold">MELAHIRKAN:</span> ${dataNilaiKB.kb_01_melahirkan} kali</div>
-        <div><span class="text-slate-400 font-bold">ANAK HIDUP:</span> L: ${dataNilaiKB.kb_01_masih_laki}, P: ${dataNilaiKB.kb_01_masih_perempuan}</div>
-        <div><span class="text-slate-400 font-bold">ANAK IDEAL:</span> ${dataNilaiKB.kb_02_anak_ideal} anak</div>
-        <div><span class="text-slate-400 font-bold">SEDANG HAMIL:</span> ${dataNilaiKB.kb_03_sedang_hamil === '1' ? 'YA' : 'TIDAK'}</div>
-        <div><span class="text-slate-400 font-bold">SEDANG BER-KB:</span> ${dataNilaiKB.kb_04_sedang_kb === '1' ? 'YA' : 'TIDAK'}</div>
-        <div><span class="text-slate-400 font-bold">JENIS METODE:</span> <span class="font-bold text-emerald-700">Kode ${dataNilaiKB.kb_07_jenis_kb}</span></div>
-      `;
-      document.getElementById('review_konten_kb').innerHTML = htmlKB;
+      kontainerKeluarga.innerHTML = htmlAnggota;
 
-      // 4. Ekstrak Data Pembangunan Keluarga
-      const htmlPK = `
-        <div><span class="text-slate-400 font-bold">IBADAH RUTIN:</span> ${dataNilaiPK.pk_01_ibadah === '1' ? 'YA' : 'TIDAK'}</div>
-        <div><span class="text-slate-400 font-bold">AKTA NIKAH:</span> ${dataNilaiPK.pk_02_akta_nikah === '1' ? 'YA' : 'TIDAK'}</div>
-        <div><span class="text-slate-400 font-bold">MEMILIKI ASET:</span> ${dataNilaiPK.pk_06_aset === '1' ? 'YA' : 'TIDAK'}</div>
-        <div><span class="text-slate-400 font-bold">AIR MINUM:</span> Kode ${dataNilaiPK.pk_18_air_minum}</div>
-        <div><span class="text-slate-400 font-bold">JAMBAN:</span> Kode ${dataNilaiPK.pk_19_jamban}</div>
-        <div><span class="text-slate-400 font-bold">LUAS RUMAH:</span> ${dataNilaiPK.pk_20_luas_rumah} m²</div>
-        <div><span class="text-slate-400 font-bold">PENGHUNI:</span> ${dataNilaiPK.pk_21_jumlah_penghuni} Orang</div>
-      `;
-      document.getElementById('review_konten_pk').innerHTML = htmlPK;
+      // Pindahkan tampilan ke halaman pratinjau
+      pindahHalamanForm('hal_review', 'V. FORM PRATINJAU');
+    }
 
-      // Pindahkan tampilan ke halaman review
-      pindahHalamanForm('hal_review', 'V. REVIEW RINGKASAN DATA KELUARGA');
+    function mundurDariReview() {
+      // Kembali ke halaman Blok Pembangunan Keluarga
+      pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+      tampilkanStepPK();
     }
 
     // --- SUBMIT PENUH KE DATABASE (MENCAKUP 17 KOLOM) ---
