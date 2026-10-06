@@ -2347,7 +2347,7 @@
       pk_04_penghasilan: '',
       pk_05_makanan_beragam: '',
       pk_06_aset: '',
-      pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? (Array.isArray(dataNilaiPK.pk_06_aset_jenis) ? dataNilaiPK.pk_06_aset_jenis.join(',') : dataNilaiPK.pk_06_aset_jenis) : null,
+      pk_06_aset_jenis: [], // Ubah jadi []
       pk_07_penyakit_kronis: '',
       pk_08_disabilitas: '',
       pk_09_internet: '',
@@ -2370,9 +2370,9 @@
       pk_22_bahan_bakar: '',
       pk_23_kepemilikan_rumah: '',
       pk_24_info_media: '',
-      pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? (Array.isArray(dataNilaiPK.pk_25_media_sumber) ? dataNilaiPK.pk_25_media_sumber.join(',') : dataNilaiPK.pk_25_media_sumber) : null,
+      pk_25_media_sumber: [], // Ubah jadi []
       pk_26_info_petugas: '',
-      pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? (Array.isArray(dataNilaiPK.pk_27_petugas_sumber) ? dataNilaiPK.pk_27_petugas_sumber.join(',') : dataNilaiPK.pk_27_petugas_sumber) : null,
+      pk_27_petugas_sumber: [] // Ubah jadi []
     };
 
     // Fungsi Render Pilihan Pil
@@ -2750,7 +2750,7 @@
             </div>
           ` : ''}
         `;
-      }
+      
       } else if (q.opsi) {
         html = `
           <div class="judul-tanya-krs">${q.judul}</div>
@@ -3212,7 +3212,7 @@
           pk_04_penghasilan: dataNilaiPK.pk_04_penghasilan,
           pk_05_makanan_beragam: dataNilaiPK.pk_05_makanan_beragam,
           pk_06_aset: dataNilaiPK.pk_06_aset,
-          pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? dataNilaiPK.pk_06_aset_jenis : null,
+          pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? (Array.isArray(dataNilaiPK.pk_06_aset_jenis) ? dataNilaiPK.pk_06_aset_jenis.join(',') : dataNilaiPK.pk_06_aset_jenis) : null,
           pk_07_penyakit_kronis: dataNilaiPK.pk_07_penyakit_kronis,
           pk_08_disabilitas: dataNilaiPK.pk_08_disabilitas,
           pk_09_internet: dataNilaiPK.pk_09_internet,
@@ -3237,9 +3237,9 @@
           pk_23_kepemilikan_rumah: dataNilaiPK.pk_23_kepemilikan_rumah,
 
           pk_24_info_media: dataNilaiPK.pk_24_info_media,
-          pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? dataNilaiPK.pk_25_media_sumber : null,
+          pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? (Array.isArray(dataNilaiPK.pk_25_media_sumber) ? dataNilaiPK.pk_25_media_sumber.join(',') : dataNilaiPK.pk_25_media_sumber) : null,
           pk_26_info_petugas: dataNilaiPK.pk_26_info_petugas,
-          pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? dataNilaiPK.pk_27_petugas_sumber : null,
+          pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? (Array.isArray(dataNilaiPK.pk_27_petugas_sumber) ? dataNilaiPK.pk_27_petugas_sumber.join(',') : dataNilaiPK.pk_27_petugas_sumber) : null,
 
           diperbarui_pada: new Date()
         };
