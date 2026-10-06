@@ -2019,18 +2019,18 @@
       let defaultHubungan = "3";
 
       if (no === 1) {
-        defaultJk = "1";
-        defaultKawin = "2";
-        defaultHubungan = "1";
+        defaultJk = "1";        // Laki-laki
+        defaultKawin = "2";     // Kawin
+        defaultHubungan = "1";  // Kepala Keluarga
       } else if (no === 2) {
         const hal1 = document.getElementById('hal_anggota_1');
         const jkKK = hal1 ? hal1.querySelector('[name="jenis_kelamin"]')?.value : "1";
         const kawinKK = hal1 ? hal1.querySelector('[name="status_perkawinan"]')?.value : "2";
 
         if (jkKK === "1" && kawinKK === "2") {
-          defaultJk = "2";
-          defaultKawin = "2";
-          defaultHubungan = "2";
+          defaultJk = "2";        // Perempuan
+          defaultKawin = "2";     // Kawin
+          defaultHubungan = "2";  // Istri
         } else {
           defaultJk = "2";
           defaultKawin = "1";
@@ -2044,7 +2044,7 @@
       hal.setAttribute('data-urutan', no);
 
       hal.innerHTML = `
-        <!-- Header Form Keluarga Sesuai Aplikasi KRS -->
+        <!-- Header Form Keluarga -->
         <div class="border-b pb-2 flex justify-between items-center">
           <h2 class="text-base font-bold text-slate-800">Form Keluarga</h2>
           ${no > 1 ? `
@@ -2120,10 +2120,8 @@
                     class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
               <option value="1" ${defaultKawin === "1" ? 'selected' : ''}>1. Belum Kawin</option>
               <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tercatat</option>
-              <option value="3" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tidak Tercatat</option>
-              <option value="4" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup Tercatat</option>
-              <option value="5" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup Tidak Tercatat</option>
-              <option value="6" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Mati</option>
+              <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup</option>
+              <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Mati</option>
             </select>
           </div>
           <div>
@@ -2135,13 +2133,14 @@
           </div>
         </div>
 
+        <!-- Kolom Usia Kawin Pertama (Tampil Jika Kawin / Cerai) -->
         <div id="wrapper_usia_kawin_${no}" class="${defaultKawin === '1' ? 'hidden' : ''}">
           <label class="block text-slate-700 font-medium mb-1">Usia Kawin Pertama (Tahun) *</label>
           <input type="number" name="usia_kawin_pertama" min="10" max="70" placeholder="Contoh: 21"
                  class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-semibold text-slate-800 focus:border-blue-500 text-xs sm:text-sm" />
         </div>
 
-        <!-- Separator Pembatas Seperti Gambar KRS -->
+        <!-- Separator Panah Lipat -->
         <div class="flex items-center justify-center gap-2 pt-2 pb-1">
           <div class="h-px bg-slate-300 w-1/3"></div>
           <span class="text-slate-400 text-xs">▼</span>
@@ -2179,7 +2178,7 @@
           </div>
         </div>
 
-        <!-- Pendidikan & Mutasi Anggota (2 Kolom) -->
+        <!-- Pendidikan & Mutasi / Bekerja Luar Negeri (2 Kolom) -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-700 font-medium mb-1">Pendidikan</label>
@@ -2230,13 +2229,12 @@
           </div>
         </div>
 
-        <!-- Parameter Tersembunyi Tambahan untuk Integrasi Supabase -->
-        <input type="hidden" name="usia_kawin_pertama" value="" />
+        <!-- Hidden input pendukung skema database -->
         <input type="hidden" name="memiliki_akta_lahir" value="1" />
         <input type="hidden" name="agama" value="1" />
         <input type="hidden" name="kepesertaan_jkn" value="1" />
 
-        <!-- Tombol Navigasi Bawah Sejajar Rapi (Gaya KRS) -->
+        <!-- Navigasi Bawah -->
         <div class="flex justify-between items-center gap-3 pt-6 border-t">
           <button type="button" onclick="mundurDariAnggota(${no})"
                   class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
@@ -2251,7 +2249,32 @@
 
       container.appendChild(hal);
       perbaruiLabelTotalAnggota();
+
+      const selectPerkawinan = hal.querySelector('[name="status_perkawinan"]');
+      evaluasiUsiaKawin(selectPerkawinan, no);
+
       perbaruiSemuaOpsiIbuKandung();
+    }
+
+    function evaluasiUsiaKawin(elSelect, noUrut) {
+      const hal = document.getElementById(`hal_anggota_${noUrut}`);
+      if (!hal) return;
+
+      const wrapper = document.getElementById(`wrapper_usia_kawin_${noUrut}`);
+      const inputUsia = hal.querySelector('[name="usia_kawin_pertama"]');
+
+      if (elSelect.value === '1') {
+        if (wrapper) wrapper.classList.add('hidden');
+        if (inputUsia) {
+          inputUsia.value = '';
+          inputUsia.required = false;
+        }
+      } else {
+        if (wrapper) wrapper.classList.remove('hidden');
+        if (inputUsia) {
+          inputUsia.required = true;
+        }
+      }
     }
 
     function hitungUsiaAnggota(inputTgl, noUrut) {
@@ -2270,21 +2293,6 @@
         if (inputUsia) {
           inputUsia.value = usia >= 0 ? `${usia} Tahun` : '0 Tahun';
         }
-      }
-    }
-
-    function evaluasiUsiaKawin(elSelect, noUrut) {
-      const hal = document.getElementById(`hal_anggota_${noUrut}`);
-      const inputUsiaKawin = hal.querySelector('[name="usia_kawin_pertama"]');
-      if (elSelect.value === '1') {
-        inputUsiaKawin.value = '';
-        inputUsiaKawin.disabled = true;
-        inputUsiaKawin.classList.add('bg-slate-100');
-        inputUsiaKawin.required = false;
-      } else {
-        inputUsiaKawin.disabled = false;
-        inputUsiaKawin.classList.remove('bg-slate-100');
-        inputUsiaKawin.required = true;
       }
     }
 
