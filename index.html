@@ -367,33 +367,41 @@
           <div class="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs sm:text-sm">
             <div>
               <p class="text-slate-500 font-medium mb-0.5">Provinsi</p>
-              <p id="label_provinsi" class="font-bold text-slate-900 leading-snug">NUSA TENGGARA BARAT</p>
-              <select id="provinsi" required onchange="updateFormKabupaten(); sinkronkanLabelWilayah();" class="hidden"></select>
-              <input type="hidden" id="kode_prov" value="52" />
+              <p id="label_provinsi" class="font-bold text-slate-900 leading-snug hidden"></p>
+              <select id="provinsi" required onchange="updateFormKabupaten(); sinkronkanLabelWilayah();" 
+                      class="w-full bg-white font-bold text-slate-900 border border-slate-300 rounded-lg p-2 outline-none text-xs sm:text-sm">
+                <option value="">-- PILIH PROVINSI --</option>
+              </select>
+              <input type="hidden" id="kode_prov" />
             </div>
 
             <div>
               <p class="text-slate-500 font-medium mb-0.5">Kabupaten</p>
-              <p id="label_kabupaten" class="font-bold text-slate-900 leading-snug">LOMBOK BARAT</p>
-              <select id="kabupaten" required disabled onchange="updateFormKecamatan(); sinkronkanLabelWilayah();" class="hidden"></select>
-              <input type="hidden" id="kode_kab" value="01" />
+              <p id="label_kabupaten" class="font-bold text-slate-900 leading-snug hidden"></p>
+              <select id="kabupaten" required onchange="updateFormKecamatan(); sinkronkanLabelWilayah();" 
+                      class="w-full bg-white font-bold text-slate-900 border border-slate-300 rounded-lg p-2 outline-none text-xs sm:text-sm">
+                <option value="">-- PILIH KABUPATEN --</option>
+              </select>
+              <input type="hidden" id="kode_kab" />
             </div>
 
             <div>
               <p class="text-slate-500 font-medium mb-0.5">Kecamatan</p>
-              <p id="label_kecamatan" class="font-bold text-slate-900 leading-snug">LEMBAR</p>
-              <select id="kecamatan" required disabled onchange="updateFormDesa(); sinkronkanLabelWilayah();" class="hidden"></select>
-              <input type="hidden" id="kode_kec" value="08" />
+              <p id="label_kecamatan" class="font-bold text-slate-900 leading-snug hidden"></p>
+              <select id="kecamatan" required onchange="updateFormDesa(); sinkronkanLabelWilayah();" 
+                      class="w-full bg-white font-bold text-slate-900 border border-slate-300 rounded-lg p-2 outline-none text-xs sm:text-sm">
+                <option value="">-- PILIH KECAMATAN --</option>
+              </select>
+              <input type="hidden" id="kode_kec" />
             </div>
 
             <div>
-              <p class="text-slate-500 font-medium mb-0.5">Kelurahan</p>
-              <div class="relative">
-                <select id="desa" required disabled onchange="updateFormDusun(); sinkronkanLabelWilayah();" 
-                        class="w-full bg-transparent font-bold text-slate-900 border-b border-slate-300 py-0.5 outline-none text-xs sm:text-sm">
-                  <option value="">-- PILIH DESA --</option>
-                </select>
-              </div>
+              <p class="text-slate-500 font-medium mb-0.5">Kelurahan / Desa</p>
+              <p id="label_desa" class="font-bold text-slate-900 leading-snug hidden"></p>
+              <select id="desa" required onchange="updateFormDusun(); sinkronkanLabelWilayah();" 
+                      class="w-full bg-white font-bold text-slate-900 border border-slate-300 rounded-lg p-2 outline-none text-xs sm:text-sm">
+                <option value="">-- PILIH DESA --</option>
+              </select>
               <input type="hidden" id="kode_desa" />
             </div>
           </div>
@@ -1615,70 +1623,127 @@
       const elKec = document.getElementById('kecamatan');
       const elDesa = document.getElementById('desa');
 
-      // Ambil kode default pertama jika akun Super Admin belum mengunci wilayah
-      const listKdProv = Object.keys(dataProvinsi);
-      const kdProvAktif = userAktif.kode_prov || (listKdProv.length > 0 ? listKdProv[0] : '52');
-      
-      if (elProv && kdProvAktif) {
-        elProv.value = kdProvAktif;
-        document.getElementById('kode_prov').value = kdProvAktif;
+      const setTampilanField = (selectEl, labelId, value, isLock) => {
+        const lbl = document.getElementById(labelId);
+        if (!selectEl) return;
+        if (value) selectEl.value = value;
+        
+        if (isLock) {
+          selectEl.disabled = true;
+          selectEl.classList.add('hidden');
+          if (lbl) {
+            lbl.classList.remove('hidden');
+            lbl.innerText = selectEl.options[selectEl.selectedIndex]?.text || value;
+          }
+        } else {
+          selectEl.disabled = false;
+          selectEl.classList.remove('hidden');
+          if (lbl) lbl.classList.add('hidden');
+        }
+      };
+
+      // 1. SUPER ADMIN: Semua dropdown terbuka bebas
+      if (userAktif.role === 'SUPER_ADMIN') {
+        setTampilanField(elProv, 'label_provinsi', '', false);
+        setTampilanField(elKab, 'label_kabupaten', '', false);
+        setTampilanField(elKec, 'label_kecamatan', '', false);
+        setTampilanField(elDesa, 'label_desa', '', false);
+        
+        // Pilih default provinsi pertama jika ada
+        const firstProv = Object.keys(dataProvinsi)[0];
+        if (firstProv) {
+          elProv.value = firstProv;
+          updateFormKabupaten();
+        }
+      } 
+      // 2. ADMIN KABUPATEN: Kunci Prov & Kab
+      else if (userAktif.role === 'ADMIN_KABUPATEN') {
+        elProv.value = userAktif.kode_prov;
         updateFormKabupaten();
-      }
-
-      const listKdKab = dataKabupaten[kdProvAktif] ? Object.keys(dataKabupaten[kdProvAktif]) : [];
-      const kdKabAktif = userAktif.kode_kab || (listKdKab.length > 0 ? listKdKab[0] : '01');
-
-      if (elKab && kdKabAktif) {
-        elKab.value = kdKabAktif;
-        document.getElementById('kode_kab').value = kdKabAktif;
+        elKab.value = userAktif.kode_kab;
         updateFormKecamatan();
-      }
 
-      const listKdKec = dataKecamatan[kdKabAktif] ? Object.keys(dataKecamatan[kdKabAktif]) : [];
-      const kdKecAktif = userAktif.kode_kec || (listKdKec.length > 0 ? listKdKec[0] : '08');
-
-      if (elKec && kdKecAktif) {
-        elKec.value = kdKecAktif;
-        document.getElementById('kode_kec').value = kdKecAktif;
+        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
+        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
+        setTampilanField(elKec, 'label_kecamatan', '', false);
+        setTampilanField(elDesa, 'label_desa', '', false);
+      } 
+      // 3. ADMIN KECAMATAN: Kunci Prov, Kab, Kec
+      else if (userAktif.role === 'ADMIN_KECAMATAN') {
+        elProv.value = userAktif.kode_prov;
+        updateFormKabupaten();
+        elKab.value = userAktif.kode_kab;
+        updateFormKecamatan();
+        elKec.value = userAktif.kode_kec;
         updateFormDesa();
-      }
 
-      // KUNCI OTOMATIS SESUAI ROLE LOGIN:
-      if (userAktif.role === 'USER_DESA') {
-        // Kader Desa: Desa terkunci
-        if (elDesa && userAktif.kode_desa) {
-          elDesa.value = userAktif.kode_desa;
-          document.getElementById('kode_desa').value = userAktif.kode_desa;
-          elDesa.disabled = true;
-          updateFormDusun();
-        }
-      } else {
-        // Super Admin, Admin Kab, Admin Kec: Desa bebas dipilih
-        if (elDesa) {
-          elDesa.disabled = false;
-        }
+        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
+        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
+        setTampilanField(elKec, 'label_kecamatan', userAktif.kode_kec, true);
+        setTampilanField(elDesa, 'label_desa', '', false);
+      } 
+      // 4. USER DESA: Kunci sampai Desa
+      else {
+        elProv.value = userAktif.kode_prov;
+        updateFormKabupaten();
+        elKab.value = userAktif.kode_kab;
+        updateFormKecamatan();
+        elKec.value = userAktif.kode_kec;
+        updateFormDesa();
+        elDesa.value = userAktif.kode_desa;
+        updateFormDusun();
+
+        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
+        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
+        setTampilanField(elKec, 'label_kecamatan', userAktif.kode_kec, true);
+        setTampilanField(elDesa, 'label_desa', userAktif.kode_desa, true);
       }
 
       sinkronkanLabelWilayah();
     }
 
-    function sinkronkanLabelWilayah() {
-      const p = document.getElementById('provinsi');
-      const k = document.getElementById('kabupaten');
-      const c = document.getElementById('kecamatan');
+    function updateFormKabupaten() {
+      const kdProv = document.getElementById('provinsi').value;
+      document.getElementById('kode_prov').value = kdProv;
 
-      const lblP = document.getElementById('label_provinsi');
-      const lblK = document.getElementById('label_kabupaten');
-      const lblC = document.getElementById('label_kecamatan');
+      const elKab = document.getElementById('kabupaten');
+      elKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
+      document.getElementById('kode_kab').value = '';
+      resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
 
-      if (lblP && p) {
-        lblP.innerText = (p.selectedIndex >= 0 && p.value) ? p.options[p.selectedIndex].text : (userAktif.provinsi || 'NUSA TENGGARA BARAT');
+      if (!kdProv || !dataKabupaten[kdProv]) return;
+
+      for (let kd in dataKabupaten[kdProv]) {
+        elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
       }
-      if (lblK && k) {
-        lblK.innerText = (k.selectedIndex >= 0 && k.value) ? k.options[k.selectedIndex].text : (userAktif.kabupaten || 'LOMBOK BARAT');
+      
+      // Auto pilih jika hanya 1 opsi
+      const keys = Object.keys(dataKabupaten[kdProv]);
+      if (keys.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKab.value = keys[0];
+        updateFormKecamatan();
       }
-      if (lblC && c) {
-        lblC.innerText = (c.selectedIndex >= 0 && c.value) ? c.options[c.selectedIndex].text : (userAktif.kecamatan || 'LEMBAR');
+    }
+
+    function updateFormKecamatan() {
+      const kdKab = document.getElementById('kabupaten').value;
+      document.getElementById('kode_kab').value = kdKab;
+
+      const elKec = document.getElementById('kecamatan');
+      elKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
+      document.getElementById('kode_kec').value = '';
+      resetFormDropdowns(['desa', 'dusun', 'rt']);
+
+      if (!kdKab || !dataKecamatan[kdKab]) return;
+
+      for (let kd in dataKecamatan[kdKab]) {
+        elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
+      }
+
+      const keys = Object.keys(dataKecamatan[kdKab]);
+      if (keys.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKec.value = keys[0];
+        updateFormDesa();
       }
     }
 
@@ -1695,7 +1760,6 @@
 
       const desaKey = kdKab + "_" + kdKec;
       if (!kdKec || !dataDesa[desaKey]) {
-        elDesa.disabled = true;
         return;
       }
 
@@ -1703,7 +1767,7 @@
         elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
       }
       elDesa.disabled = false;
-    }
+    }    
 
     function updateFormDusun() {
       const kdKab = document.getElementById('kode_kab').value;
@@ -1749,6 +1813,23 @@
         elRt.add(new Option(`${strRt} - ${strRt}`, strRt));
       }
       elRt.disabled = false;
+    }
+
+    function sinkronkanLabelWilayah() {
+      const p = document.getElementById('provinsi');
+      const k = document.getElementById('kabupaten');
+      const c = document.getElementById('kecamatan');
+      const d = document.getElementById('desa');
+
+      const lblP = document.getElementById('label_provinsi');
+      const lblK = document.getElementById('label_kabupaten');
+      const lblC = document.getElementById('label_kecamatan');
+      const lblD = document.getElementById('label_desa');
+
+      if (lblP && p && p.selectedIndex >= 0 && p.value) lblP.innerText = p.options[p.selectedIndex].text;
+      if (lblK && k && k.selectedIndex >= 0 && k.value) lblK.innerText = k.options[k.selectedIndex].text;
+      if (lblC && c && c.selectedIndex >= 0 && c.value) lblC.innerText = c.options[c.selectedIndex].text;
+      if (lblD && d && d.selectedIndex >= 0 && d.value) lblD.innerText = d.options[d.selectedIndex].text;
     }
 
     function resetFormDropdowns(ids) {
