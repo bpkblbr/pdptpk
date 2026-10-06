@@ -356,137 +356,130 @@
         
         <!-- STEP 1: I. IDENTITAS WILAYAH -->
         <div id="hal_wilayah" class="halaman-form aktif space-y-5">
-          <h2 class="text-base sm:text-lg font-bold text-emerald-800 border-l-4 border-emerald-600 pl-3 uppercase">
-            I. IDENTITAS WILAYAH
-          </h2>
+          
+          <div class="border-b pb-2">
+            <h2 class="text-base sm:text-lg font-bold text-slate-800">
+              Form Wilayah
+            </h2>
+          </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+          <!-- Bagian Wilayah Atas (Grid 2 Kolom Bersih) -->
+          <div class="grid grid-cols-2 gap-x-4 gap-y-3.5 text-xs sm:text-sm">
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. KK *</label>
-              <input type="text" id="nomor_kk" required maxlength="16" placeholder="16 DIGIT"
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">PROVINSI *</label>
-              <select id="provinsi" required onchange="updateFormKabupaten()" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
-                <option value="">-- PILIH PROVINSI --</option>
-              </select>
+              <p class="text-slate-500 font-medium mb-0.5">Provinsi</p>
+              <p id="label_provinsi" class="font-bold text-slate-900 leading-snug">NUSA TENGGARA BARAT</p>
+              <select id="provinsi" required onchange="updateFormKabupaten(); sinkronkanLabelWilayah();" class="hidden"></select>
+              <input type="hidden" id="kode_prov" value="52" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE PROVINSI</label>
-              <input type="text" id="kode_prov" readonly placeholder=""
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
+              <p class="text-slate-500 font-medium mb-0.5">Kabupaten</p>
+              <p id="label_kabupaten" class="font-bold text-slate-900 leading-snug">LOMBOK BARAT</p>
+              <select id="kabupaten" required disabled onchange="updateFormKecamatan(); sinkronkanLabelWilayah();" class="hidden"></select>
+              <input type="hidden" id="kode_kab" value="01" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KABUPATEN *</label>
-              <select id="kabupaten" required disabled onchange="updateFormKecamatan()" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
-                <option value="">-- PILIH KABUPATEN --</option>
-              </select>
+              <p class="text-slate-500 font-medium mb-0.5">Kecamatan</p>
+              <p id="label_kecamatan" class="font-bold text-slate-900 leading-snug">LEMBAR</p>
+              <select id="kecamatan" required disabled onchange="updateFormDesa(); sinkronkanLabelWilayah();" class="hidden"></select>
+              <input type="hidden" id="kode_kec" value="08" />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KABUPATEN</label>
-              <input type="text" id="kode_kab" readonly placeholder=""
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KECAMATAN *</label>
-              <select id="kecamatan" required disabled onchange="updateFormDesa()" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
-                <option value="">-- PILIH KECAMATAN --</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE KECAMATAN</label>
-              <input type="text" id="kode_kec" readonly placeholder=""
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DESA *</label>
-              <select id="desa" required disabled onchange="updateFormDusun()" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
-                <option value="">-- PILIH DESA --</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DESA</label>
-              <input type="text" id="kode_desa" readonly placeholder=""
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">DUSUN *</label>
-              <select id="dusun" required disabled onchange="updateFormRT()" class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm bg-white">
-                <option value="">-- PILIH DUSUN --</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">KODE DUSUN</label>
-              <input type="text" id="kode_dusun" readonly placeholder=""
-                     class="w-full px-3.5 py-2.5 bg-slate-100 border rounded-xl text-slate-600 font-bold outline-none uppercase text-sm font-mono" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">RT *</label>
-              <select id="rt" required disabled class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-bold text-sm bg-white">
-                <option value="">-- PILIH RT --</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NOMOR RUMAH *</label>
-              <input type="text" id="kode_rumah" required maxlength="3" placeholder=""
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono font-bold outline-none uppercase text-sm" />
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. URUT KELUARGA *</label>
-              <input type="text" id="no_urut_keluarga" required maxlength="3" placeholder=""
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono font-bold outline-none uppercase text-sm" />
-            </div>
-
-            <div class="sm:col-span-2 lg:col-span-1">
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NO. HP/WA *</label>
-              <input type="text" id="no_hp" required placeholder="08XXXXXXXXXX"
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold outline-none uppercase text-sm" />
-            </div>
-
-            <div class="sm:col-span-2 lg:col-span-3">
-              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">ALAMAT *</label>
-              <input type="text" id="alamat_detail" required placeholder="NAMA JALAN / GANG / NOMOR RUMAH"
-                     class="w-full px-3.5 py-2.5 border rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none uppercase text-sm" />
-            </div>
-
-            <!-- STATUS KELUARGA -->
-            <div class="sm:col-span-2 lg:col-span-2">
-              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">STATUS KELUARGA *</label>
-              <select id="status_keluarga" required onchange="evaluasiStatusKeluarga()" class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-bold text-sm bg-white outline-none uppercase">
-                <option value="1" selected>1. ADA</option>
-                <option value="2">2. PINDAH</option>
-                <option value="3">3. SELURUH ANGGOTA MENINGGAL DUNIA</option>
-                <option value="4">4. TIDAK DITEMUKAN</option>
-                <option value="5">5. KELUARGA BERCERAI</option>
-                <option value="6">6. KELUARGA BARU</option>
-              </select>
-            </div>
-
-            <div id="wrapper_jumlah_anggota">
-              <label class="block text-xs font-bold text-emerald-800 uppercase mb-1">JUMLAH ANGGOTA KELUARGA *</label>
-              <input type="number" id="jumlah_anggota_input" required min="1" max="25" placeholder="MISAL: 4"
-                     class="w-full px-3.5 py-2.5 border-2 border-emerald-500 rounded-xl focus:ring-2 focus:ring-emerald-600 font-black text-slate-800 outline-none uppercase text-sm" />
+              <p class="text-slate-500 font-medium mb-0.5">Kelurahan</p>
+              <div class="relative">
+                <select id="desa" required disabled onchange="updateFormDusun(); sinkronkanLabelWilayah();" 
+                        class="w-full bg-transparent font-bold text-slate-900 border-b border-slate-300 py-0.5 outline-none text-xs sm:text-sm">
+                  <option value="">-- PILIH DESA --</option>
+                </select>
+              </div>
+              <input type="hidden" id="kode_desa" />
             </div>
           </div>
 
-          <div class="flex justify-end pt-4">
+          <!-- RW / Dusun & RT (Berdampingan 2 Kolom) -->
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label class="block text-xs text-slate-700 font-medium mb-1">RW / Dusun</label>
+              <select id="dusun" required disabled onchange="updateFormRT()" 
+                      class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-800 font-medium outline-none focus:border-blue-500">
+                <option value="">-- PILIH RW/DUSUN --</option>
+              </select>
+              <input type="hidden" id="kode_dusun" />
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-700 font-medium mb-1">RT</label>
+              <select id="rt" required disabled 
+                      class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-800 font-medium outline-none focus:border-blue-500">
+                <option value="">-- PILIH RT --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- No. Kartu Keluarga -->
+          <div>
+            <label class="block text-xs text-slate-700 font-medium mb-1">No. Kartu Keluarga</label>
+            <input type="text" id="nomor_kk" required maxlength="16" placeholder="Masukkan 16 Digit No. KK"
+                   class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-800 font-mono font-medium outline-none focus:border-blue-500" />
+          </div>
+
+          <!-- Status Keluarga -->
+          <div>
+            <label class="block text-xs text-slate-700 font-medium mb-1">Status Keluarga</label>
+            <select id="status_keluarga" required onchange="evaluasiStatusKeluarga()" 
+                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-800 outline-none focus:border-blue-500">
+              <option value="1" selected>1. Keluarga Ada</option>
+              <option value="2">2. Pindah</option>
+              <option value="3">3. Seluruh Anggota Meninggal Dunia</option>
+              <option value="4">4. Tidak Ditemukan</option>
+              <option value="5">5. Keluarga Bercerai</option>
+              <option value="6">6. Keluarga Baru</option>
+            </select>
+          </div>
+
+          <!-- Isian Tambahan yang Terbuka Saat Status 1 atau 6 -->
+          <div id="wrapper_jumlah_anggota" class="space-y-3 pt-1">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-700 font-medium mb-1">No. Rumah (3 Digit)</label>
+                <input type="text" id="kode_rumah" required maxlength="3" placeholder="001" value="001"
+                       class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-700 font-medium mb-1">No. Urut KK (3 Digit)</label>
+                <input type="text" id="no_urut_keluarga" required maxlength="3" placeholder="001" value="001"
+                       class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 outline-none" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-700 font-medium mb-1">No. Handphone / WhatsApp</label>
+                <input type="text" id="no_hp" required placeholder="08xxxxxxxxxx"
+                       class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-800 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-700 font-medium mb-1">Jumlah Anggota Keluarga</label>
+                <input type="number" id="jumlah_anggota_input" required min="1" max="25" placeholder="Contoh: 4"
+                       class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs text-slate-700 font-medium mb-1">Alamat Detail (Jalan / Gang)</label>
+              <input type="text" id="alamat_detail" required placeholder="Nama Jalan / Gang / Dusun"
+                     class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs text-slate-800 outline-none" />
+            </div>
+          </div>
+
+          <!-- Tombol Aksi di Kanan Bawah (Sesuai Gaya KRS) -->
+          <div class="flex justify-end pt-5">
             <button type="button" id="btnAksiWilayah" onclick="prosesAksiWilayah()"
-                    class="w-full sm:w-auto px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
-              LANJUT KE ANGGOTA KELUARGA &rarr;
+                    class="px-6 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+              <span>Selanjutnya</span>
+              <span>&rarr;</span>
             </button>
           </div>
         </div>
@@ -1206,6 +1199,7 @@
     function bukaFormulirPendataan() {
       tampilkanLayar('tampilan_formulir');
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+      inisialisasiWilayahSesuaiRole();
     }
 
     function sembunyikanSemuaHalamanForm() {
@@ -1423,6 +1417,76 @@
       for (let kd in dataProvinsi) {
         elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
       }
+      
+      inisialisasiWilayahSesuaiRole();
+    }
+
+    function inisialisasiWilayahSesuaiRole() {
+      const elProv = document.getElementById('provinsi');
+      const elKab = document.getElementById('kabupaten');
+      const elKec = document.getElementById('kecamatan');
+      const elDesa = document.getElementById('desa');
+
+      const kdProvAktif = userAktif.kode_prov || '52';
+      const kdKabAktif = userAktif.kode_kab || '01';
+      const kdKecAktif = userAktif.kode_kec || '08';
+      const kdDesaAktif = userAktif.kode_desa || '';
+
+      // 1. Set & Kunci Provinsi
+      if (elProv) {
+        elProv.value = kdProvAktif;
+        document.getElementById('kode_prov').value = kdProvAktif;
+        updateFormKabupaten();
+      }
+
+      // 2. Set & Kunci Kabupaten
+      if (elKab) {
+        elKab.value = kdKabAktif;
+        document.getElementById('kode_kab').value = kdKabAktif;
+        updateFormKecamatan();
+      }
+
+      // 3. Set & Kunci Kecamatan jika login Kecamatan atau Kader Desa
+      if (kdKecAktif && elKec) {
+        elKec.value = kdKecAktif;
+        document.getElementById('kode_kec').value = kdKecAktif;
+        updateFormDesa();
+      }
+
+      // 4. Kunci otomatis Desa jika login sebagai Kader Desa
+      if (userAktif.role === 'USER_DESA' && kdDesaAktif && elDesa) {
+        elDesa.value = kdDesaAktif;
+        document.getElementById('kode_desa').value = kdDesaAktif;
+        elDesa.disabled = true;
+        elDesa.classList.add('opacity-80', 'cursor-not-allowed');
+        updateFormDusun();
+      } else if (elDesa) {
+        // Jika Super Admin / Kab / Kec, biarkan dropdown desa aktif bisa diklik
+        elDesa.disabled = false;
+        elDesa.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+
+      sinkronkanLabelWilayah();
+    }
+
+    function sinkronkanLabelWilayah() {
+      const p = document.getElementById('provinsi');
+      const k = document.getElementById('kabupaten');
+      const c = document.getElementById('kecamatan');
+
+      const lblP = document.getElementById('label_provinsi');
+      const lblK = document.getElementById('label_kabupaten');
+      const lblC = document.getElementById('label_kecamatan');
+
+      if (lblP) {
+        lblP.innerText = (p && p.selectedIndex >= 0 && p.value) ? p.options[p.selectedIndex].text : userAktif.provinsi;
+      }
+      if (lblK) {
+        lblK.innerText = (k && k.selectedIndex >= 0 && k.value) ? k.options[k.selectedIndex].text : userAktif.kabupaten;
+      }
+      if (lblC) {
+        lblC.innerText = (c && c.selectedIndex >= 0 && c.value) ? c.options[c.selectedIndex].text : (userAktif.kecamatan || 'LEMBAR');
+      }
     }
 
     function updateFormKabupaten() {
@@ -1496,7 +1560,7 @@
         const item = dataDusun[dsnKey][kd];
         const opt = new Option(`${item.nama.toUpperCase()} (${kd})`, kd);
         opt.setAttribute('data-rt', item.jumlah_rt || 1);
-        elDusun.add(opt);
+        elDusun.add(new Option(`${kd} - ${item.nama.toUpperCase()}`, kd));
       }
       elDusun.disabled = false;
     }
@@ -1515,7 +1579,7 @@
 
       for (let i = 1; i <= jumlahRt; i++) {
         const strRt = String(i).padStart(3, '0');
-        elRt.add(new Option("RT " + strRt, strRt));
+        elRt.add(new Option(`${strRt} - ${strRt}`, strRt));
       }
       elRt.disabled = false;
     }
@@ -2395,9 +2459,7 @@
             usia_kawin_pertama: parseInt(hal.querySelector('[name="usia_kawin_pertama"]').value, 10) || null,
             memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]').value,
             hubungan_dengan_kk: (idx === 0) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3'),
-            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
-            hubungan_dengan_kk: hal.querySelector('[name="hubungan_dengan_kk"]').value,
-            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]').value.trim(),
+            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',            
             agama: hal.querySelector('[name="agama"]').value,
             jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]').value,
             status_pekerjaan: hal.querySelector('[name="status_pekerjaan"]').value,
