@@ -1199,6 +1199,7 @@
     function bukaFormulirPendataan() {
       tampilkanLayar('tampilan_formulir');
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+      inisialisasiWilayahSesuaiRole();
     }
 
     function sembunyikanSemuaHalamanForm() {
@@ -1416,6 +1417,56 @@
       for (let kd in dataProvinsi) {
         elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
       }
+      
+      inisialisasiWilayahSesuaiRole();
+    }
+
+    function inisialisasiWilayahSesuaiRole() {
+      const elProv = document.getElementById('provinsi');
+      const elKab = document.getElementById('kabupaten');
+      const elKec = document.getElementById('kecamatan');
+      const elDesa = document.getElementById('desa');
+
+      const kdProvAktif = userAktif.kode_prov || '52';
+      const kdKabAktif = userAktif.kode_kab || '01';
+      const kdKecAktif = userAktif.kode_kec || '08';
+      const kdDesaAktif = userAktif.kode_desa || '';
+
+      // 1. Set & Kunci Provinsi
+      if (elProv) {
+        elProv.value = kdProvAktif;
+        document.getElementById('kode_prov').value = kdProvAktif;
+        updateFormKabupaten();
+      }
+
+      // 2. Set & Kunci Kabupaten
+      if (elKab) {
+        elKab.value = kdKabAktif;
+        document.getElementById('kode_kab').value = kdKabAktif;
+        updateFormKecamatan();
+      }
+
+      // 3. Set & Kunci Kecamatan jika login Kecamatan atau Kader Desa
+      if (kdKecAktif && elKec) {
+        elKec.value = kdKecAktif;
+        document.getElementById('kode_kec').value = kdKecAktif;
+        updateFormDesa();
+      }
+
+      // 4. Kunci otomatis Desa jika login sebagai Kader Desa
+      if (userAktif.role === 'USER_DESA' && kdDesaAktif && elDesa) {
+        elDesa.value = kdDesaAktif;
+        document.getElementById('kode_desa').value = kdDesaAktif;
+        elDesa.disabled = true;
+        elDesa.classList.add('opacity-80', 'cursor-not-allowed');
+        updateFormDusun();
+      } else if (elDesa) {
+        // Jika Super Admin / Kab / Kec, biarkan dropdown desa aktif bisa diklik
+        elDesa.disabled = false;
+        elDesa.classList.remove('opacity-80', 'cursor-not-allowed');
+      }
+
+      sinkronkanLabelWilayah();
     }
 
     function sinkronkanLabelWilayah() {
@@ -1427,14 +1478,14 @@
       const lblK = document.getElementById('label_kabupaten');
       const lblC = document.getElementById('label_kecamatan');
 
-      if (lblP && p && p.selectedIndex >= 0) {
-        lblP.innerText = p.options[p.selectedIndex]?.text || userAktif.provinsi;
+      if (lblP) {
+        lblP.innerText = (p && p.selectedIndex >= 0 && p.value) ? p.options[p.selectedIndex].text : userAktif.provinsi;
       }
-      if (lblK && k && k.selectedIndex >= 0) {
-        lblK.innerText = k.options[k.selectedIndex]?.text || userAktif.kabupaten;
+      if (lblK) {
+        lblK.innerText = (k && k.selectedIndex >= 0 && k.value) ? k.options[k.selectedIndex].text : userAktif.kabupaten;
       }
-      if (lblC && c && c.selectedIndex >= 0) {
-        lblC.innerText = c.options[c.selectedIndex]?.text || userAktif.kecamatan;
+      if (lblC) {
+        lblC.innerText = (c && c.selectedIndex >= 0 && c.value) ? c.options[c.selectedIndex].text : (userAktif.kecamatan || 'LEMBAR');
       }
     }
 
