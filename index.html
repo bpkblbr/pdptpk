@@ -39,6 +39,47 @@
       from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .opsi-pil {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.6rem 0.9rem;
+      border: 1.5px solid #e2e8f0;
+      background-color: #ffffff;
+      color: #334155;
+      border-radius: 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      user-select: none;
+    }
+    .opsi-pil:hover {
+      border-color: #cbd5e1;
+      background-color: #f8fafc;
+    }
+    .opsi-pil.aktif {
+      background-color: #dcfce7 !important;
+      border-color: #10b981 !important;
+      color: #064e3b !important;
+      font-weight: 700 !important;
+      box-shadow: 0 1px 2px rgba(16, 185, 129, 0.15);
+    }
+    .kartu-krs {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f1f5f9;
+      padding: 1.25rem;
+    }
+    .judul-tanya-krs {
+      background-color: #f8fafc;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen antialiased">
@@ -497,615 +538,63 @@
 
         <!-- STEP 3: III. BLOK KELUARGA BERENCANA -->        
         <div id="hal_kb" class="halaman-form space-y-5">
-          <div class="border-l-4 border-emerald-600 pl-3">
-            <h2 class="text-base sm:text-lg font-black text-emerald-800 uppercase">
-              III. BLOK KELUARGA BERENCANA
-            </h2>
-            <p class="text-xs text-slate-500 font-semibold uppercase">Ditanyakan kepada wanita PUS umur 10–49 tahun</p>
-          </div>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 text-xs">
-            
-            <!-- 01. KELAHIRAN & JUMLAH ANAK -->
+          <div class="flex justify-between items-center border-b pb-2">
             <div>
-              <label class="block font-bold text-slate-700 mb-1 uppercase">01. Berapa kali Ibu melahirkan?</label>
-              <input type="number" id="kb_01_melahirkan" min="0" max="25" placeholder="0" class="w-full p-2.5 border rounded-xl font-bold uppercase text-sm" />
+              <h2 class="text-sm sm:text-base font-bold text-slate-800">III. Formulir KB</h2>
+              <p class="text-[11px] text-slate-500">Ditanyakan kepada wanita PUS usia 10–49 tahun</p>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 uppercase">01.1 Anak Lahir Hidup (L / P)</label>
-              <div class="flex gap-2">
-                <input type="number" id="kb_01_hidup_laki" placeholder="Laki" min="0" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-                <input type="number" id="kb_01_hidup_perempuan" placeholder="Perempuan" min="0" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-              </div>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 uppercase">01.2 Anak Masih Hidup (L / P)</label>
-              <div class="flex gap-2">
-                <input type="number" id="kb_01_masih_laki" placeholder="Laki" min="0" class="w-1/2 p-2.5 border rounded-xl font-bold text-sm" />
-                <input type="number" id="kb_01_masih_perempuan" placeholder="Perempuan" min="0" class="w-1/2 p-2.5 border rounded-xl font-bold text-sm" />
-              </div>
-            </div>
-
-            <!-- 02. JUMLAH ANAK IDEAL -->
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 uppercase">02. Jumlah anak ideal diinginkan</label>
-              <input type="number" id="kb_02_anak_ideal" min="0" max="20" placeholder="Anak" class="w-full p-2.5 border rounded-xl text-sm" />
-            </div>
-
-            <!-- 03. SEDANG HAMIL -->
-            <div>
-              <label class="block font-bold text-slate-700 mb-1 uppercase">03. Apakah saat ini sedang hamil? *</label>
-              <select id="kb_03_sedang_hamil" onchange="evaluasiAlurKB()" class="w-full p-2.5 border rounded-xl font-bold uppercase text-sm bg-white">
-                <option value="2" selected>2. TIDAK</option>
-                <option value="1">1. YA</option>
-              </select>
-            </div>
-
-            <!-- 03.1 USIA KEHAMILAN (JIKA 03 = YA) -->
-            <div id="row_kb_usia_hamil" style="display: none;">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">Usia Kehamilan (Minggu)</label>
-              <input type="number" id="kb_03_usia_kehamilan" min="1" max="45" placeholder="Minggu" class="w-full p-2.5 border rounded-xl text-sm" />
-            </div>
-
-            <!-- 03.1.1 KEINGINAN SAAT HAMIL (JIKA 03 = YA) -->
-            <div id="row_kb_ingin_hamil" style="display: none;" class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">03.1 Saat mulai hamil, apakah Ibu memang ingin hamil?</label>
-              <select id="kb_03_status_ingin_hamil" class="w-full p-2.5 border rounded-xl text-sm bg-white">
-                <option value="">-- PILIH STATUS KEINGINAN --</option>
-                <option value="1">1. YA, INGIN HAMIL SAAT ITU</option>
-                <option value="2">2. INGIN HAMIL NANTI / KEMUDIAN</option>
-                <option value="3">3. TIDAK INGIN ANAK LAGI</option>
-              </select>
-            </div>
-
-            <!-- 03.2 INGIN ANAK LAGI (JIKA 03 = TIDAK) -->
-            <div id="row_kb_ingin_anak_lagi" class="sm:col-span-2 lg:col-span-2">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">03.2 Apakah Ibu menginginkan anak lagi?</label>
-              <select id="kb_03_keinginan_anak_lagi" class="w-full p-2.5 border rounded-xl text-sm bg-white">
-                <option value="1" selected>1. YA, INGIN ANAK SEGERA (<= 2 TAHUN)</option>
-                <option value="2">2. YA, INGIN ANAK NANTI / KEMUDIAN (> 2 TAHUN)</option>
-                <option value="3">3. TIDAK INGIN ANAK LAGI</option>
-              </select>
-            </div>
-
-            <!-- 04. MENGGUNAKAN KONTRASEPSI SAAT INI -->
-            <div id="row_kb_04" class="sm:col-span-2 lg:col-span-1">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">04. Saat ini sedang pakai KB? *</label>
-              <select id="kb_04_sedang_kb" onchange="evaluasiAlurKB()" class="w-full p-2.5 border rounded-xl font-bold uppercase text-sm bg-white">
-                <option value="1" selected>1. YA</option>
-                <option value="2">2. TIDAK</option>
-              </select>
-            </div>
-
-            <!-- 04.1 BULAN & TAHUN MULAI PAKAI -->
-            <div id="row_kb_04_waktu" class="sm:col-span-2 lg:col-span-2">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">Mulai pakai alat KB yang dipakai saat ini (Bulan / Tahun)</label>
-              <div class="flex gap-2">
-                <select id="kb_04_mulai_bulan" class="w-1/2 p-2.5 border rounded-xl text-sm bg-white">
-                  <option value="">-- BULAN --</option>
-                  <option value="01">01. JANUARI</option><option value="02">02. FEBRUARI</option><option value="03">03. MARET</option>
-                  <option value="04">04. APRIL</option><option value="05">05. MEI</option><option value="06">06. JUNI</option>
-                  <option value="07">07. JULI</option><option value="08">08. AGUSTUS</option><option value="09">09. SEPTEMBER</option>
-                  <option value="10">10. OKTOBER</option><option value="11">11. NOVEMBER</option><option value="12">12. DESEMBER</option>
-                </select>
-                <input type="number" id="kb_04_mulai_tahun" placeholder="Contoh: 2024" min="1980" max="2035" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-              </div>
-            </div>
-
-            <!-- 05. PERNAH PAKAI DALAM 12 BULAN TERAKHIR -->
-            <div id="row_kb_05" class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">05. Dalam 12 bulan terakhir pernah pakai KB?</label>
-              <select id="kb_05_pernah_kb" onchange="evaluasiAlurKB()" class="w-full p-2.5 border rounded-xl font-bold text-sm bg-white">
-                <option value="2" selected>2. TIDAK</option>
-                <option value="1">1. YA</option>
-              </select>
-            </div>
-
-            <!-- 05.1 WAKTU MULAI & BERHENTI -->
-            <div id="row_kb_05_waktu" style="display: none;" class="sm:col-span-2 lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 border rounded-2xl">
-              <div>
-                <label class="block font-bold text-slate-600 mb-1 uppercase">Mulai pakai KB terakhir (Bulan / Tahun)</label>
-                <div class="flex gap-2">
-                  <input type="number" id="kb_05_mulai_bulan" min="1" max="12" placeholder="Bulan (01-12)" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-                  <input type="number" id="kb_05_mulai_tahun" min="1980" max="2035" placeholder="Tahun (YYYY)" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-                </div>
-              </div>
-              <div>
-                <label class="block font-bold text-slate-600 mb-1 uppercase">Berhenti pakai KB terakhir (Bulan / Tahun)</label>
-                <div class="flex gap-2">
-                  <input type="number" id="kb_05_berhenti_bulan" min="1" max="12" placeholder="Bulan (01-12)" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-                  <input type="number" id="kb_05_berhenti_tahun" min="1980" max="2035" placeholder="Tahun (YYYY)" class="w-1/2 p-2.5 border rounded-xl text-sm" />
-                </div>
-              </div>
-            </div>
-
-            <!-- 06. ALASAN UTAMA TIDAK BER-KB (16 OPSI) -->
-            <div id="row_kb_06" class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">06. Alasan utama tidak pakai KB / putus pakai KB (PILIH 1 JAWABAN)</label>
-              <select id="kb_06_alasan_tidak_kb" class="w-full p-2.5 border rounded-xl text-sm bg-white">
-                <option value="">-- PILIH ALASAN --</option>
-                <option value="1">1. INGIN HAMIL / ANAK</option>
-                <option value="2">2. TIDAK TAHU TENTANG KB</option>
-                <option value="3">3. ALASAN KESEHATAN</option>
-                <option value="4">4. EFEK SAMPING / KEGAGALAN KB</option>
-                <option value="5">5. TEMPAT PELAYANAN JAUH</option>
-                <option value="6">6. ALAT/OBAT/CARA KB TIDAK TERSEDIA</option>
-                <option value="7">7. BIAYA MAHAL</option>
-                <option value="8">8. TIDAK ADA ALAT/OBAT/CARA KB YANG COCOK</option>
-                <option value="9">9. SUAMI / KELUARGA MENOLAK</option>
-                <option value="10">10. ALASAN AGAMA</option>
-                <option value="11">11. TIDAK ADA PETUGAS PELAYANAN KB</option>
-                <option value="12">12. BARU MELAHIRKAN</option>
-                <option value="13">13. 6 BULAN TERAKHIR TIDAK BERHUBUNGAN (MISAL: SUAMI JAUH)</option>
-                <option value="14">14. 6 BULAN TERAKHIR TIDAK MENSTRUASI</option>
-                <option value="15">15. TIDAK SUBUR / MANDUL / LAMA MENIKAH MIN. 5 TAHUN BELUM PUNYA ANAK</option>
-                <option value="16">16. MENOPAUSE</option>
-              </select>
-            </div>
-
-            <!-- 07. JENIS KONTRASEPSI SAAT INI / TERAKHIR DIPAKAI (9 OPSI) -->
-            <div id="row_kb_07" class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">07. Jenis alat/obat/cara KB yang dipakai saat ini / terakhir dipakai *</label>
-              <select id="kb_07_jenis_kb" onchange="evaluasiAlurKB()" class="w-full p-2.5 border rounded-xl font-bold uppercase text-sm bg-white">
-                <option value="">-- PILIH METODE KB --</option>
-                <option value="1">1. MOW / STERIL WANITA</option>
-                <option value="2">2. MOP / STERIL PRIA</option>
-                <option value="3">3. IUD / SPIRAL / AKDR</option>
-                <option value="4">4. IMPLANT / SUSUK</option>
-                <option value="5">5. SUNTIK</option>
-                <option value="6">6. PIL</option>
-                <option value="7">7. KONDOM</option>
-                <option value="8">8. MAL (METODE AMENORE LAKTASI)</option>
-                <option value="9">9. TRADISIONAL (PANTANG BERKALA / SENGENGAMA TERPUTUS / LAINNYA)</option>
-              </select>
-            </div>
-
-            <!-- 08. SUMBER PELAYANAN KB (10 OPSI) -->
-            <div id="row_kb_08" class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1 uppercase">08. Sumber mendapatkan pelayanan KB terakhir</label>
-              <select id="kb_08_sumber_pelayanan" class="w-full p-2.5 border rounded-xl text-sm bg-white">
-                <option value="">-- PILIH SUMBER PELAYANAN --</option>
-                <option value="1">1. RS PEMERINTAH / TNI / POLRI</option>
-                <option value="2">2. RS SWASTA</option>
-                <option value="3">3. PUSKESMAS / KLINIK TNI / POLRI</option>
-                <option value="4">4. KLINIK SWASTA</option>
-                <option value="5">5. PRAKTIK DOKTER</option>
-                <option value="6">6. PUSTU / PUSLING / BIDAN DESA</option>
-                <option value="7">7. PRAKTIK MANDIRI BIDAN</option>
-                <option value="8">8. MOBIL PELAYANAN KB</option>
-                <option value="9">9. TOKO OBAT / APOTEK</option>
-                <option value="10">10. LAINNYA</option>
-              </select>
-            </div>
-
-            <!-- 09. INFORMASI YANG DIDAPATKAN KETIKA PERTAMA KALI DATANG -->
-            <div id="row_kb_09" class="sm:col-span-2 lg:col-span-3 space-y-2 p-3 bg-slate-50 border rounded-2xl">
-              <p class="font-bold text-slate-800 uppercase">09. Saat pertama kali datang, apakah Ibu/Suami mendapat info tentang:</p>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                <div>
-                  <label class="block text-slate-600 mb-1 font-semibold uppercase">1. Jenis-jenis alat KB?</label>
-                  <select id="kb_09_info_jenis" class="w-full p-2 border rounded-xl bg-white">
-                    <option value="1" selected>1. YA</option>
-                    <option value="2">2. TIDAK</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-slate-600 mb-1 font-semibold uppercase">2. Efek samping alat KB?</label>
-                  <select id="kb_09_info_efek_samping" class="w-full p-2 border rounded-xl bg-white">
-                    <option value="1" selected>1. YA</option>
-                    <option value="2">2. TIDAK</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-slate-600 mb-1 font-semibold uppercase">3. Yang harus dilakukan bila ada efek samping?</label>
-                  <select id="kb_09_info_tindakan" class="w-full p-2 border rounded-xl bg-white">
-                    <option value="1" selected>1. YA</option>
-                    <option value="2">2. TIDAK</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
+            <span id="label_langkah_kb" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              Langkah 1/9
+            </span>
           </div>
 
-          <div class="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t">
-            <button type="button" onclick="bukaHalamanAnggota(totalHalamanAnggota)"
-                    class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
-              &larr; KEMBALI KE ANGGOTA
-            </button>
-            <button type="button" onclick="pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA')"
-                    class="w-full sm:w-auto px-7 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-sm uppercase">
-              LANJUT KE PEMBANGUNAN KELUARGA &rarr;
-            </button>
+          <div class="kartu-krs min-h-[300px] flex flex-col justify-between">
+            <div id="kontainer_step_kb" class="space-y-4">
+              <!-- Pertanyaan KB akan dimuat di sini secara bergantian -->
+            </div>
+
+            <!-- Tombol Navigasi Bawah -->
+            <div class="flex justify-between items-center pt-6 border-t mt-6">
+              <button type="button" onclick="mundurStepKB()"
+                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+                <span>&larr; Sebelumnya</span>
+              </button>
+              <button type="button" onclick="majuStepKB()"
+                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+                <span>Selanjutnya &rarr;</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- STEP 4: IV. BLOK PEMBANGUNAN KELUARGA -->
-        <div id="hal_pembangunan" class="halaman-form space-y-6">
-          <div class="border-l-4 border-emerald-600 pl-3">
-            <h2 class="text-base sm:text-lg font-black text-emerald-800 uppercase">
-              IV. BLOK PEMBANGUNAN KELUARGA
-            </h2>
-            <p class="text-xs text-slate-500 font-semibold uppercase">Instrumen Pendataan Pembangunan Keluarga Terpadu</p>
-          </div>
-
-          <!-- SUB-BLOK A: SOSIAL, EKONOMI, DAN KETAHANAN KELUARGA (01 - 13) -->
-          <div class="bg-white border rounded-2xl p-4 space-y-4">
-            <h3 class="text-xs font-black text-slate-800 uppercase border-b pb-2 text-emerald-800">
-              A. Ketahanan Sosial & Ekonomi Keluarga (01 - 13)
-            </h3>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 text-xs">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">01. Ibadah rutin sesuai agama/kepercayaan (10 th+)?</label>
-                <select id="pk_01_ibadah" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">02. Memiliki buku/akta nikah sah?</label>
-                <select id="pk_02_akta_nikah" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">03.a Konflik tanpa tegur sapa (3 hari berturut-turut)?</label>
-                <select id="pk_03_a_tanpa_sapa" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">03.b Pisah ranjang suami-istri (7 hari berturut-turut)?</label>
-                <select id="pk_03_b_pisah_ranjang" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                  <option value="3">3. TIDAK BERLAKU</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">03.c Pergi dari rumah/minggat (2 hari berturut-turut)?</label>
-                <select id="pk_03_c_minggat" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">03.d Kekerasan dalam rumah tangga (KDRT)?</label>
-                <select id="pk_03_d_kdrt" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">04. Memiliki sumber penghasilan pokok per bulan?</label>
-                <select id="pk_04_penghasilan" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">05. Makan makanan beragam minimal 2x sehari?</label>
-                <select id="pk_05_makanan_beragam" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">06. Keluarga memiliki aset? *</label>
-                <select id="pk_06_aset" onchange="evaluasiAlurPK()" class="w-full p-2.5 border rounded-xl font-bold bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <!-- 06.1 JIKA MEMILIKI ASET -->
-              <div id="row_pk_06_aset_detail" class="sm:col-span-2 lg:col-span-3">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">06.1 Aset utama yang dimiliki keluarga</label>
-                <select id="pk_06_aset_jenis" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Tabungan (uang kontan / rekening aktif)</option>
-                  <option value="2">2. AC</option>
-                  <option value="3">3. Televisi layar datar</option>
-                  <option value="4">4. Lemari es / kulkas</option>
-                  <option value="5">5. Komputer / laptop</option>
-                  <option value="6" selected>6. Sepeda motor</option>
-                  <option value="7">7. Mobil</option>
-                  <option value="8">8. Kapal / perahu motor / perahu</option>
-                  <option value="9">9. Emas / perhiasan (minimal 10 gram)</option>
-                  <option value="10">10. Hewan ternak</option>
-                  <option value="11">11. Lahan</option>
-                  <option value="12">12. Rumah di tempat lain</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">07. Anggota keluarga sakit kronis sebulan terakhir?</label>
-                <select id="pk_07_penyakit_kronis" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">08. Terdapat anggota keluarga yang disabilitas?</label>
-                <select id="pk_08_disabilitas" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="2" selected>2. TIDAK</option>
-                  <option value="1">1. YA</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">09. Mengakses informasi dari internet sebulan terakhir?</label>
-                <select id="pk_09_internet" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">10. Memiliki waktu berinteraksi setiap hari?</label>
-                <select id="pk_10_interaksi" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">11. Pengasuhan anak bersama suami dan istri?</label>
-                <select id="pk_11_pengasuhan_bersama" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                  <option value="3">3. TIDAK BERLAKU</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">12. Rekreasi bersama di luar rumah (6 bulan terakhir)?</label>
-                <select id="pk_12_rekreasi" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
-
-              <div class="sm:col-span-2 lg:col-span-3">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">13. Ikut kegiatan gotong royong di lingkungan RT?</label>
-                <select id="pk_13_gotong_royong" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. YA</option>
-                  <option value="2">2. TIDAK</option>
-                </select>
-              </div>
+        <!-- STEP 4: IV. BLOK PEMBANGUNAN KELUARGA (SATU PER SATU GAYA KRS) -->
+        <div id="hal_pembangunan" class="halaman-form space-y-5">
+          <div class="flex justify-between items-center border-b pb-2">
+            <div>
+              <h2 class="text-sm sm:text-base font-bold text-slate-800">IV. Pembangunan Keluarga</h2>
+              <p class="text-[11px] text-slate-500">Kondisi perumahan, sanitasi, sosial, dan ketahanan</p>
             </div>
+            <span id="label_langkah_pk" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              Langkah 1/23
+            </span>
           </div>
 
-          <!-- SUB-BLOK B: RUMAH DAN KONDISI FISIK LINGKUNGAN (14 - 23) -->
-          <div class="bg-white border rounded-2xl p-4 space-y-4">
-            <h3 class="text-xs font-black text-slate-800 uppercase border-b pb-2 text-emerald-800">
-              B. Kondisi Perumahan & Sanitasi Lingkungan (14 - 23)
-            </h3>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">14.1 Jenis atap rumah terluas</label>
-                <select id="pk_14_1_atap" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Beton</option>
-                  <option value="2" selected>2. Genteng</option>
-                  <option value="3">3. Seng</option>
-                  <option value="4">4. Asbes</option>
-                  <option value="5">5. Kayu / Sirap</option>
-                  <option value="6">6. Bambu</option>
-                  <option value="7">7. Jerami / Ijuk / Rumbia</option>
-                  <option value="8">8. Lainnya</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">14.2 Kondisi atap</label>
-                <select id="pk_14_2_kondisi_atap" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Bagus / Kualitas tinggi</option>
-                  <option value="2">2. Jelek / Kualitas rendah</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">15.1 Jenis dinding rumah terluas</label>
-                <select id="pk_15_1_dinding" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Tembok</option>
-                  <option value="2">2. Plesteran anyaman bambu/kawat</option>
-                  <option value="3">3. Kayu / Papan / Gypsum</option>
-                  <option value="4">4. Anyaman bambu</option>
-                  <option value="5">5. Batang kayu</option>
-                  <option value="6">6. Bambu</option>
-                  <option value="7">7. Lainnya</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">15.2 Kondisi dinding</label>
-                <select id="pk_15_2_kondisi_dinding" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Bagus / Kualitas tinggi</option>
-                  <option value="2">2. Jelek / Kualitas rendah</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">16.1 Jenis lantai rumah terluas</label>
-                <select id="pk_16_1_lantai" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Marmer / Granit</option>
-                  <option value="2" selected>2. Keramik</option>
-                  <option value="3">3. Parket / Vinil / Karpet</option>
-                  <option value="4">4. Ubin / Tegel / Teraso</option>
-                  <option value="5">5. Kayu / Papan</option>
-                  <option value="6">6. Semen / Bata merah</option>
-                  <option value="7">7. Bambu</option>
-                  <option value="8">8. Tanah</option>
-                  <option value="9">9. Lainnya</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">16.2 Kondisi lantai</label>
-                <select id="pk_16_2_kondisi_lantai" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Bagus / Kualitas tinggi</option>
-                  <option value="2">2. Jelek / Kualitas rendah</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">17.1 Sumber penerangan utama</label>
-                <select id="pk_17_1_penerangan" onchange="evaluasiAlurPK()" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Listrik PLN meteran</option>
-                  <option value="2">2. Listrik PLN non meteran</option>
-                  <option value="3">3. Listrik non-PLN (genset/solar cell)</option>
-                  <option value="4">4. Bukan listrik</option>
-                </select>
-              </div>
-
-              <div id="row_pk_17_2_daya">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">17.2 Daya listrik terpasang</label>
-                <select id="pk_17_2_daya_pln" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. 450 watt</option>
-                  <option value="2" selected>2. 900 watt</option>
-                  <option value="3">3. 1.300 watt</option>
-                  <option value="4">4. > 1.300 watt</option>
-                </select>
-              </div>
-
-              <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">18. Sumber air minum utama</label>
-                <select id="pk_18_air_minum" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Air kemasan / isi ulang</option>
-                  <option value="2" selected>2. Ledeng / PAM</option>
-                  <option value="3">3. Sumur bor / pompa</option>
-                  <option value="4">4. Sumur terlindung</option>
-                  <option value="5">5. Sumur tak terlindung</option>
-                  <option value="6">6. Mata air terlindung</option>
-                  <option value="7">7. Mata air tak terlindung</option>
-                  <option value="8">8. Air permukaan (sungai/danau/waduk)</option>
-                  <option value="9">9. Air hujan</option>
-                  <option value="10">10. Lainnya</option>
-                </select>
-              </div>
-
-              <div class="sm:col-span-2">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">19. Fasilitas tempat buang air besar</label>
-                <select id="pk_19_jamban" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Ya, milik sendiri dengan leher angsa dan tangki septik/IPAL</option>
-                  <option value="2">2. Ya, MCK komunal dengan leher angsa dan tangki septik/IPAL</option>
-                  <option value="3">3. Ya, Lainnya</option>
-                  <option value="4">4. Tidak ada</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">20. Luas bangunan total (m2)</label>
-                <input type="number" id="pk_20_luas_rumah" min="5" max="999" placeholder="Contoh: 45" class="w-full p-2.5 border rounded-xl text-sm" />
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">21. Orang menetap di rumah ini</label>
-                <input type="number" id="pk_21_jumlah_penghuni" min="1" max="30" placeholder="Orang" class="w-full p-2.5 border rounded-xl text-sm" />
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">22. Bahan bakar utama memasak</label>
-                <select id="pk_22_bahan_bakar" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Listrik</option>
-                  <option value="2">2. Gas 12 kg</option>
-                  <option value="3">3. Gas 5,5 kg / blue gaz</option>
-                  <option value="4" selected>4. Gas 3 kg</option>
-                  <option value="5">5. Minyak tanah</option>
-                  <option value="6">6. Briket / arang / kayu</option>
-                  <option value="7">7. Lainnya</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">23. Kepemilikan rumah tinggal</label>
-                <select id="pk_23_kepemilikan_rumah" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1" selected>1. Milik sendiri</option>
-                  <option value="2">2. Kontrak / sewa</option>
-                  <option value="3">3. Bebas sewa / menumpang</option>
-                  <option value="4">4. Dinas</option>
-                  <option value="5">5. Lainnya</option>
-                </select>
-              </div>
+          <div class="kartu-krs min-h-[320px] flex flex-col justify-between">
+            <div id="kontainer_step_pk" class="space-y-4">
+              <!-- Pertanyaan PK akan dimuat di sini secara bergantian -->
             </div>
-          </div>
 
-          <!-- SUB-BLOK C: PENERIMAAN INFORMASI KEPENDUDUKAN & STUNTING (24 - 27) -->
-          <div class="bg-white border rounded-2xl p-4 space-y-4">
-            <h3 class="text-xs font-black text-slate-800 uppercase border-b pb-2 text-emerald-800">
-              C. Penerimaan Informasi Program & Stunting (24 - 27)
-            </h3>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">24. Pernah melihat/mendengar pesan program Bangga Kencana dari media?</label>
-                <select id="pk_24_info_media" onchange="evaluasiAlurPK()" class="w-full p-2.5 border rounded-xl font-bold bg-white">
-                  <option value="1" selected>1. YA (Lanjut No. 25)</option>
-                  <option value="2">2. TIDAK (Lompat ke No. 26)</option>
-                </select>
-              </div>
-
-              <div id="row_pk_25_media_detail">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">25. Media utama informasi tersebut diperoleh</label>
-                <select id="pk_25_media_sumber" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Koran / Majalah / Tabloid</option>
-                  <option value="2" selected>2. Televisi / Radio / Videotron</option>
-                  <option value="3">3. Facebook / Instagram / Twitter / WA / YouTube / Website</option>
-                  <option value="4">4. Seminar / Pengajian / Pertemuan Kelompok / Pameran</option>
-                  <option value="5">5. Leaflet / Poster / Spanduk / Baliho / Mural / Souvenir</option>
-                  <option value="6">6. Wayang / Tarian / Pentas Budaya Lokal</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block font-bold text-slate-700 mb-1 uppercase">26. Pernah memperoleh informasi program & STUNTING dari petugas?</label>
-                <select id="pk_26_info_petugas" onchange="evaluasiAlurPK()" class="w-full p-2.5 border rounded-xl font-bold bg-white">
-                  <option value="1" selected>1. YA (Lanjut No. 27)</option>
-                  <option value="2">2. TIDAK (Selesai)</option>
-                </select>
-              </div>
-
-              <div id="row_pk_27_petugas_detail">
-                <label class="block font-bold text-slate-700 mb-1 uppercase">27. Petugas utama yang memberi informasi tersebut</label>
-                <select id="pk_27_petugas_sumber" class="w-full p-2.5 border rounded-xl bg-white">
-                  <option value="1">1. Pejabat Pemerintah</option>
-                  <option value="2">2. PKB / PLKB / Petugas Lapangan KB lainnya</option>
-                  <option value="3">3. Guru / Dosen</option>
-                  <option value="4">4. Tokoh Agama</option>
-                  <option value="5">5. Tokoh Masyarakat</option>
-                  <option value="6">6. Dokter</option>
-                  <option value="7">7. Bidan / Perawat</option>
-                  <option value="8">8. Perangkat Desa / Kelurahan</option>
-                  <option value="9" selected>9. Kader / IMP</option>
-                  <option value="10">10. Tim Pendamping Keluarga (TPK)</option>
-                  <option value="11">11. Lainnya</option>
-                </select>
-              </div>
+            <!-- Tombol Navigasi Bawah -->
+            <div class="flex justify-between items-center pt-6 border-t mt-6">
+              <button type="button" onclick="mundurStepPK()"
+                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+                <span>&larr; Sebelumnya</span>
+              </button>
+              <button type="button" onclick="majuStepPK()"
+                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+                <span>Selanjutnya &rarr;</span>
+              </button>
             </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t">
-            <button type="button" onclick="pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA')"
-                    class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl text-slate-700 font-bold uppercase hover:bg-slate-100 transition text-sm">
-              &larr; KEMBALI KE BLOK KB
-            </button>
-            <button type="button" onclick="bukaHalamanReview()"
-                    class="w-full sm:w-auto px-8 py-3.5 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-black rounded-xl shadow-lg transition text-sm uppercase">
-              REVIEW SELURUH DATA &rarr;
-            </button>
           </div>
         </div>
 
@@ -1208,6 +697,10 @@
       tampilkanLayar('tampilan_formulir');
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
       inisialisasiWilayahSesuaiRole();
+      indexStepKB = 0;
+      indexStepPK = 0;
+      tampilkanStepKB();
+      tampilkanStepPK();
     }
 
     function sembunyikanSemuaHalamanForm() {
@@ -2411,8 +1904,9 @@
       const nik = pageEl.querySelector('[name="nik"]').value.trim();
       const tgl = pageEl.querySelector('[name="tanggal_lahir"]').value;
       const statusKawin = pageEl.querySelector('[name="status_perkawinan"]').value;
-      const usiaKawin = pageEl.querySelector('[name="usia_kawin_pertama"]').value;
+      const usiaKawin = pageEl.querySelector('[name="usia_kawin_pertama"]')?.value;
 
+      // Validasi Isian Wajib
       if (!nama || !nik || !tgl) {
         Swal.fire({
           icon: 'warning',
@@ -2433,28 +1927,786 @@
         return;
       }
 
+      // Jika ini anggota terakhir, tampilkan popup modal persis seperti aplikasi KRS
       if (noUrut === totalHalamanAnggota) {
         Swal.fire({
-          title: 'Pemeriksaan Anggota',
-          text: 'Apakah seluruh anggota keluarga telah terisi?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#059669',
-          cancelButtonColor: '#0284c7',
-          confirmButtonText: 'Ya, Lanjut ke Blok KB',
-          cancelButtonText: 'Tambah Anggota Baru'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
-            const badge = document.getElementById('badgeLangkah');
-            if (badge) badge.innerText = "LANGKAH 3";
-          } else {
-            tambahHalamanAnggotaBaru();
-            bukaHalamanAnggota(totalHalamanAnggota);
+          title: `
+            <div class="text-base sm:text-lg font-black text-slate-800 uppercase tracking-tight">
+              Tambah Data Individu
+            </div>
+          `,
+          html: `
+            <div class="space-y-4 pt-1 pb-2">
+              <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                Apakah anda akan melakukan tambah data individu?
+              </p>
+              
+              <div class="flex flex-col gap-2.5 pt-2">
+                <!-- Tombol Hijau: Ya, Tambah Individu -->
+                <button type="button" id="btnYaTambahIndividu"
+                        class="w-full py-3 bg-[#48bb78] hover:bg-[#38a169] active:scale-95 text-white font-bold rounded-2xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
+                  <span>👤+</span>
+                  <span>Ya, Tambah Individu</span>
+                </button>
+                
+                <!-- Tombol Putih: Tidak -->
+                <button type="button" id="btnTidakLanjutKB"
+                        class="w-full py-3 bg-slate-50 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold border border-slate-200 rounded-2xl shadow-sm transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
+                  <span>Tidak</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
+
+              <p class="text-[11px] text-slate-400 italic pt-1">
+                *Jika pilih Tidak maka akan dilanjutkan ke Blok KB / Form Penapisan
+              </p>
+            </div>
+          `,
+          showConfirmButton: false,
+          showCancelButton: false,
+          showCloseButton: true,
+          customClass: {
+            popup: 'rounded-3xl p-5 sm:p-6 shadow-2xl max-w-xs sm:max-w-sm border border-slate-100',
+            closeButton: 'text-slate-400 hover:text-slate-700 focus:outline-none'
+          },
+          didOpen: () => {
+            // Action saat tombol 'Ya, Tambah Individu' ditekan
+            document.getElementById('btnYaTambahIndividu').addEventListener('click', () => {
+              Swal.close();
+              tambahHalamanAnggotaBaru();
+              bukaHalamanAnggota(totalHalamanAnggota);
+            });
+
+            // Action saat tombol 'Tidak ->' ditekan
+            document.getElementById('btnTidakLanjutKB').addEventListener('click', () => {
+              Swal.close();
+              pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
+              const badge = document.getElementById('badgeLangkah');
+              if (badge) badge.innerText = "LANGKAH 3";
+            });
           }
         });
       } else {
+        // Jika masih ada anggota berikutnya, lanjut ke lembar berikutnya
         bukaHalamanAnggota(noUrut + 1);
+      }
+    }
+
+    // ========================================================
+    // DATA PERTANYAAN STEP-BY-STEP BLOK KB
+    // ========================================================
+    let indexStepKB = 0;
+    const daftarPertanyaanKB = [
+      {
+        id: 'kb_step_1',
+        tipe: 'angka_kelahiran',
+        judul: '01. Riwayat Melahirkan & Jumlah Anak'
+      },
+      {
+        id: 'kb_02_anak_ideal',
+        tipe: 'angka',
+        judul: '02. Menurut Ibu, berapa jumlah anak ideal yang diinginkan?',
+        satuan: 'Anak',
+        default: 2
+      },
+      {
+        id: 'kb_03_sedang_hamil',
+        tipe: 'pil_hamil',
+        judul: '03. Apakah Ibu saat ini sedang hamil?'
+      },
+      {
+        id: 'kb_04_sedang_kb',
+        tipe: 'pil_sedang_kb',
+        judul: '04. Apakah saat ini IBU atau SUAMI menggunakan alat/obat/cara KB (kontrasepsi)?'
+      },
+      {
+        id: 'kb_05_pernah_kb',
+        tipe: 'pil_pernah_kb',
+        judul: '05. Apakah dalam 12 bulan terakhir IBU atau SUAMI PERNAH menggunakan kontrasepsi?'
+      },
+      {
+        id: 'kb_06_alasan_tidak_kb',
+        tipe: 'pilihan_banyak',
+        judul: '06. Alasan utama tidak pakai KB atau putus pakai KB?',
+        opsi: [
+          { val: '1', label: '1. Ingin hamil/anak' },
+          { val: '2', label: '2. Tidak tahu tentang KB' },
+          { val: '3', label: '3. Alasan kesehatan' },
+          { val: '4', label: '4. Efek samping/kegagalan KB' },
+          { val: '5', label: '5. Tempat pelayanan jauh' },
+          { val: '6', label: '6. Alat/obat KB tidak tersedia' },
+          { val: '7', label: '7. Biaya mahal' },
+          { val: '8', label: '8. Tidak ada alat KB yang cocok' },
+          { val: '9', label: '9. Suami/keluarga menolak' },
+          { val: '10', label: '10. Alasan agama' },
+          { val: '11', label: '11. Tidak ada petugas pelayanan KB' },
+          { val: '12', label: '12. Baru melahirkan' },
+          { val: '13', label: '13. Tidak berhubungan (suami jauh)' },
+          { val: '14', label: '14. 6 bulan tidak menstruasi' },
+          { val: '15', label: '15. Tidak subur/mandul/lama menikah' },
+          { val: '16', label: '16. Menopause' }
+        ]
+      },
+      {
+        id: 'kb_07_jenis_kb',
+        tipe: 'pilihan_banyak',
+        judul: '07. Jenis alat/obat/cara KB yang dipakai saat ini / terakhir dipakai?',
+        opsi: [
+          { val: '1', label: '1. MOW/Steril Wanita' },
+          { val: '2', label: '2. MOP/Steril Pria' },
+          { val: '3', label: '3. IUD/Spiral/AKDR' },
+          { val: '4', label: '4. Implant/Susuk' },
+          { val: '5', label: '5. Suntik' },
+          { val: '6', label: '6. Pil' },
+          { val: '7', label: '7. Kondom' },
+          { val: '8', label: '8. MAL (Metode Amenore Laktasi)' },
+          { val: '9', label: '9. Tradisional (Pantang Berkala/Senggama Terputus)' }
+        ]
+      },
+      {
+        id: 'kb_08_sumber_pelayanan',
+        tipe: 'pilihan_banyak',
+        judul: '08. Sumber mendapatkan pelayanan KB terakhir?',
+        opsi: [
+          { val: '1', label: '1. RS Pemerintah/TNI/Polri' },
+          { val: '2', label: '2. RS Swasta' },
+          { val: '3', label: '3. Puskesmas/Klinik TNI/Polri' },
+          { val: '4', label: '4. Klinik Swasta' },
+          { val: '5', label: '5. Praktik Dokter' },
+          { val: '6', label: '6. Pustu/Pusling/Bidan Desa' },
+          { val: '7', label: '7. Praktik Mandiri Bidan' },
+          { val: '8', label: '8. Mobil Pelayanan KB' },
+          { val: '9', label: '9. Toko Obat/Apotek' },
+          { val: '10', label: '10. Lainnya' }
+        ]
+      },
+      {
+        id: 'kb_09_info_petugas',
+        tipe: 'info_tiga_poin',
+        judul: '09. Informasi pelayanan KB yang diperoleh saat pertama kali datang:'
+      }
+    ];
+
+    // ========================================================
+    // DATA PERTANYAAN STEP-BY-STEP BLOK PEMBANGUNAN KELUARGA
+    // ========================================================
+    let indexStepPK = 0;
+    const daftarPertanyaanPK = [
+      {
+        id: 'pk_01_ibadah',
+        judul: '01. Anggota keluarga (10 th+) menjalankan ibadah secara rutin?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_02_akta_nikah',
+        judul: '02. Keluarga memiliki buku/akta nikah sah?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_03_konflik',
+        tipe: 'konflik_keluarga',
+        judul: '03. Konflik dalam keluarga 6 bulan terakhir:'
+      },
+      {
+        id: 'pk_04_penghasilan',
+        judul: '04. Terdapat anggota keluarga yang memiliki sumber penghasilan tetap per bulan?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_05_makanan_beragam',
+        judul: '05. Makan makanan beragam (pokok, sayur/buah, lauk) minimal 2x sehari?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_06_aset',
+        tipe: 'aset_keluarga',
+        judul: '06. Kepemilikan aset oleh keluarga:'
+      },
+      {
+        id: 'pk_07_penyakit_kronis',
+        judul: '07. Terdapat anggota keluarga yang memiliki penyakit kronis?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_08_disabilitas',
+        judul: '08. Terdapat anggota keluarga yang disabilitas?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_09_internet',
+        judul: '09. Anggota keluarga mengakses informasi dari media internet?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_10_interaksi',
+        judul: '10. Memiliki waktu interaksi antar anggota keluarga setiap hari?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_11_pengasuhan_bersama',
+        judul: '11. Pengasuhan anak dilakukan bersama antara suami dan istri?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak Berlaku' }]
+      },
+      {
+        id: 'pk_12_rekreasi',
+        judul: '12. Rekreasi bersama di luar rumah dalam 6 bulan terakhir?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_13_gotong_royong',
+        judul: '13. Mengikuti kegiatan sosial / gotong royong di lingkungan RT?',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+      },
+      {
+        id: 'pk_14_atap',
+        tipe: 'dua_tingkat',
+        judulUtama: '14. Jenis atap rumah terluas?',
+        opsiUtama: [
+          { val: '1', label: '1. Beton' }, { val: '2', label: '2. Genteng' }, { val: '3', label: '3. Seng' },
+          { val: '4', label: '4. Asbes' }, { val: '5', label: '5. Kayu/sirap' }, { val: '6', label: '6. Bambu' },
+          { val: '7', label: '7. Jerami/ijuk/rumbia/daun-daunan' }, { val: '8', label: '8. Lainnya' }
+        ],
+        judulSub: '14.1. Kondisi atap?',
+        opsiSub: [
+          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
+        ],
+        fieldUtama: 'pk_14_1_atap',
+        fieldSub: 'pk_14_2_kondisi_atap'
+      },
+      {
+        id: 'pk_15_dinding',
+        tipe: 'dua_tingkat',
+        judulUtama: '15. Jenis dinding rumah terluas?',
+        opsiUtama: [
+          { val: '1', label: '1. Tembok' }, { val: '2', label: '2. Plesteran anyaman bambu/kawat' },
+          { val: '3', label: '3. Kayu/papan/gipsum' }, { val: '4', label: '4. Anyaman bambu' },
+          { val: '5', label: '5. Batang kayu' }, { val: '6', label: '6. Bambu' }, { val: '7', label: '7. Lainnya' }
+        ],
+        judulSub: '15.1. Kondisi dinding?',
+        opsiSub: [
+          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
+        ],
+        fieldUtama: 'pk_15_1_dinding',
+        fieldSub: 'pk_15_2_kondisi_dinding'
+      },
+      {
+        id: 'pk_16_lantai',
+        tipe: 'dua_tingkat',
+        judulUtama: '16. Jenis lantai rumah terluas?',
+        opsiUtama: [
+          { val: '1', label: '1. Marmer/granit' }, { val: '2', label: '2. Keramik' }, { val: '3', label: '3. Parket/vinil/karpet' },
+          { val: '4', label: '4. Ubin/tegel/teraso' }, { val: '5', label: '5. Kayu/papan' }, { val: '6', label: '6. Semen/bata merah' },
+          { val: '7', label: '7. Bambu' }, { val: '8', label: '8. Tanah' }, { val: '9', label: '9. Lainnya' }
+        ],
+        judulSub: '16.1. Kondisi lantai?',
+        opsiSub: [
+          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
+        ],
+        fieldUtama: 'pk_16_1_lantai',
+        fieldSub: 'pk_16_2_kondisi_lantai'
+      },
+      {
+        id: 'pk_17_penerangan',
+        tipe: 'penerangan',
+        judul: '17. Sumber penerangan utama?'
+      },
+      {
+        id: 'pk_18_air_minum',
+        tipe: 'pilihan_banyak',
+        judul: '18. Sumber Air Minum Utama?',
+        opsi: [
+          { val: '1', label: '1. Air kemasan bermerek' },
+          { val: '2', label: '2. Air isi ulang' },
+          { val: '3', label: '3. Leding/PAM' },
+          { val: '4', label: '4. Sumur bor/pompa' },
+          { val: '5', label: '5. Sumur terlindung' },
+          { val: '6', label: '6. Sumur tak terlindungi' },
+          { val: '7', label: '7. Mata air terlindungi' },
+          { val: '8', label: '8. Mata air tak terlindungi' },
+          { val: '9', label: '9. Air permukaan (sungai/danau/waduk/kolam/irigasi)' },
+          { val: '10', label: '10. Kran umum/hidran umum/terminal air' },
+          { val: '11', label: '11. Penampungan Air Hujan (PAH)' },
+          { val: '12', label: '12. Lainnya' }
+        ]
+      },
+      {
+        id: 'pk_19_jamban',
+        tipe: 'pilihan_banyak',
+        judul: '19. Memiliki fasilitas tempat buang air besar?',
+        opsi: [
+          { val: '1', label: '1. Jamban milik sendiri dengan leher angsa dan tangki septik/IPAL dan disedot berkala (1x dlm 3-5 thn)' },
+          { val: '2', label: '2. Jamban milik sendiri dengan leher angsa dan tangki septik/IPAL' },
+          { val: '3', label: '3. Jamban pada MCK komunal dengan leher angsa dan tangki septik/IPAL' },
+          { val: '4', label: '4. Lainnya' },
+          { val: '5', label: '5. Tidak Ada' }
+        ]
+      },
+      {
+        id: 'pk_20_luas_rumah',
+        tipe: 'angka',
+        judul: '20. Luas rumah/bangunan keseluruhan?',
+        satuan: 'm²',
+        default: 45
+      },
+      {
+        id: 'pk_21_jumlah_penghuni',
+        tipe: 'angka',
+        judul: '21. Jumlah orang yang tinggal dalam bangunan rumah?',
+        satuan: 'Orang',
+        default: 4
+      },
+      {
+        id: 'pk_22_bahan_bakar',
+        tipe: 'pilihan_banyak',
+        judul: '22. Bahan bakar utama untuk memasak?',
+        opsi: [
+          { val: '1', label: '1. Listrik' }, { val: '2', label: '2. Gas 12 kg' }, { val: '3', label: '3. Gas 5,5 kg / Blue Gaz' },
+          { val: '4', label: '4. Gas 3 kg' }, { val: '5', label: '5. Minyak tanah' }, { val: '6', label: '6. Briket/arang/kayu' }, { val: '7', label: '7. Lainnya' }
+        ]
+      },
+      {
+        id: 'pk_23_kepemilikan_rumah',
+        tipe: 'pilihan_banyak',
+        judul: '23. Kepemilikan rumah/bangunan tempat tinggal?',
+        opsi: [
+          { val: '1', label: '1. Milik sendiri' }, { val: '2', label: '2. Kontrak/sewa' },
+          { val: '3', label: '3. Bebas sewa/menumpang' }, { val: '4', label: '4. Dinas' }, { val: '5', label: '5. Lainnya' }
+        ]
+      },
+      {
+        id: 'pk_24_info_media',
+        tipe: 'media_informasi',
+        judul: '24. Informasi program Bangga Kencana dari media:'
+      },
+      {
+        id: 'pk_26_info_petugas',
+        tipe: 'petugas_informasi',
+        judul: '25. Informasi program Bangga Kencana & Stunting dari petugas:'
+      }
+    ];
+
+    // Objek penyimpan nilai formulir
+    const dataNilaiKB = {
+      kb_01_melahirkan: 0,
+      kb_01_hidup_laki: 0,
+      kb_01_hidup_perempuan: 0,
+      kb_01_masih_laki: 0,
+      kb_01_masih_perempuan: 0,
+      kb_02_anak_ideal: 2,
+      kb_03_sedang_hamil: '2',
+      kb_03_usia_kehamilan: '',
+      kb_03_status_ingin_hamil: '1',
+      kb_03_keinginan_anak_lagi: '1',
+      kb_04_sedang_kb: '1',
+      kb_04_mulai_bulan: '01',
+      kb_04_mulai_tahun: 2024,
+      kb_05_pernah_kb: '2',
+      kb_05_mulai_bulan: '',
+      kb_05_mulai_tahun: '',
+      kb_05_berhenti_bulan: '',
+      kb_05_berhenti_tahun: '',
+      kb_06_alasan_tidak_kb: '1',
+      kb_07_jenis_kb: '5',
+      kb_08_sumber_pelayanan: '3',
+      kb_09_info_jenis: '1',
+      kb_09_info_efek_samping: '1',
+      kb_09_info_tindakan: '1'
+    };
+
+    const dataNilaiPK = {
+      pk_01_ibadah: '1',
+      pk_02_akta_nikah: '1',
+      pk_03_a_tanpa_sapa: '2',
+      pk_03_b_pisah_ranjang: '2',
+      pk_03_c_minggat: '2',
+      pk_03_d_kdrt: '2',
+      pk_04_penghasilan: '1',
+      pk_05_makanan_beragam: '1',
+      pk_06_aset: '1',
+      pk_06_aset_jenis: '6',
+      pk_07_penyakit_kronis: '2',
+      pk_08_disabilitas: '2',
+      pk_09_internet: '1',
+      pk_10_interaksi: '1',
+      pk_11_pengasuhan_bersama: '1',
+      pk_12_rekreasi: '1',
+      pk_13_gotong_royong: '1',
+      pk_14_1_atap: '2',
+      pk_14_2_kondisi_atap: '1',
+      pk_15_1_dinding: '1',
+      pk_15_2_kondisi_dinding: '1',
+      pk_16_1_lantai: '2',
+      pk_16_2_kondisi_lantai: '1',
+      pk_17_1_penerangan: '1',
+      pk_17_2_daya_pln: '2',
+      pk_18_air_minum: '2',
+      pk_19_jamban: '1',
+      pk_20_luas_rumah: 45,
+      pk_21_jumlah_penghuni: 4,
+      pk_22_bahan_bakar: '4',
+      pk_23_kepemilikan_rumah: '1',
+      pk_24_info_media: '1',
+      pk_25_media_sumber: '2',
+      pk_26_info_petugas: '1',
+      pk_27_petugas_sumber: '9'
+    };
+
+    // Fungsi Render Pilihan Pil
+    function buatPilHTML(namaKoleksi, keyField, opsiList, nilaiAktif) {
+      return `
+        <div class="flex flex-wrap gap-2.5 pt-1">
+          ${opsiList.map(o => `
+            <button type="button" 
+                    onclick="pilihOpsiPil('${namaKoleksi}', '${keyField}', '${o.val}', this)"
+                    class="opsi-pil ${nilaiAktif === o.val ? 'aktif' : ''}">
+              ${o.label}
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function pilihOpsiPil(namaKoleksi, keyField, nilai, tombolEl) {
+      if (namaKoleksi === 'KB') {
+        dataNilaiKB[keyField] = nilai;
+      } else {
+        dataNilaiPK[keyField] = nilai;
+      }
+      const parent = tombolEl.parentElement;
+      parent.querySelectorAll('.opsi-pil').forEach(btn => btn.classList.remove('aktif'));
+      tombolEl.classList.add('aktif');
+
+      // Reaktif jika ada percabangan
+      if (keyField === 'kb_03_sedang_hamil' || keyField === 'kb_04_sedang_kb' || keyField === 'kb_05_pernah_kb' || keyField === 'pk_17_1_penerangan' || keyField === 'pk_24_info_media' || keyField === 'pk_26_info_petugas') {
+        if (namaKoleksi === 'KB') tampilkanStepKB();
+        else tampilkanStepPK();
+      }
+    }
+
+    // ========================================================
+    // LOGIKA RENDER STEP BLOK KB
+    // ========================================================
+    function tampilkanStepKB() {
+      const kontainer = document.getElementById('kontainer_step_kb');
+      const labelLangkah = document.getElementById('label_langkah_kb');
+      if (!kontainer) return;
+
+      labelLangkah.innerText = `Langkah ${indexStepKB + 1} / ${daftarPertanyaanKB.length}`;
+      const q = daftarPertanyaanKB[indexStepKB];
+      let html = '';
+
+      if (q.tipe === 'angka_kelahiran') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="space-y-3 pt-2">
+            <div>
+              <label class="block text-slate-600 font-semibold mb-1">Berapa kali Ibu pernah melahirkan?</label>
+              <div class="flex items-center gap-2">
+                <input type="number" min="0" value="${dataNilaiKB.kb_01_melahirkan}" 
+                       oninput="dataNilaiKB.kb_01_melahirkan = parseInt(this.value, 10) || 0"
+                       class="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm font-bold text-center outline-none focus:border-blue-500" />
+                <span class="text-slate-600 font-medium">Kali</span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-slate-600 font-semibold mb-1">Anak Masih Hidup (Laki-laki / Perempuan)</label>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5">
+                  <input type="number" min="0" placeholder="Laki" value="${dataNilaiKB.kb_01_masih_laki}"
+                         oninput="dataNilaiKB.kb_01_masih_laki = parseInt(this.value, 10) || 0"
+                         class="w-20 px-3 py-2 border rounded-lg text-sm text-center font-bold outline-none" />
+                  <span class="text-xs text-slate-500">Laki</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" min="0" placeholder="Perempuan" value="${dataNilaiKB.kb_01_masih_perempuan}"
+                         oninput="dataNilaiKB.kb_01_masih_perempuan = parseInt(this.value, 10) || 0"
+                         class="w-20 px-3 py-2 border rounded-lg text-sm text-center font-bold outline-none" />
+                  <span class="text-xs text-slate-500">Perempuan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (q.tipe === 'angka') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="flex items-center gap-2 pt-2">
+            <input type="number" min="0" value="${dataNilaiKB[q.id] || q.default}" 
+                   oninput="dataNilaiKB['${q.id}'] = parseInt(this.value, 10) || 0"
+                   class="w-24 px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-center outline-none focus:border-blue-500" />
+            <span class="text-slate-600 font-medium">${q.satuan}</span>
+          </div>
+        `;
+      } else if (q.tipe === 'pil_hamil') {
+        const opsiHamil = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', 'kb_03_sedang_hamil', opsiHamil, dataNilaiKB.kb_03_sedang_hamil)}
+          ${dataNilaiKB.kb_03_sedang_hamil === '1' ? `
+            <div class="space-y-3 pt-3 border-t">
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">Usia Kehamilan (Minggu)</label>
+                <input type="number" min="1" max="42" value="${dataNilaiKB.kb_03_usia_kehamilan}"
+                       oninput="dataNilaiKB.kb_03_usia_kehamilan = this.value" placeholder="Contoh: 12"
+                       class="w-28 px-3 py-2 border rounded-lg text-sm font-bold" />
+              </div>
+              <div>
+                <label class="block text-slate-600 font-medium mb-1">Saat mulai hamil, apakah ingin hamil saat itu?</label>
+                ${buatPilHTML('KB', 'kb_03_status_ingin_hamil', [
+                  { val: '1', label: '1. Ya, Ingin Hamil Saat Itu' },
+                  { val: '2', label: '2. Ingin Hamil Nanti' },
+                  { val: '3', label: '3. Tidak Ingin Anak Lagi' }
+                ], dataNilaiKB.kb_03_status_ingin_hamil)}
+              </div>
+            </div>
+          ` : `
+            <div class="pt-3 border-t">
+              <label class="block text-slate-600 font-medium mb-1">Apakah Ibu menginginkan anak lagi?</label>
+              ${buatPilHTML('KB', 'kb_03_keinginan_anak_lagi', [
+                { val: '1', label: '1. Ya, Ingin Segera (<= 2 th)' },
+                { val: '2', label: '2. Ya, Ingin Nanti (> 2 th)' },
+                { val: '3', label: '3. Tidak Ingin Anak Lagi' }
+              ], dataNilaiKB.kb_03_keinginan_anak_lagi)}
+            </div>
+          `}
+        `;
+      } else if (q.tipe === 'pil_sedang_kb') {
+        const opsiKB = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', 'kb_04_sedang_kb', opsiKB, dataNilaiKB.kb_04_sedang_kb)}
+          ${dataNilaiKB.kb_04_sedang_kb === '1' ? `
+            <div class="pt-3 border-t flex gap-2 items-center">
+              <span class="text-slate-600 font-medium text-xs">Mulai pakai saat ini (Bulan / Tahun):</span>
+              <input type="text" maxlength="2" placeholder="01" value="${dataNilaiKB.kb_04_mulai_bulan}"
+                     oninput="dataNilaiKB.kb_04_mulai_bulan = this.value" class="w-14 px-2 py-1.5 border rounded-lg text-center font-bold text-xs" />
+              <input type="number" placeholder="2024" value="${dataNilaiKB.kb_04_mulai_tahun}"
+                     oninput="dataNilaiKB.kb_04_mulai_tahun = this.value" class="w-20 px-2 py-1.5 border rounded-lg text-center font-bold text-xs" />
+            </div>
+          ` : ''}
+        `;
+      } else if (q.tipe === 'pil_pernah_kb') {
+        const opsiPernah = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', 'kb_05_pernah_kb', opsiPernah, dataNilaiKB.kb_05_pernah_kb)}
+        `;
+      } else if (q.tipe === 'pilihan_banyak') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', q.id, q.opsi, dataNilaiKB[q.id])}
+        `;
+      } else if (q.tipe === 'info_tiga_poin') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="space-y-3 pt-2">
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">1. Jenis-jenis alat KB?</p>
+              ${buatPilHTML('KB', 'kb_09_info_jenis', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiKB.kb_09_info_jenis)}
+            </div>
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">2. Efek samping alat KB?</p>
+              ${buatPilHTML('KB', 'kb_09_info_efek_samping', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiKB.kb_09_info_efek_samping)}
+            </div>
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">3. Tindakan bila ada efek samping?</p>
+              ${buatPilHTML('KB', 'kb_09_info_tindakan', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiKB.kb_09_info_tindakan)}
+            </div>
+          </div>
+        `;
+      }
+
+      kontainer.innerHTML = html;
+    }
+
+    function majuStepKB() {
+      // Skip logic berdasarkan jawaban
+      if (indexStepKB === 2 && dataNilaiKB.kb_03_sedang_hamil === '1') {
+        indexStepKB = 4; // Jika hamil, lompat lewati 04
+      } else if (indexStepKB === 3 && dataNilaiKB.kb_04_sedang_kb === '1') {
+        indexStepKB = 6; // Jika sedang KB, langsung ke jenis KB (lewati 05 & 06)
+      } else if (indexStepKB === 4 && dataNilaiKB.kb_05_pernah_kb === '2' && dataNilaiKB.kb_04_sedang_kb === '2') {
+        indexStepKB = 5; // Jawab alasan tidak KB
+      } else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {
+        // Jika 04=Tidak dan 05=Tidak, selesai blok KB langsung ke Pembangunan Keluarga
+        indexStepPK = 0;
+        pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+        tampilkanStepPK();
+        return;
+      } else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {
+        // Jika Tradisional (9), selesai lanjut ke Blok Pembangunan Keluarga
+        indexStepPK = 0;
+        pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+        tampilkanStepPK();
+        return;
+      } else if (indexStepKB >= daftarPertanyaanKB.length - 1) {
+        // Selesai Blok KB
+        indexStepPK = 0;
+        pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+        tampilkanStepPK();
+        return;
+      } else {
+        indexStepKB++;
+      }
+      tampilkanStepKB();
+    }
+
+    function mundurStepKB() {
+      if (indexStepKB <= 0) {
+        bukaHalamanAnggota(totalHalamanAnggota);
+      } else {
+        indexStepKB--;
+        tampilkanStepKB();
+      }
+    }
+
+    // ========================================================
+    // LOGIKA RENDER STEP BLOK PEMBANGUNAN KELUARGA
+    // ========================================================
+    function tampilkanStepPK() {
+      const kontainer = document.getElementById('kontainer_step_pk');
+      const labelLangkah = document.getElementById('label_langkah_pk');
+      if (!kontainer) return;
+
+      labelLangkah.innerText = `Langkah ${indexStepPK + 1} / ${daftarPertanyaanPK.length}`;
+      const q = daftarPertanyaanPK[indexStepPK];
+      let html = '';
+
+      if (q.tipe === 'dua_tingkat') {
+        html = `
+          <div class="judul-tanya-krs">${q.judulUtama}</div>
+          ${buatPilHTML('PK', q.fieldUtama, q.opsiUtama, dataNilaiPK[q.fieldUtama])}
+          <div class="pt-4 border-t mt-4">
+            <div class="judul-tanya-krs">${q.judulSub}</div>
+            ${buatPilHTML('PK', q.fieldSub, q.opsiSub, dataNilaiPK[q.fieldSub])}
+          </div>
+        `;
+      } else if (q.tipe === 'angka') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="flex items-center gap-2 pt-2">
+            <input type="number" min="0" value="${dataNilaiPK[q.id] || q.default}" 
+                   oninput="dataNilaiPK['${q.id}'] = parseInt(this.value, 10) || 0"
+                   class="w-24 px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-center outline-none focus:border-blue-500" />
+            <span class="text-slate-600 font-medium">${q.satuan}</span>
+          </div>
+        `;
+      } else if (q.tipe === 'penerangan') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('PK', 'pk_17_1_penerangan', [
+            { val: '1', label: '1. Listrik PLN meteran' },
+            { val: '2', label: '2. Listrik PLN non meteran' },
+            { val: '3', label: '3. Listrik non-PLN' },
+            { val: '4', label: '4. Bukan listrik' }
+          ], dataNilaiPK.pk_17_1_penerangan)}
+          ${dataNilaiPK.pk_17_1_penerangan === '1' ? `
+            <div class="pt-4 border-t mt-4">
+              <div class="judul-tanya-krs">17.1. Daya terpasang?</div>
+              ${buatPilHTML('PK', 'pk_17_2_daya_pln', [
+                { val: '1', label: '1. 450 watt' }, { val: '2', label: '2. 900 watt' },
+                { val: '3', label: '3. 1.300 watt' }, { val: '4', label: '4. > 1.300 watt' }
+              ], dataNilaiPK.pk_17_2_daya_pln)}
+            </div>
+          ` : ''}
+        `;
+      } else if (q.tipe === 'konflik_keluarga') {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="space-y-3 pt-2">
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">a. Tanpa tegur sapa (3 hari berturut)?</p>
+              ${buatPilHTML('PK', 'pk_03_a_tanpa_sapa', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_a_tanpa_sapa)}
+            </div>
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">b. Pisah ranjang suami-istri (7 hari berturut)?</p>
+              ${buatPilHTML('PK', 'pk_03_b_pisah_ranjang', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak Berlaku' }], dataNilaiPK.pk_03_b_pisah_ranjang)}
+            </div>
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">c. Pergi dari rumah/minggat (2 hari berturut)?</p>
+              ${buatPilHTML('PK', 'pk_03_c_minggat', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_c_minggat)}
+            </div>
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">d. Kekerasan dalam rumah tangga (KDRT)?</p>
+              ${buatPilHTML('PK', 'pk_03_d_kdrt', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_d_kdrt)}
+            </div>
+          </div>
+        `;
+      } else if (q.tipe === 'aset_keluarga') {
+        html = `
+          <div class="judul-tanya-krs">06. Keluarga memiliki aset?</div>
+          ${buatPilHTML('PK', 'pk_06_aset', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_06_aset)}
+          ${dataNilaiPK.pk_06_aset === '1' ? `
+            <div class="pt-4 border-t mt-4">
+              <div class="judul-tanya-krs">06.1. Aset utama yang dimiliki:</div>
+              ${buatPilHTML('PK', 'pk_06_aset_jenis', [
+                { val: '1', label: '1. Tabungan' }, { val: '2', label: '2. AC' }, { val: '3', label: '3. TV Layar Datar' },
+                { val: '4', label: '4. Kulkas' }, { val: '5', label: '5. Komputer/Laptop' }, { val: '6', label: '6. Sepeda Motor' },
+                { val: '7', label: '7. Mobil' }, { val: '8', label: '8. Perahu Motor' }, { val: '9', label: '9. Emas (min. 10 gr)' },
+                { val: '10', label: '10. Hewan Ternak' }, { val: '11', label: '11. Lahan' }, { val: '12', label: '12. Rumah Lain' }
+              ], dataNilaiPK.pk_06_aset_jenis)}
+            </div>
+          ` : ''}
+        `;
+      } else if (q.tipe === 'media_informasi') {
+        html = `
+          <div class="judul-tanya-krs">24. Pernah mendengar/melihat pesan Bangga Kencana dari media?</div>
+          ${buatPilHTML('PK', 'pk_24_info_media', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_24_info_media)}
+          ${dataNilaiPK.pk_24_info_media === '1' ? `
+            <div class="pt-4 border-t mt-4">
+              <div class="judul-tanya-krs">24.1. Dari media mana informasi diperoleh?</div>
+              ${buatPilHTML('PK', 'pk_25_media_sumber', [
+                { val: '1', label: '1. Koran/Majalah' }, { val: '2', label: '2. Televisi/Radio' },
+                { val: '3', label: '3. Media Sosial/Internet' }, { val: '4', label: '4. Pertemuan/Penyuluhan' },
+                { val: '5', label: '5. Spanduk/Baliho' }, { val: '6', label: '6. Pentas Seni' }
+              ], dataNilaiPK.pk_25_media_sumber)}
+            </div>
+          ` : ''}
+        `;
+      } else if (q.tipe === 'petugas_informasi') {
+        html = `
+          <div class="judul-tanya-krs">25. Pernah memperoleh informasi program & Stunting dari petugas?</div>
+          ${buatPilHTML('PK', 'pk_26_info_petugas', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_26_info_petugas)}
+          ${dataNilaiPK.pk_26_info_petugas === '1' ? `
+            <div class="pt-4 border-t mt-4">
+              <div class="judul-tanya-krs">25.1. Petugas yang memberi informasi:</div>
+              ${buatPilHTML('PK', 'pk_27_petugas_sumber', [
+                { val: '1', label: '1. Pejabat Pemerintah' }, { val: '2', label: '2. PKB/PLKB' },
+                { val: '3', label: '3. Guru/Dosen' }, { val: '4', label: '4. Tokoh Agama' },
+                { val: '5', label: '5. Tokoh Masyarakat' }, { val: '6', label: '6. Dokter' },
+                { val: '7', label: '7. Bidan/Perawat' }, { val: '8', label: '8. Perangkat Desa' },
+                { val: '9', label: '9. Kader/IMP' }, { val: '10', label: '10. TPK' }, { val: '11', label: '11. Lainnya' }
+              ], dataNilaiPK.pk_27_petugas_sumber)}
+            </div>
+          ` : ''}
+        `;
+      } else if (q.opsi) {
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('PK', q.id, q.opsi, dataNilaiPK[q.id])}
+        `;
+      }
+
+      kontainer.innerHTML = html;
+    }
+
+    function majuStepPK() {
+      if (indexStepPK >= daftarPertanyaanPK.length - 1) {
+        bukaHalamanReview();
+      } else {
+        indexStepPK++;
+        tampilkanStepPK();
+      }
+    }
+
+    function mundurStepPK() {
+      if (indexStepPK <= 0) {
+        indexStepKB = daftarPertanyaanKB.length - 1;
+        pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
+        tampilkanStepKB();
+      } else {
+        indexStepPK--;
+        tampilkanStepPK();
       }
     }
 
@@ -2675,31 +2927,24 @@
 
       // 3. Ekstrak Data Blok KB
       const htmlKB = `
-        <div><span class="text-slate-400 font-bold">MELAHIRKAN:</span> ${getTeks('kb_01_melahirkan')} kali</div>
-        <div><span class="text-slate-400 font-bold">ANAK HIDUP:</span> L: ${getTeks('kb_01_masih_laki')}, P: ${getTeks('kb_01_masih_perempuan')}</div>
-        <div><span class="text-slate-400 font-bold">ANAK IDEAL:</span> ${getTeks('kb_02_anak_ideal')} anak</div>
-        <div><span class="text-slate-400 font-bold">SEDANG HAMIL:</span> ${getTeks('kb_03_sedang_hamil')}</div>
-        <div><span class="text-slate-400 font-bold">SEDANG BER-KB:</span> ${getTeks('kb_04_sedang_kb')}</div>
-        <div><span class="text-slate-400 font-bold">JENIS METODE:</span> <span class="font-bold text-emerald-700">${getTeks('kb_07_jenis_kb')}</span></div>
-        <div class="sm:col-span-2"><span class="text-slate-400 font-bold">ALASAN TIDAK KB:</span> ${getTeks('kb_06_alasan_tidak_kb')}</div>
-        <div><span class="text-slate-400 font-bold">SUMBER LAYANAN:</span> ${getTeks('kb_08_sumber_pelayanan')}</div>
+        <div><span class="text-slate-400 font-bold">MELAHIRKAN:</span> ${dataNilaiKB.kb_01_melahirkan} kali</div>
+        <div><span class="text-slate-400 font-bold">ANAK HIDUP:</span> L: ${dataNilaiKB.kb_01_masih_laki}, P: ${dataNilaiKB.kb_01_masih_perempuan}</div>
+        <div><span class="text-slate-400 font-bold">ANAK IDEAL:</span> ${dataNilaiKB.kb_02_anak_ideal} anak</div>
+        <div><span class="text-slate-400 font-bold">SEDANG HAMIL:</span> ${dataNilaiKB.kb_03_sedang_hamil === '1' ? 'YA' : 'TIDAK'}</div>
+        <div><span class="text-slate-400 font-bold">SEDANG BER-KB:</span> ${dataNilaiKB.kb_04_sedang_kb === '1' ? 'YA' : 'TIDAK'}</div>
+        <div><span class="text-slate-400 font-bold">JENIS METODE:</span> <span class="font-bold text-emerald-700">Kode ${dataNilaiKB.kb_07_jenis_kb}</span></div>
       `;
       document.getElementById('review_konten_kb').innerHTML = htmlKB;
 
       // 4. Ekstrak Data Pembangunan Keluarga
       const htmlPK = `
-        <div><span class="text-slate-400 font-bold">IBADAH RUTIN:</span> ${getTeks('pk_01_ibadah')}</div>
-        <div><span class="text-slate-400 font-bold">AKTA NIKAH:</span> ${getTeks('pk_02_akta_nikah')}</div>
-        <div><span class="text-slate-400 font-bold">MEMILIKI ASET:</span> ${getTeks('pk_06_aset')}</div>
-        <div><span class="text-slate-400 font-bold">JENIS ATAP:</span> ${getTeks('pk_14_1_atap')}</div>
-        <div><span class="text-slate-400 font-bold">JENIS DINDING:</span> ${getTeks('pk_15_1_dinding')}</div>
-        <div><span class="text-slate-400 font-bold">JENIS LANTAI:</span> ${getTeks('pk_16_1_lantai')}</div>
-        <div><span class="text-slate-400 font-bold">PENERANGAN:</span> ${getTeks('pk_17_1_penerangan')}</div>
-        <div><span class="text-slate-400 font-bold">AIR MINUM:</span> ${getTeks('pk_18_air_minum')}</div>
-        <div><span class="text-slate-400 font-bold">FASILITAS JAMBAN:</span> ${getTeks('pk_19_jamban')}</div>
-        <div><span class="text-slate-400 font-bold">LUAS RUMAH:</span> ${getTeks('pk_20_luas_rumah')} m²</div>
-        <div><span class="text-slate-400 font-bold">STATUS RUMAH:</span> ${getTeks('pk_23_kepemilikan_rumah')}</div>
-        <div><span class="text-slate-400 font-bold">INFO STUNTING:</span> ${getTeks('pk_26_info_petugas')}</div>
+        <div><span class="text-slate-400 font-bold">IBADAH RUTIN:</span> ${dataNilaiPK.pk_01_ibadah === '1' ? 'YA' : 'TIDAK'}</div>
+        <div><span class="text-slate-400 font-bold">AKTA NIKAH:</span> ${dataNilaiPK.pk_02_akta_nikah === '1' ? 'YA' : 'TIDAK'}</div>
+        <div><span class="text-slate-400 font-bold">MEMILIKI ASET:</span> ${dataNilaiPK.pk_06_aset === '1' ? 'YA' : 'TIDAK'}</div>
+        <div><span class="text-slate-400 font-bold">AIR MINUM:</span> Kode ${dataNilaiPK.pk_18_air_minum}</div>
+        <div><span class="text-slate-400 font-bold">JAMBAN:</span> Kode ${dataNilaiPK.pk_19_jamban}</div>
+        <div><span class="text-slate-400 font-bold">LUAS RUMAH:</span> ${dataNilaiPK.pk_20_luas_rumah} m²</div>
+        <div><span class="text-slate-400 font-bold">PENGHUNI:</span> ${dataNilaiPK.pk_21_jumlah_penghuni} Orang</div>
       `;
       document.getElementById('review_konten_pk').innerHTML = htmlPK;
 
@@ -2785,46 +3030,44 @@
           alamat_detail: alamat,
           no_hp: noHp,
 
-          // 01 - 13 (Sosial & Ekonomi)
-          pk_01_ibadah: document.getElementById('pk_01_ibadah').value,
-          pk_02_akta_nikah: document.getElementById('pk_02_akta_nikah').value,
-          pk_03_a_tanpa_sapa: document.getElementById('pk_03_a_tanpa_sapa').value,
-          pk_03_b_pisah_ranjang: document.getElementById('pk_03_b_pisah_ranjang').value,
-          pk_03_c_minggat: document.getElementById('pk_03_c_minggat').value,
-          pk_03_d_kdrt: document.getElementById('pk_03_d_kdrt').value,
-          pk_04_penghasilan: document.getElementById('pk_04_penghasilan').value,
-          pk_05_makanan_beragam: document.getElementById('pk_05_makanan_beragam').value,
-          pk_06_aset: document.getElementById('pk_06_aset').value,
-          pk_06_aset_jenis: (document.getElementById('pk_06_aset').value === '1') ? document.getElementById('pk_06_aset_jenis').value : null,
-          pk_07_penyakit_kronis: document.getElementById('pk_07_penyakit_kronis').value,
-          pk_08_disabilitas: document.getElementById('pk_08_disabilitas').value,
-          pk_09_internet: document.getElementById('pk_09_internet').value,
-          pk_10_interaksi: document.getElementById('pk_10_interaksi').value,
-          pk_11_pengasuhan_bersama: document.getElementById('pk_11_pengasuhan_bersama').value,
-          pk_12_rekreasi: document.getElementById('pk_12_rekreasi').value,
-          pk_13_gotong_royong: document.getElementById('pk_13_gotong_royong').value,
+          // AMBIL LANGSUNG DARI dataNilaiPK:
+          pk_01_ibadah: dataNilaiPK.pk_01_ibadah,
+          pk_02_akta_nikah: dataNilaiPK.pk_02_akta_nikah,
+          pk_03_a_tanpa_sapa: dataNilaiPK.pk_03_a_tanpa_sapa,
+          pk_03_b_pisah_ranjang: dataNilaiPK.pk_03_b_pisah_ranjang,
+          pk_03_c_minggat: dataNilaiPK.pk_03_c_minggat,
+          pk_03_d_kdrt: dataNilaiPK.pk_03_d_kdrt,
+          pk_04_penghasilan: dataNilaiPK.pk_04_penghasilan,
+          pk_05_makanan_beragam: dataNilaiPK.pk_05_makanan_beragam,
+          pk_06_aset: dataNilaiPK.pk_06_aset,
+          pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? dataNilaiPK.pk_06_aset_jenis : null,
+          pk_07_penyakit_kronis: dataNilaiPK.pk_07_penyakit_kronis,
+          pk_08_disabilitas: dataNilaiPK.pk_08_disabilitas,
+          pk_09_internet: dataNilaiPK.pk_09_internet,
+          pk_10_interaksi: dataNilaiPK.pk_10_interaksi,
+          pk_11_pengasuhan_bersama: dataNilaiPK.pk_11_pengasuhan_bersama,
+          pk_12_rekreasi: dataNilaiPK.pk_12_rekreasi,
+          pk_13_gotong_royong: dataNilaiPK.pk_13_gotong_royong,
 
-          // 14 - 23 (Rumah & Sanitasi)
-          pk_14_1_atap: document.getElementById('pk_14_1_atap').value,
-          pk_14_2_kondisi_atap: document.getElementById('pk_14_2_kondisi_atap').value,
-          pk_15_1_dinding: document.getElementById('pk_15_1_dinding').value,
-          pk_15_2_kondisi_dinding: document.getElementById('pk_15_2_kondisi_dinding').value,
-          pk_16_1_lantai: document.getElementById('pk_16_1_lantai').value,
-          pk_16_2_kondisi_lantai: document.getElementById('pk_16_2_kondisi_lantai').value,
-          pk_17_1_penerangan: document.getElementById('pk_17_1_penerangan').value,
-          pk_17_2_daya_pln: (document.getElementById('pk_17_1_penerangan').value === '1') ? document.getElementById('pk_17_2_daya_pln').value : null,
-          pk_18_air_minum: document.getElementById('pk_18_air_minum').value,
-          pk_19_jamban: document.getElementById('pk_19_jamban').value,
-          pk_20_luas_rumah: parseInt(document.getElementById('pk_20_luas_rumah').value, 10) || null,
-          pk_21_jumlah_penghuni: parseInt(document.getElementById('pk_21_jumlah_penghuni').value, 10) || null,
-          pk_22_bahan_bakar: document.getElementById('pk_22_bahan_bakar').value,
-          pk_23_kepemilikan_rumah: document.getElementById('pk_23_kepemilikan_rumah').value,
+          pk_14_1_atap: dataNilaiPK.pk_14_1_atap,
+          pk_14_2_kondisi_atap: dataNilaiPK.pk_14_2_kondisi_atap,
+          pk_15_1_dinding: dataNilaiPK.pk_15_1_dinding,
+          pk_15_2_kondisi_dinding: dataNilaiPK.pk_15_2_kondisi_dinding,
+          pk_16_1_lantai: dataNilaiPK.pk_16_1_lantai,
+          pk_16_2_kondisi_lantai: dataNilaiPK.pk_16_2_kondisi_lantai,
+          pk_17_1_penerangan: dataNilaiPK.pk_17_1_penerangan,
+          pk_17_2_daya_pln: dataNilaiPK.pk_17_1_penerangan === '1' ? dataNilaiPK.pk_17_2_daya_pln : null,
+          pk_18_air_minum: dataNilaiPK.pk_18_air_minum,
+          pk_19_jamban: dataNilaiPK.pk_19_jamban,
+          pk_20_luas_rumah: parseInt(dataNilaiPK.pk_20_luas_rumah, 10) || null,
+          pk_21_jumlah_penghuni: parseInt(dataNilaiPK.pk_21_jumlah_penghuni, 10) || null,
+          pk_22_bahan_bakar: dataNilaiPK.pk_22_bahan_bakar,
+          pk_23_kepemilikan_rumah: dataNilaiPK.pk_23_kepemilikan_rumah,
 
-          // 24 - 27 (Informasi Media & Petugas)
-          pk_24_info_media: document.getElementById('pk_24_info_media').value,
-          pk_25_media_sumber: (document.getElementById('pk_24_info_media').value === '1') ? document.getElementById('pk_25_media_sumber').value : null,
-          pk_26_info_petugas: document.getElementById('pk_26_info_petugas').value,
-          pk_27_petugas_sumber: (document.getElementById('pk_26_info_petugas').value === '1') ? document.getElementById('pk_27_petugas_sumber').value : null,
+          pk_24_info_media: dataNilaiPK.pk_24_info_media,
+          pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? dataNilaiPK.pk_25_media_sumber : null,
+          pk_26_info_petugas: dataNilaiPK.pk_26_info_petugas,
+          pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? dataNilaiPK.pk_27_petugas_sumber : null,
 
           diperbarui_pada: new Date()
         };
@@ -2840,30 +3083,30 @@
         // 3. Simpan Blok KB
         const payloadKB = {
           kartu_keluarga_id: kkData.id,
-          // 01 & 02
-          jml_melahirkan: parseInt(document.getElementById('kb_01_melahirkan').value, 10) || 0,
-          anak_lahir_hidup_laki: parseInt(document.getElementById('kb_01_hidup_laki').value, 10) || 0,
-          anak_lahir_hidup_perempuan: parseInt(document.getElementById('kb_01_hidup_perempuan').value, 10) || 0,
-          anak_masih_hidup_laki: parseInt(document.getElementById('kb_01_masih_laki').value, 10) || 0,
-          anak_masih_hidup_perempuan: parseInt(document.getElementById('kb_01_masih_perempuan').value, 10) || 0,
-          anak_ideal_diinginkan: parseInt(document.getElementById('kb_02_anak_ideal').value, 10) || 0,
-          // 03
-          sedang_hamil: document.getElementById('kb_03_sedang_hamil').value === '1',
-          usia_kehamilan_minggu: parseInt(document.getElementById('kb_03_usia_kehamilan').value, 10) || null,
-          status_keinginan_hamil: document.getElementById('kb_03_status_ingin_hamil').value || null,
-          keinginan_anak_lagi: document.getElementById('kb_03_keinginan_anak_lagi').value || null,
-          // 04 & 05
-          sedang_pakai_kb: document.getElementById('kb_04_sedang_kb').value === '1',
-          mulai_kb_bulan: document.getElementById('kb_04_mulai_bulan').value || null,
-          mulai_kb_tahun: parseInt(document.getElementById('kb_04_mulai_tahun').value, 10) || null,
-          pernah_pakai_kb_12_bulan: document.getElementById('kb_05_pernah_kb').value === '1',
-          // 06 s.d 09
-          kode_alasan_tidak_kb: document.getElementById('kb_06_alasan_tidak_kb').value || null,
-          kode_jenis_kb: document.getElementById('kb_07_jenis_kb').value || null,
-          kode_sumber_pelayanan: document.getElementById('kb_08_sumber_pelayanan').value || null,
-          dapat_info_jenis_kb: document.getElementById('kb_09_info_jenis').value === '1',
-          dapat_info_efek_samping: document.getElementById('kb_09_info_efek_samping').value === '1',
-          dapat_info_penanganan: document.getElementById('kb_09_info_tindakan').value === '1'
+          // AMBIL LANGSUNG DARI dataNilaiKB:
+          jml_melahirkan: parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0,
+          anak_lahir_hidup_laki: parseInt(dataNilaiKB.kb_01_hidup_laki, 10) || 0,
+          anak_lahir_hidup_perempuan: parseInt(dataNilaiKB.kb_01_hidup_perempuan, 10) || 0,
+          anak_masih_hidup_laki: parseInt(dataNilaiKB.kb_01_masih_laki, 10) || 0,
+          anak_masih_hidup_perempuan: parseInt(dataNilaiKB.kb_01_masih_perempuan, 10) || 0,
+          anak_ideal_diinginkan: parseInt(dataNilaiKB.kb_02_anak_ideal, 10) || 0,
+
+          sedang_hamil: dataNilaiKB.kb_03_sedang_hamil === '1',
+          usia_kehamilan_minggu: parseInt(dataNilaiKB.kb_03_usia_kehamilan, 10) || null,
+          status_keinginan_hamil: dataNilaiKB.kb_03_status_ingin_hamil || null,
+          keinginan_anak_lagi: dataNilaiKB.kb_03_keinginan_anak_lagi || null,
+
+          sedang_pakai_kb: dataNilaiKB.kb_04_sedang_kb === '1',
+          mulai_kb_bulan: dataNilaiKB.kb_04_mulai_bulan || null,
+          mulai_kb_tahun: parseInt(dataNilaiKB.kb_04_mulai_tahun, 10) || null,
+          pernah_pakai_kb_12_bulan: dataNilaiKB.kb_05_pernah_kb === '1',
+
+          kode_alasan_tidak_kb: dataNilaiKB.kb_06_alasan_tidak_kb || null,
+          kode_jenis_kb: dataNilaiKB.kb_07_jenis_kb || null,
+          kode_sumber_pelayanan: dataNilaiKB.kb_08_sumber_pelayanan || null,
+          dapat_info_jenis_kb: dataNilaiKB.kb_09_info_jenis === '1',
+          dapat_info_efek_samping: dataNilaiKB.kb_09_info_efek_samping === '1',
+          dapat_info_penanganan: dataNilaiKB.kb_09_info_tindakan === '1'
         };
 
         const { error: errKB } = await supabaseClient
