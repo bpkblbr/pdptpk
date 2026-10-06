@@ -2120,8 +2120,10 @@
                     class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
               <option value="1" ${defaultKawin === "1" ? 'selected' : ''}>1. Belum Kawin</option>
               <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tercatat</option>
-              <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup</option>
-              <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Mati</option>
+              <option value="3" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tidak Tercatat</option>
+              <option value="4" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup Tercatat</option>
+              <option value="5" ${defaultKawin === "3" ? 'selected' : ''}>3. Cerai Hidup Tidak Tercatat</option>
+              <option value="6" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Mati</option>
             </select>
           </div>
           <div>
@@ -2131,6 +2133,12 @@
               <option value="00">00. Lainnya</option>
             </select>
           </div>
+        </div>
+
+        <div id="wrapper_usia_kawin_${no}" class="${defaultKawin === '1' ? 'hidden' : ''}">
+          <label class="block text-slate-700 font-medium mb-1">Usia Kawin Pertama (Tahun) *</label>
+          <input type="number" name="usia_kawin_pertama" min="10" max="70" placeholder="Contoh: 21"
+                 class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-semibold text-slate-800 focus:border-blue-500 text-xs sm:text-sm" />
         </div>
 
         <!-- Separator Pembatas Seperti Gambar KRS -->
