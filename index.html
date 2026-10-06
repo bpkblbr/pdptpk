@@ -1245,21 +1245,23 @@
 
       const uLow = user.toLowerCase();
 
-      // Penentuan Role & Wilayah Berjenjang
+      // PEMETAAN AKUN UJI COBA BERJENJANG
       if (uLow.includes('superadmin')) {
+        // SUPER ADMIN: Bebas memilih semua wilayah
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
           role: 'SUPER_ADMIN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
+          provinsi: '',
+          kode_prov: '',
+          kabupaten: '',
+          kode_kab: '',
           kecamatan: '',
           kode_kec: '',
           desa: '',
           kode_desa: ''
         };
       } else if (uLow.includes('kab')) {
+        // ADMIN KABUPATEN: Terkunci di NTB & Lombok Barat
         userAktif = {
           username: 'ADMIN KABUPATEN LOMBOK BARAT',
           role: 'ADMIN_KABUPATEN',
@@ -1273,6 +1275,7 @@
           kode_desa: ''
         };
       } else if (uLow.includes('kec')) {
+        // ADMIN KECAMATAN: Terkunci sampai Kecamatan Lembar
         userAktif = {
           username: 'ADMIN KECAMATAN LEMBAR',
           role: 'ADMIN_KECAMATAN',
@@ -1286,8 +1289,9 @@
           kode_desa: ''
         };
       } else {
+        // KADER DESA: Terkunci penuh sampai Desa Lembar
         userAktif = {
-          username: user.toUpperCase(),
+          username: 'KADER DESA LEMBAR',
           role: 'USER_DESA',
           provinsi: 'NUSA TENGGARA BARAT',
           kode_prov: '52',
@@ -1300,12 +1304,8 @@
         };
       }
 
-      // SIMPAN SESI KE LOCALSTORAGE
       localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
-
-      // Terapkan UI Akun
       terapkanDataSesiUser();
-
       tampilkanLayar('tampilan_dashboard');
       loadMasterWilayahFromDB();
     }
@@ -1358,6 +1358,195 @@
         text: `Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`,
         confirmButtonColor: '#059669'
       });
+    }
+
+    function bukaKelolaWilayah() {
+      if (userAktif.role === 'USER_DESA') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Akses Ditolak',
+          text: 'User Desa tidak memiliki hak akses ke modul Kelola Wilayah!',
+          confirmButtonColor: '#e11d48'
+        });
+        return;
+      }
+
+      tampilkanLayar('tampilan_kelola_wilayah');
+      
+      const labelCakupan = document.getElementById('labelCakupanWilayah');
+      if (labelCakupan) {
+        if (userAktif.role === 'SUPER_ADMIN') {
+          labelCakupan.innerText = "Cakupan Akses: SEMUA WILAYAH (SUPER ADMIN)";
+        } else if (userAktif.role === 'ADMIN_KABUPATEN') {
+          labelCakupan.innerText = `Cakupan Akses: KABUPATEN ${userAktif.kabupaten} (KODE: ${userAktif.kode_kab})`;
+        } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+          labelCakupan.innerText = `Cakupan Akses: KECAMATAN ${userAktif.kecamatan} (KODE: ${userAktif.kode_kec})`;
+        }
+      }
+
+      resetMwForm();
+      tampilkanTabelMasterWilayah();
+    }
+
+    function resetMwForm() {
+      const setVal = (id, val, isLock) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = val || '';
+        el.readOnly = isLock;
+        el.style.backgroundColor = isLock ? "#f1f5f9" : "#ffffff";
+      };
+
+      document.getElementById("man_dusun").value = "";
+      document.getElementById("man_kode_dusun").value = "";
+      document.getElementById("man_jumlah_rt").value = "4";
+
+      if (userAktif.role === 'ADMIN_KABUPATEN') {
+        setVal("man_provinsi", userAktif.provinsi, true);
+        setVal("man_kode_prov", userAktif.kode_prov, true);
+        setVal("man_kabupaten", userAktif.kabupaten, true);
+        setVal("man_kode_kab", userAktif.kode_kab, true);
+        setVal("man_kecamatan", "", false);
+        setVal("man_kode_kec", "", false);
+        setVal("man_desa", "", false);
+        setVal("man_kode_desa", "", false);
+      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+        setVal("man_provinsi", userAktif.provinsi, true);
+        setVal("man_kode_prov", userAktif.kode_prov, true);
+        setVal("man_kabupaten", userAktif.kabupaten, true);
+        setVal("man_kode_kab", userAktif.kode_kab, true);
+        setVal("man_kecamatan", userAktif.kecamatan, true);
+        setVal("man_kode_kec", userAktif.kode_kec, true);
+        setVal("man_desa", "", false);
+        setVal("man_kode_desa", "", false);
+      } else {
+        setVal("man_provinsi", "NUSA TENGGARA BARAT", false);
+        setVal("man_kode_prov", "52", false);
+        setVal("man_kabupaten", "LOMBOK BARAT", false);
+        setVal("man_kode_kab", "01", false);
+        setVal("man_kecamatan", "", false);
+        setVal("man_kode_kec", "", false);
+        setVal("man_desa", "", false);
+        setVal("man_kode_desa", "", false);
+      }
+    }
+
+    function getWilayahTersaringSesuaiRole() {
+      if (userAktif.role === 'SUPER_ADMIN') return rawWilayahList;
+      if (userAktif.role === 'ADMIN_KABUPATEN') {
+        return rawWilayahList.filter(w => String(w.kode_kab || w.kode_kabupaten).padStart(2, '0') === userAktif.kode_kab);
+      }
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        return rawWilayahList.filter(w => String(w.kode_kec || w.kode_kecamatan).padStart(2, '0') === userAktif.kode_kec);
+      }
+      return [];
+    }
+
+    function tampilkanTabelMasterWilayah() {
+      const tbody = document.getElementById('tbodyMasterWilayah');
+      if (!tbody) return;
+      const dataSaring = getWilayahTersaringSesuaiRole();
+
+      if (!dataSaring || dataSaring.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah. Silakan tambah data manual atau upload Excel.</td></tr>`;
+        return;
+      }
+
+      let baris = '';
+      dataSaring.forEach(item => {
+        const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
+        const kdDesa = String(item.kode_desa || '').padStart(4, '0');
+        const kdDsn = String(item.kode_dusun || '').padStart(4, '0');
+
+        baris += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-3 font-semibold">${(item.kecamatan || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdKec}</td>
+            <td class="p-3 font-semibold text-emerald-800">${(item.desa || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdDesa}</td>
+            <td class="p-3 font-bold">${(item.dusun || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-600 font-bold">${kdDsn}</td>
+            <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
+            <td class="p-3 text-center">
+              <button onclick="hapusWilayah('${item.id}', '${item.dusun}')" class="text-rose-600 hover:text-rose-800 font-bold uppercase text-[11px]">
+                Hapus
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = baris;
+    }
+
+    function filterTabelWilayah() {
+      const keyword = document.getElementById('cariTabelWilayah').value.toLowerCase();
+      const trList = document.querySelectorAll('#tbodyMasterWilayah tr');
+      trList.forEach(tr => {
+        const text = tr.innerText.toLowerCase();
+        tr.style.display = text.includes(keyword) ? '' : 'none';
+      });
+    }
+
+    async function hapusWilayah(id, namaDusun) {
+      Swal.fire({
+        title: 'Konfirmasi Hapus',
+        text: `Hapus wilayah dusun ${namaDusun}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        confirmButtonText: 'Ya, Hapus'
+      }).then(async (res) => {
+        if (res.isConfirmed && supabaseClient) {
+          const { error } = await supabaseClient.from('master_wilayah').delete().eq('id', id);
+          if (error) {
+            Swal.fire('Gagal', error.message, 'error');
+          } else {
+            Swal.fire('Sukses', 'Data wilayah terhapus.', 'success');
+            await loadMasterWilayahFromDB();
+            tampilkanTabelMasterWilayah();
+          }
+        }
+      });
+    }
+
+    async function simpanWilayahManual() {
+      const btn = document.getElementById('btnSimpanManualWilayah');
+      btn.disabled = true;
+      btn.innerText = "MENYIMPAN...";
+
+      const payload = {
+        provinsi: document.getElementById('man_provinsi').value.trim().toUpperCase(),
+        kode_prov: document.getElementById('man_kode_prov').value.trim().padStart(2, '0'),
+        kabupaten: document.getElementById('man_kabupaten').value.trim().toUpperCase(),
+        kode_kab: document.getElementById('man_kode_kab').value.trim().padStart(2, '0'),
+        kecamatan: document.getElementById('man_kecamatan').value.trim().toUpperCase(),
+        kode_kec: document.getElementById('man_kode_kec').value.trim().padStart(2, '0'),
+        desa: document.getElementById('man_desa').value.trim().toUpperCase(),
+        kode_desa: document.getElementById('man_kode_desa').value.trim().padStart(4, '0'),
+        dusun: document.getElementById('man_dusun').value.trim().toUpperCase(),
+        kode_dusun: document.getElementById('man_kode_dusun').value.trim().padStart(4, '0'),
+        jumlah_rt: parseInt(document.getElementById('man_jumlah_rt').value, 10) || 1
+      };
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient
+            .from('master_wilayah')
+            .upsert([payload], { onConflict: 'kode_kec,kode_desa,kode_dusun' });
+          if (error) throw error;
+        }
+
+        Swal.fire('Berhasil', `Wilayah ${payload.dusun} tersimpan!`, 'success');
+        document.getElementById('man_dusun').value = '';
+        document.getElementById('man_kode_dusun').value = '';
+        await loadMasterWilayahFromDB();
+        tampilkanTabelMasterWilayah();
+      } catch (err) {
+        Swal.fire('Gagal', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "SIMPAN WILAYAH";
+      }
     }
 
     async function loadMasterWilayahFromDB() {
@@ -1417,7 +1606,6 @@
       for (let kd in dataProvinsi) {
         elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
       }
-      
       inisialisasiWilayahSesuaiRole();
     }
 
@@ -1427,43 +1615,48 @@
       const elKec = document.getElementById('kecamatan');
       const elDesa = document.getElementById('desa');
 
-      const kdProvAktif = userAktif.kode_prov || '52';
-      const kdKabAktif = userAktif.kode_kab || '01';
-      const kdKecAktif = userAktif.kode_kec || '08';
-      const kdDesaAktif = userAktif.kode_desa || '';
-
-      // 1. Set & Kunci Provinsi
-      if (elProv) {
+      // Ambil kode default pertama jika akun Super Admin belum mengunci wilayah
+      const listKdProv = Object.keys(dataProvinsi);
+      const kdProvAktif = userAktif.kode_prov || (listKdProv.length > 0 ? listKdProv[0] : '52');
+      
+      if (elProv && kdProvAktif) {
         elProv.value = kdProvAktif;
         document.getElementById('kode_prov').value = kdProvAktif;
         updateFormKabupaten();
       }
 
-      // 2. Set & Kunci Kabupaten
-      if (elKab) {
+      const listKdKab = dataKabupaten[kdProvAktif] ? Object.keys(dataKabupaten[kdProvAktif]) : [];
+      const kdKabAktif = userAktif.kode_kab || (listKdKab.length > 0 ? listKdKab[0] : '01');
+
+      if (elKab && kdKabAktif) {
         elKab.value = kdKabAktif;
         document.getElementById('kode_kab').value = kdKabAktif;
         updateFormKecamatan();
       }
 
-      // 3. Set & Kunci Kecamatan jika login Kecamatan atau Kader Desa
-      if (kdKecAktif && elKec) {
+      const listKdKec = dataKecamatan[kdKabAktif] ? Object.keys(dataKecamatan[kdKabAktif]) : [];
+      const kdKecAktif = userAktif.kode_kec || (listKdKec.length > 0 ? listKdKec[0] : '08');
+
+      if (elKec && kdKecAktif) {
         elKec.value = kdKecAktif;
         document.getElementById('kode_kec').value = kdKecAktif;
         updateFormDesa();
       }
 
-      // 4. Kunci otomatis Desa jika login sebagai Kader Desa
-      if (userAktif.role === 'USER_DESA' && kdDesaAktif && elDesa) {
-        elDesa.value = kdDesaAktif;
-        document.getElementById('kode_desa').value = kdDesaAktif;
-        elDesa.disabled = true;
-        elDesa.classList.add('opacity-80', 'cursor-not-allowed');
-        updateFormDusun();
-      } else if (elDesa) {
-        // Jika Super Admin / Kab / Kec, biarkan dropdown desa aktif bisa diklik
-        elDesa.disabled = false;
-        elDesa.classList.remove('opacity-80', 'cursor-not-allowed');
+      // KUNCI OTOMATIS SESUAI ROLE LOGIN:
+      if (userAktif.role === 'USER_DESA') {
+        // Kader Desa: Desa terkunci
+        if (elDesa && userAktif.kode_desa) {
+          elDesa.value = userAktif.kode_desa;
+          document.getElementById('kode_desa').value = userAktif.kode_desa;
+          elDesa.disabled = true;
+          updateFormDusun();
+        }
+      } else {
+        // Super Admin, Admin Kab, Admin Kec: Desa bebas dipilih
+        if (elDesa) {
+          elDesa.disabled = false;
+        }
       }
 
       sinkronkanLabelWilayah();
@@ -1478,49 +1671,15 @@
       const lblK = document.getElementById('label_kabupaten');
       const lblC = document.getElementById('label_kecamatan');
 
-      if (lblP) {
-        lblP.innerText = (p && p.selectedIndex >= 0 && p.value) ? p.options[p.selectedIndex].text : userAktif.provinsi;
+      if (lblP && p) {
+        lblP.innerText = (p.selectedIndex >= 0 && p.value) ? p.options[p.selectedIndex].text : (userAktif.provinsi || 'NUSA TENGGARA BARAT');
       }
-      if (lblK) {
-        lblK.innerText = (k && k.selectedIndex >= 0 && k.value) ? k.options[k.selectedIndex].text : userAktif.kabupaten;
+      if (lblK && k) {
+        lblK.innerText = (k.selectedIndex >= 0 && k.value) ? k.options[k.selectedIndex].text : (userAktif.kabupaten || 'LOMBOK BARAT');
       }
-      if (lblC) {
-        lblC.innerText = (c && c.selectedIndex >= 0 && c.value) ? c.options[c.selectedIndex].text : (userAktif.kecamatan || 'LEMBAR');
+      if (lblC && c) {
+        lblC.innerText = (c.selectedIndex >= 0 && c.value) ? c.options[c.selectedIndex].text : (userAktif.kecamatan || 'LEMBAR');
       }
-    }
-
-    function updateFormKabupaten() {
-      const kdProv = document.getElementById('provinsi').value;
-      document.getElementById('kode_prov').value = kdProv;
-
-      const elKab = document.getElementById('kabupaten');
-      elKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
-      document.getElementById('kode_kab').value = '';
-      resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
-
-      if (!kdProv || !dataKabupaten[kdProv]) { elKab.disabled = true; return; }
-
-      for (let kd in dataKabupaten[kdProv]) {
-        elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
-      }
-      elKab.disabled = false;
-    }
-
-    function updateFormKecamatan() {
-      const kdKab = document.getElementById('kabupaten').value;
-      document.getElementById('kode_kab').value = kdKab;
-
-      const elKec = document.getElementById('kecamatan');
-      elKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
-      document.getElementById('kode_kec').value = '';
-      resetFormDropdowns(['desa', 'dusun', 'rt']);
-
-      if (!kdKab || !dataKecamatan[kdKab]) { elKec.disabled = true; return; }
-
-      for (let kd in dataKecamatan[kdKab]) {
-        elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
-      }
-      elKec.disabled = false;
     }
 
     function updateFormDesa() {
@@ -1529,12 +1688,16 @@
       document.getElementById('kode_kec').value = kdKec;
 
       const elDesa = document.getElementById('desa');
+      if (!elDesa) return;
       elDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
       document.getElementById('kode_desa').value = '';
       resetFormDropdowns(['dusun', 'rt']);
 
       const desaKey = kdKab + "_" + kdKec;
-      if (!kdKec || !dataDesa[desaKey]) { elDesa.disabled = true; return; }
+      if (!kdKec || !dataDesa[desaKey]) {
+        elDesa.disabled = true;
+        return;
+      }
 
       for (let kd in dataDesa[desaKey]) {
         elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
@@ -1549,18 +1712,22 @@
       document.getElementById('kode_desa').value = kdDesa;
 
       const elDusun = document.getElementById('dusun');
-      elDusun.innerHTML = '<option value="">-- PILIH DUSUN --</option>';
+      if (!elDusun) return;
+      elDusun.innerHTML = '<option value="">-- PILIH RW/DUSUN --</option>';
       document.getElementById('kode_dusun').value = '';
       resetFormDropdowns(['rt']);
 
       const dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
-      if (!kdDesa || !dataDusun[dsnKey]) { elDusun.disabled = true; return; }
+      if (!kdDesa || !dataDusun[dsnKey]) {
+        elDusun.disabled = true;
+        return;
+      }
 
       for (let kd in dataDusun[dsnKey]) {
         const item = dataDusun[dsnKey][kd];
-        const opt = new Option(`${item.nama.toUpperCase()} (${kd})`, kd);
+        const opt = new Option(`${kd} - ${item.nama.toUpperCase()}`, kd);
         opt.setAttribute('data-rt', item.jumlah_rt || 1);
-        elDusun.add(new Option(`${kd} - ${item.nama.toUpperCase()}`, kd));
+        elDusun.add(opt);
       }
       elDusun.disabled = false;
     }
