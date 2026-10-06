@@ -2311,68 +2311,68 @@
 
     // Objek penyimpan nilai formulir
     const dataNilaiKB = {
-      kb_01_melahirkan: 0,
-      kb_01_hidup_laki: 0,
-      kb_01_hidup_perempuan: 0,
-      kb_01_masih_laki: 0,
-      kb_01_masih_perempuan: 0,
-      kb_02_anak_ideal: 2,
-      kb_03_sedang_hamil: '2',
+      kb_01_melahirkan: '',
+      kb_01_hidup_laki: '',
+      kb_01_hidup_perempuan: '',
+      kb_01_masih_laki: '',
+      kb_01_masih_perempuan: '',
+      kb_02_anak_ideal: '',
+      kb_03_sedang_hamil: '',
       kb_03_usia_kehamilan: '',
-      kb_03_status_ingin_hamil: '1',
-      kb_03_keinginan_anak_lagi: '1',
-      kb_04_sedang_kb: '1',
-      kb_04_mulai_bulan: '01',
-      kb_04_mulai_tahun: 2024,
-      kb_05_pernah_kb: '2',
+      kb_03_status_ingin_hamil: '',
+      kb_03_keinginan_anak_lagi: '',
+      kb_04_sedang_kb: '',
+      kb_04_mulai_bulan: '',
+      kb_04_mulai_tahun: '',
+      kb_05_pernah_kb: '',
       kb_05_mulai_bulan: '',
       kb_05_mulai_tahun: '',
       kb_05_berhenti_bulan: '',
       kb_05_berhenti_tahun: '',
-      kb_06_alasan_tidak_kb: '1',
-      kb_07_jenis_kb: '5',
-      kb_08_sumber_pelayanan: '3',
-      kb_09_info_jenis: '1',
-      kb_09_info_efek_samping: '1',
-      kb_09_info_tindakan: '1'
+      kb_06_alasan_tidak_kb: '',
+      kb_07_jenis_kb: '',
+      kb_08_sumber_pelayanan: '',
+      kb_09_info_jenis: '',
+      kb_09_info_efek_samping: '',
+      kb_09_info_tindakan: ''
     };
 
     const dataNilaiPK = {
-      pk_01_ibadah: '1',
-      pk_02_akta_nikah: '1',
-      pk_03_a_tanpa_sapa: '2',
-      pk_03_b_pisah_ranjang: '2',
-      pk_03_c_minggat: '2',
-      pk_03_d_kdrt: '2',
-      pk_04_penghasilan: '1',
-      pk_05_makanan_beragam: '1',
-      pk_06_aset: '1',
-      pk_06_aset_jenis: '6',
-      pk_07_penyakit_kronis: '2',
-      pk_08_disabilitas: '2',
-      pk_09_internet: '1',
-      pk_10_interaksi: '1',
-      pk_11_pengasuhan_bersama: '1',
-      pk_12_rekreasi: '1',
-      pk_13_gotong_royong: '1',
-      pk_14_1_atap: '2',
-      pk_14_2_kondisi_atap: '1',
-      pk_15_1_dinding: '1',
-      pk_15_2_kondisi_dinding: '1',
-      pk_16_1_lantai: '2',
-      pk_16_2_kondisi_lantai: '1',
-      pk_17_1_penerangan: '1',
-      pk_17_2_daya_pln: '2',
-      pk_18_air_minum: '2',
-      pk_19_jamban: '1',
-      pk_20_luas_rumah: 45,
-      pk_21_jumlah_penghuni: 4,
-      pk_22_bahan_bakar: '4',
-      pk_23_kepemilikan_rumah: '1',
-      pk_24_info_media: '1',
-      pk_25_media_sumber: '2',
-      pk_26_info_petugas: '1',
-      pk_27_petugas_sumber: '9'
+      pk_01_ibadah: '',
+      pk_02_akta_nikah: '',
+      pk_03_a_tanpa_sapa: '',
+      pk_03_b_pisah_ranjang: '',
+      pk_03_c_minggat: '',
+      pk_03_d_kdrt: '',
+      pk_04_penghasilan: '',
+      pk_05_makanan_beragam: '',
+      pk_06_aset: '',
+      pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? (Array.isArray(dataNilaiPK.pk_06_aset_jenis) ? dataNilaiPK.pk_06_aset_jenis.join(',') : dataNilaiPK.pk_06_aset_jenis) : null,
+      pk_07_penyakit_kronis: '',
+      pk_08_disabilitas: '',
+      pk_09_internet: '',
+      pk_10_interaksi: '',
+      pk_11_pengasuhan_bersama: '',
+      pk_12_rekreasi: '',
+      pk_13_gotong_royong: '',
+      pk_14_1_atap: '',
+      pk_14_2_kondisi_atap: '',
+      pk_15_1_dinding: '',
+      pk_15_2_kondisi_dinding: '',
+      pk_16_1_lantai: '',
+      pk_16_2_kondisi_lantai: '',
+      pk_17_1_penerangan: '',
+      pk_17_2_daya_pln: '',
+      pk_18_air_minum: '',
+      pk_19_jamban: '',
+      pk_20_luas_rumah: '',
+      pk_21_jumlah_penghuni: '',
+      pk_22_bahan_bakar: '',
+      pk_23_kepemilikan_rumah: '',
+      pk_24_info_media: '',
+      pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? (Array.isArray(dataNilaiPK.pk_25_media_sumber) ? dataNilaiPK.pk_25_media_sumber.join(',') : dataNilaiPK.pk_25_media_sumber) : null,
+      pk_26_info_petugas: '',
+      pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? (Array.isArray(dataNilaiPK.pk_27_petugas_sumber) ? dataNilaiPK.pk_27_petugas_sumber.join(',') : dataNilaiPK.pk_27_petugas_sumber) : null,
     };
 
     // Fungsi Render Pilihan Pil
@@ -2390,6 +2390,7 @@
       `;
     }
 
+    // Klik Pilihan Tunggal
     function pilihOpsiPil(namaKoleksi, keyField, nilai, tombolEl) {
       if (namaKoleksi === 'KB') {
         dataNilaiKB[keyField] = nilai;
@@ -2400,10 +2401,51 @@
       parent.querySelectorAll('.opsi-pil').forEach(btn => btn.classList.remove('aktif'));
       tombolEl.classList.add('aktif');
 
-      // Reaktif jika ada percabangan
-      if (keyField === 'kb_03_sedang_hamil' || keyField === 'kb_04_sedang_kb' || keyField === 'kb_05_pernah_kb' || keyField === 'pk_17_1_penerangan' || keyField === 'pk_24_info_media' || keyField === 'pk_26_info_petugas') {
-        if (namaKoleksi === 'KB') tampilkanStepKB();
-        else tampilkanStepPK();
+      // Reaktif jika ada percabangan bertingkat
+      if (['kb_03_sedang_hamil', 'kb_04_sedang_kb', 'kb_05_pernah_kb'].includes(keyField)) {
+        tampilkanStepKB();
+      } else if (['pk_06_aset', 'pk_17_1_penerangan', 'pk_24_info_media', 'pk_26_info_petugas'].includes(keyField)) {
+        tampilkanStepPK();
+      }
+    }
+
+    // Render Pilihan Jamak / Lebih Dari 1 (Multi Select)
+    function buatPilMultiHTML(namaKoleksi, keyField, opsiList, listNilaiAktif) {
+      const arrNilai = Array.isArray(listNilaiAktif) ? listNilaiAktif : [];
+      return `
+        <div class="flex flex-wrap gap-2.5 pt-1">
+          ${opsiList.map(o => {
+            const isTerpilih = arrNilai.includes(o.val);
+            return `
+              <button type="button" 
+                      onclick="pilihOpsiPilMulti('${namaKoleksi}', '${keyField}', '${o.val}', this)"
+                      class="opsi-pil ${isTerpilih ? 'aktif' : ''}">
+                ${o.label}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Klik Pilihan Jamak (Toggle Aktif / Non-aktif)
+    function pilihOpsiPilMulti(namaKoleksi, keyField, nilai, tombolEl) {
+      let targetArr = (namaKoleksi === 'KB') ? dataNilaiKB[keyField] : dataNilaiPK[keyField];
+      if (!Array.isArray(targetArr)) targetArr = [];
+
+      const idx = targetArr.indexOf(nilai);
+      if (idx > -1) {
+        targetArr.splice(idx, 1);
+        tombolEl.classList.remove('aktif');
+      } else {
+        targetArr.push(nilai);
+        tombolEl.classList.add('aktif');
+      }
+
+      if (namaKoleksi === 'KB') {
+        dataNilaiKB[keyField] = targetArr;
+      } else {
+        dataNilaiPK[keyField] = targetArr;
       }
     }
 
@@ -2662,8 +2704,8 @@
           ${buatPilHTML('PK', 'pk_06_aset', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_06_aset)}
           ${dataNilaiPK.pk_06_aset === '1' ? `
             <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">06.1. Aset utama yang dimiliki:</div>
-              ${buatPilHTML('PK', 'pk_06_aset_jenis', [
+              <div class="judul-tanya-krs">06.1. Aset yang dimiliki keluarga: <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
+              ${buatPilMultiHTML('PK', 'pk_06_aset_jenis', [
                 { val: '1', label: '1. Tabungan' }, { val: '2', label: '2. AC' }, { val: '3', label: '3. TV Layar Datar' },
                 { val: '4', label: '4. Kulkas' }, { val: '5', label: '5. Komputer/Laptop' }, { val: '6', label: '6. Sepeda Motor' },
                 { val: '7', label: '7. Mobil' }, { val: '8', label: '8. Perahu Motor' }, { val: '9', label: '9. Emas (min. 10 gr)' },
@@ -2672,14 +2714,16 @@
             </div>
           ` : ''}
         `;
-      } else if (q.tipe === 'media_informasi') {
+      } 
+      // 24. Media Informasi (Sub-pertanyaan 24.1 boleh pilih > 1)
+      else if (q.tipe === 'media_informasi') {
         html = `
           <div class="judul-tanya-krs">24. Pernah mendengar/melihat pesan Bangga Kencana dari media?</div>
           ${buatPilHTML('PK', 'pk_24_info_media', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_24_info_media)}
           ${dataNilaiPK.pk_24_info_media === '1' ? `
             <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">24.1. Dari media mana informasi diperoleh?</div>
-              ${buatPilHTML('PK', 'pk_25_media_sumber', [
+              <div class="judul-tanya-krs">24.1. Dari media mana informasi diperoleh? <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
+              ${buatPilMultiHTML('PK', 'pk_25_media_sumber', [
                 { val: '1', label: '1. Koran/Majalah' }, { val: '2', label: '2. Televisi/Radio' },
                 { val: '3', label: '3. Media Sosial/Internet' }, { val: '4', label: '4. Pertemuan/Penyuluhan' },
                 { val: '5', label: '5. Spanduk/Baliho' }, { val: '6', label: '6. Pentas Seni' }
@@ -2687,14 +2731,16 @@
             </div>
           ` : ''}
         `;
-      } else if (q.tipe === 'petugas_informasi') {
+      } 
+      // 25. Petugas Informasi (Sub-pertanyaan 25.1 boleh pilih > 1)
+      else if (q.tipe === 'petugas_informasi') {
         html = `
           <div class="judul-tanya-krs">25. Pernah memperoleh informasi program & Stunting dari petugas?</div>
           ${buatPilHTML('PK', 'pk_26_info_petugas', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_26_info_petugas)}
           ${dataNilaiPK.pk_26_info_petugas === '1' ? `
             <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">25.1. Petugas yang memberi informasi:</div>
-              ${buatPilHTML('PK', 'pk_27_petugas_sumber', [
+              <div class="judul-tanya-krs">25.1. Petugas yang memberi informasi: <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
+              ${buatPilMultiHTML('PK', 'pk_27_petugas_sumber', [
                 { val: '1', label: '1. Pejabat Pemerintah' }, { val: '2', label: '2. PKB/PLKB' },
                 { val: '3', label: '3. Guru/Dosen' }, { val: '4', label: '4. Tokoh Agama' },
                 { val: '5', label: '5. Tokoh Masyarakat' }, { val: '6', label: '6. Dokter' },
@@ -2704,6 +2750,7 @@
             </div>
           ` : ''}
         `;
+      }
       } else if (q.opsi) {
         html = `
           <div class="judul-tanya-krs">${q.judul}</div>
