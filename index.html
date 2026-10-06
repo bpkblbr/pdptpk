@@ -2978,15 +2978,7 @@
 
         listHalAnggota.forEach((hal, idx) => {
           payloadAnggota.push({
-            nomor_kk: noKK,
-            kode_prov: kdProv,
-            kode_kab: kdKab,
-            kode_kec: kdKec,
-            kode_desa: kdDesa,
-            kode_dusun: kdDusun,
-            rt: rt,
-            kode_rumah: kodeRumah,
-            no_urut_keluarga: noUrutKel,
+            nomor_kk: noKK,            
             nomor_anggota_keluarga: idx + 1,
             nama_lengkap: hal.querySelector('[name="nama_lengkap"]').value.trim().toUpperCase(),
             nik: hal.querySelector('[name="nik"]').value.trim(),
