@@ -627,12 +627,12 @@
 
           <!-- ACCORDION 1: KARTU WILAYAH -->
           <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-            <button type="button" onclick="toggleAccordion('konten_preview_wilayah', 'icon_acc_wilayah')"
+            <button type="button" onclick="bukaAccordionTunggal('konten_preview_wilayah', 'icon_acc_wilayah')"
                     class="w-full px-4 py-3 bg-white hover:bg-slate-50 flex justify-between items-center text-left font-bold text-slate-800 text-sm transition">
               <span>Wilayah</span>
-              <span id="icon_acc_wilayah" class="text-xs text-slate-400">▲</span>
+              <span id="icon_acc_wilayah" class="text-xs text-slate-400">▼</span>
             </button>
-            <div id="konten_preview_wilayah" class="p-4 bg-slate-50/50 border-t border-slate-100 space-y-3.5">
+            <div id="konten_preview_wilayah" class="hidden p-4 bg-slate-50/50 border-t border-slate-100 space-y-3.5">
               <div class="grid grid-cols-2 gap-x-4 gap-y-3">
                 <div>
                   <p class="text-slate-500 font-medium mb-0.5 text-xs">Provinsi</p>
@@ -676,12 +676,12 @@
 
           <!-- ACCORDION 2: KARTU ANGGOTA KELUARGA -->
           <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-            <button type="button" onclick="toggleAccordion('konten_preview_keluarga', 'icon_acc_keluarga')"
+            <button type="button" onclick="bukaAccordionTunggal('konten_preview_keluarga', 'icon_acc_keluarga')"
                     class="w-full px-4 py-3 bg-white hover:bg-slate-50 flex justify-between items-center text-left font-bold text-slate-800 text-sm transition">
               <span>Keluarga</span>
-              <span id="icon_acc_keluarga" class="text-xs text-slate-400">▲</span>
+              <span id="icon_acc_keluarga" class="text-xs text-slate-400">▼</span>
             </button>
-            <div id="konten_preview_keluarga" class="divide-y divide-slate-200 border-t border-slate-100 bg-white">
+            <div id="konten_preview_keluarga" class="hidden divide-y divide-slate-200 border-t border-slate-100 bg-white">
               <!-- Item anggota keluarga dirender dinamis di sini -->
             </div>
           </div>
@@ -2898,16 +2898,30 @@
       }
     }
 
-    function toggleAccordion(kontenId, iconId) {
-      const el = document.getElementById(kontenId);
-      const icon = document.getElementById(iconId);
-      if (!el) return;
-      if (el.classList.contains('hidden')) {
-        el.classList.remove('hidden');
-        if (icon) icon.innerText = '▲';
-      } else {
-        el.classList.add('hidden');
-        if (icon) icon.innerText = '▼';
+    function bukaAccordionTunggal(kontenId, iconId) {
+      const targetKonten = document.getElementById(kontenId);
+      const targetIcon = document.getElementById(iconId);
+      if (!targetKonten) return;
+
+      const sedangTerbuka = !targetKonten.classList.contains('hidden');
+
+      // 1. Tutup SEMUA accordion terlebih dahulu
+      const listKonten = ['konten_preview_wilayah', 'konten_preview_keluarga'];
+      const listIcon = ['icon_acc_wilayah', 'icon_acc_keluarga'];
+
+      listKonten.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      listIcon.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = '▼';
+      });
+
+      // 2. Jika sebelumnya tertutup, maka buka yang diklik
+      if (!sedangTerbuka) {
+        targetKonten.classList.remove('hidden');
+        if (targetIcon) targetIcon.innerText = '▲';
       }
     }
 
@@ -2927,6 +2941,13 @@
     }
 
     function bukaHalamanReview() {
+
+      document.getElementById('konten_preview_wilayah')?.classList.add('hidden');
+      document.getElementById('icon_acc_wilayah') && (document.getElementById('icon_acc_wilayah').innerText = '▼');
+
+      document.getElementById('konten_preview_keluarga')?.classList.add('hidden');
+      document.getElementById('icon_acc_keluarga') && (document.getElementById('icon_acc_keluarga').innerText = '▼');
+
       // 1. Ambil Geolokasi
       ambilGeolokasiOtomatis();
 
