@@ -1647,7 +1647,7 @@
             <label class="block text-slate-700 font-medium mb-1">Kode Ibu Kandung</label>
             <select name="kode_ibu_kandung"
                     class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
-              <option value="00">00. Lainnya</option>
+              <option value="00">00 - LAINNYA</option>
             </select>
           </div>
         </div>
@@ -1881,7 +1881,6 @@
 
       listHal.forEach((hal, idx) => {
         const noUrut = idx + 1;
-        // Lembar ke-1 adalah Kepala Keluarga ('1'), lembar lainnya dibaca dari dropdown
         const hubungan = (noUrut === 1) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '');
         if (hubungan === '2') {
           nomorIstri = String(noUrut).padStart(2, '0');
@@ -1889,38 +1888,38 @@
         }
       });
 
-      // 2. Terapkan aturan lock dan dropdown pada seluruh lembar anggota
+      // 2. Terapkan aturan lock dan pembaruan format dropdown
       listHal.forEach((hal, idx) => {
         const noUrut = idx + 1;
         const hubungan = (noUrut === 1) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '');
         const selectIbu = hal.querySelector('[name="kode_ibu_kandung"]');
         if (!selectIbu) return;
 
-        // JIKA KEPALA KELUARGA (1) ATAU ISTRI (2): KUNCI (LOCK) & SET KE '00'
+        // JIKA KEPALA KELUARGA (1) ATAU ISTRI (2): KUNCI & DEFAULT KE 00 - LAINNYA
         if (hubungan === '1' || hubungan === '2') {
-          selectIbu.innerHTML = `<option value="00" selected>00. LAINNYA</option>`;
+          selectIbu.innerHTML = `<option value="00" selected>00 - LAINNYA</option>`;
           selectIbu.disabled = true;
-          selectIbu.classList.add('bg-slate-100', 'text-slate-500');
+          selectIbu.classList.add('bg-slate-100', 'text-slate-500', 'cursor-not-allowed');
           selectIbu.classList.remove('bg-white');
         } else {
           // UNTUK ANAK ATAU ANGGOTA LAINNYA: BUKA LOCK
           selectIbu.disabled = false;
-          selectIbu.classList.remove('bg-slate-100', 'text-slate-500');
+          selectIbu.classList.remove('bg-slate-100', 'text-slate-500', 'cursor-not-allowed');
           selectIbu.classList.add('bg-white');
 
           const nilaiSebelumnya = selectIbu.value;
           selectIbu.innerHTML = '';
 
-          // Opsi 1: 00 LAINNYA
-          selectIbu.add(new Option("00. LAINNYA", "00"));
+          // Opsi 1: 00 - LAINNYA
+          selectIbu.add(new Option("00 - LAINNYA", "00"));
 
-          // Opsi 2: Kode nomor urut disambung Nama Istri (jika ada Istri)
+          // Opsi 2: KODE - NAMA ISTRI (misal: 02 - SIROJUDIN ROBBANI)
           if (nomorIstri) {
-            const labelIstri = `${nomorIstri}. ${namaIstri} (ISTRI)`;
+            const labelIstri = `${nomorIstri} - ${namaIstri}`;
             selectIbu.add(new Option(labelIstri, nomorIstri));
           }
 
-          // Pertahankan pilihan sebelumnya jika masih valid, atau default ke istri jika baru
+          // Pertahankan pilihan sebelumnya jika masih ada, atau default ke istri jika baru
           if (nilaiSebelumnya && (nilaiSebelumnya === "00" || nilaiSebelumnya === nomorIstri)) {
             selectIbu.value = nilaiSebelumnya;
           } else if (nomorIstri) {
