@@ -1616,7 +1616,7 @@
       }
       inisialisasiWilayahSesuaiRole();
     }
-
+    
     function inisialisasiWilayahSesuaiRole() {
       const elProv = document.getElementById('provinsi');
       const elKab = document.getElementById('kabupaten');
@@ -1642,68 +1642,81 @@
         }
       };
 
-      // 1. SUPER ADMIN: Semua dropdown terbuka bebas
+      // 1. SUPER ADMIN: Semua dropdown terbuka & aktif
       if (userAktif.role === 'SUPER_ADMIN') {
         setTampilanField(elProv, 'label_provinsi', '', false);
         setTampilanField(elKab, 'label_kabupaten', '', false);
         setTampilanField(elKec, 'label_kecamatan', '', false);
         setTampilanField(elDesa, 'label_desa', '', false);
-        
-        // Pilih default provinsi pertama jika ada
-        const firstProv = Object.keys(dataProvinsi)[0];
-        if (firstProv) {
-          elProv.value = firstProv;
+
+        // Pilih default provinsi pertama jika belum dipilih
+        const listProv = Object.keys(dataProvinsi);
+        if (listProv.length > 0 && !elProv.value) {
+          elProv.value = listProv[0];
           updateFormKabupaten();
         }
       } 
       // 2. ADMIN KABUPATEN: Kunci Prov & Kab
       else if (userAktif.role === 'ADMIN_KABUPATEN') {
-        elProv.value = userAktif.kode_prov;
+        const kdP = String(userAktif.kode_prov).padStart(2, '0');
+        const kdK = String(userAktif.kode_kab).padStart(2, '0');
+
+        elProv.value = kdP;
         updateFormKabupaten();
-        elKab.value = userAktif.kode_kab;
+        elKab.value = kdK;
         updateFormKecamatan();
 
-        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
-        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
+        setTampilanField(elProv, 'label_provinsi', kdP, true);
+        setTampilanField(elKab, 'label_kabupaten', kdK, true);
         setTampilanField(elKec, 'label_kecamatan', '', false);
         setTampilanField(elDesa, 'label_desa', '', false);
       } 
       // 3. ADMIN KECAMATAN: Kunci Prov, Kab, Kec
       else if (userAktif.role === 'ADMIN_KECAMATAN') {
-        elProv.value = userAktif.kode_prov;
+        const kdP = String(userAktif.kode_prov).padStart(2, '0');
+        const kdK = String(userAktif.kode_kab).padStart(2, '0');
+        const kdKc = String(userAktif.kode_kec).padStart(2, '0');
+
+        elProv.value = kdP;
         updateFormKabupaten();
-        elKab.value = userAktif.kode_kab;
+        elKab.value = kdK;
         updateFormKecamatan();
-        elKec.value = userAktif.kode_kec;
+        elKec.value = kdKc;
         updateFormDesa();
 
-        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
-        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
-        setTampilanField(elKec, 'label_kecamatan', userAktif.kode_kec, true);
+        setTampilanField(elProv, 'label_provinsi', kdP, true);
+        setTampilanField(elKab, 'label_kabupaten', kdK, true);
+        setTampilanField(elKec, 'label_kecamatan', kdKc, true);
         setTampilanField(elDesa, 'label_desa', '', false);
       } 
       // 4. USER DESA: Kunci sampai Desa
       else {
-        elProv.value = userAktif.kode_prov;
+        const kdP = String(userAktif.kode_prov).padStart(2, '0');
+        const kdK = String(userAktif.kode_kab).padStart(2, '0');
+        const kdKc = String(userAktif.kode_kec).padStart(2, '0');
+        const kdD = String(userAktif.kode_desa).padStart(4, '0');
+
+        elProv.value = kdP;
         updateFormKabupaten();
-        elKab.value = userAktif.kode_kab;
+        elKab.value = kdK;
         updateFormKecamatan();
-        elKec.value = userAktif.kode_kec;
+        elKec.value = kdKc;
         updateFormDesa();
-        elDesa.value = userAktif.kode_desa;
+        elDesa.value = kdD;
         updateFormDusun();
 
-        setTampilanField(elProv, 'label_provinsi', userAktif.kode_prov, true);
-        setTampilanField(elKab, 'label_kabupaten', userAktif.kode_kab, true);
-        setTampilanField(elKec, 'label_kecamatan', userAktif.kode_kec, true);
-        setTampilanField(elDesa, 'label_desa', userAktif.kode_desa, true);
+        setTampilanField(elProv, 'label_provinsi', kdP, true);
+        setTampilanField(elKab, 'label_kabupaten', kdK, true);
+        setTampilanField(elKec, 'label_kecamatan', kdKc, true);
+        setTampilanField(elDesa, 'label_desa', kdD, true);
       }
 
       sinkronkanLabelWilayah();
     }
 
     function updateFormKabupaten() {
-      const kdProv = document.getElementById('provinsi').value;
+      const rawProv = document.getElementById('provinsi').value;
+      const kdProv = rawProv ? String(rawProv).padStart(2, '0') : '';
       document.getElementById('kode_prov').value = kdProv;
 
       const elKab = document.getElementById('kabupaten');
@@ -1711,22 +1724,28 @@
       document.getElementById('kode_kab').value = '';
       resetFormDropdowns(['kecamatan', 'desa', 'dusun', 'rt']);
 
-      if (!kdProv || !dataKabupaten[kdProv]) return;
+      if (!kdProv || !dataKabupaten[kdProv]) {
+        elKab.disabled = true;
+        return;
+      }
 
       for (let kd in dataKabupaten[kdProv]) {
         elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
       }
       
-      // Auto pilih jika hanya 1 opsi
-      const keys = Object.keys(dataKabupaten[kdProv]);
-      if (keys.length === 1 && userAktif.role === 'SUPER_ADMIN') {
-        elKab.value = keys[0];
+      elKab.disabled = false; // Buka kunci kabupaten
+
+      // Auto pilih jika hanya ada 1 kabupaten
+      const listKab = Object.keys(dataKabupaten[kdProv]);
+      if (listKab.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKab.value = listKab[0];
         updateFormKecamatan();
       }
     }
 
     function updateFormKecamatan() {
-      const kdKab = document.getElementById('kabupaten').value;
+      const rawKab = document.getElementById('kabupaten').value;
+      const kdKab = rawKab ? String(rawKab).padStart(2, '0') : '';
       document.getElementById('kode_kab').value = kdKab;
 
       const elKec = document.getElementById('kecamatan');
@@ -1734,49 +1753,66 @@
       document.getElementById('kode_kec').value = '';
       resetFormDropdowns(['desa', 'dusun', 'rt']);
 
-      if (!kdKab || !dataKecamatan[kdKab]) return;
+      if (!kdKab || !dataKecamatan[kdKab]) {
+        elKec.disabled = true;
+        return;
+      }
 
       for (let kd in dataKecamatan[kdKab]) {
         elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
       }
 
-      const keys = Object.keys(dataKecamatan[kdKab]);
-      if (keys.length === 1 && userAktif.role === 'SUPER_ADMIN') {
-        elKec.value = keys[0];
+      elKec.disabled = false; // Pastikan kecamatan selalu aktif bisa dipilih
+
+      // Auto pilih jika hanya ada 1 kecamatan
+      const listKec = Object.keys(dataKecamatan[kdKab]);
+      if (listKec.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKec.value = listKec[0];
         updateFormDesa();
       }
     }
 
     function updateFormDesa() {
-      const kdKab = document.getElementById('kode_kab').value;
-      const kdKec = document.getElementById('kecamatan').value;
+      const rawKab = document.getElementById('kode_kab').value || document.getElementById('kabupaten').value;
+      const rawKec = document.getElementById('kecamatan').value;
+
+      const kdKab = rawKab ? String(rawKab).padStart(2, '0') : '';
+      const kdKec = rawKec ? String(rawKec).padStart(2, '0') : '';
       document.getElementById('kode_kec').value = kdKec;
 
       const elDesa = document.getElementById('desa');
       if (!elDesa) return;
+
       elDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
       document.getElementById('kode_desa').value = '';
       resetFormDropdowns(['dusun', 'rt']);
 
       const desaKey = kdKab + "_" + kdKec;
       if (!kdKec || !dataDesa[desaKey]) {
+        elDesa.disabled = true;
         return;
       }
 
       for (let kd in dataDesa[desaKey]) {
         elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
       }
-      elDesa.disabled = false;
-    }    
+
+      elDesa.disabled = false; // Aktifkan dropdown desa
+    }
 
     function updateFormDusun() {
-      const kdKab = document.getElementById('kode_kab').value;
-      const kdKec = document.getElementById('kode_kec').value;
-      const kdDesa = document.getElementById('desa').value;
+      const rawKab = document.getElementById('kode_kab').value || document.getElementById('kabupaten').value;
+      const rawKec = document.getElementById('kode_kec').value || document.getElementById('kecamatan').value;
+      const rawDesa = document.getElementById('desa').value;
+
+      const kdKab = rawKab ? String(rawKab).padStart(2, '0') : '';
+      const kdKec = rawKec ? String(rawKec).padStart(2, '0') : '';
+      const kdDesa = rawDesa ? String(rawDesa).padStart(4, '0') : '';
       document.getElementById('kode_desa').value = kdDesa;
 
       const elDusun = document.getElementById('dusun');
       if (!elDusun) return;
+
       elDusun.innerHTML = '<option value="">-- PILIH RW/DUSUN --</option>';
       document.getElementById('kode_dusun').value = '';
       resetFormDropdowns(['rt']);
@@ -1793,7 +1829,8 @@
         opt.setAttribute('data-rt', item.jumlah_rt || 1);
         elDusun.add(opt);
       }
-      elDusun.disabled = false;
+
+      elDusun.disabled = false; // Aktifkan dropdown dusun
     }
 
     function updateFormRT() {
