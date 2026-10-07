@@ -192,20 +192,59 @@
       <button onclick="navigasiKe('sinkron_kb')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
         ⚡ SINKRON STATUS KB
       </button>
-      <button onclick="navigasiKe('cek_nik')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
-        🔍 CEK NIK GANDA
+      <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto pt-2">
+      <button type="button" onclick="bukaModalKelolaExcelKeluarga()" 
+              class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+        📊 KELOLA DATA EXCEL KELUARGA
+      </button>
+      <button type="button" onclick="auditNikIstriGandaKeluarga()" 
+              class="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+        🔍 AUDIT NIK ISTRI GANDA
       </button>
     </div>
 
-    <div class="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto pt-2">
-      <button type="button" onclick="downloadTemplateExcelKeluarga()" 
-              class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
-        📥 DOWNLOAD TEMPLATE KELUARGA
-      </button>
-      <label class="cursor-pointer px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white rounded-full text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
-        📤 UPLOAD DATA KELUARGA
-        <input type="file" id="inputUploadExcelKeluarga" accept=".xlsx, .xls" onchange="uploadDataKeluargaExcel(event)" class="hidden" />
-      </label>
+    <!-- Modal Kelola Excel Keluarga (Download Terisi & Upload) -->
+    <div id="modalKelolaExcelKeluarga" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 space-y-5">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">Kelola Berkas Excel Data Keluarga</h3>
+          <button onclick="tutupModalKelolaExcelKeluarga()" class="text-slate-400 hover:text-slate-700 font-bold text-lg">&times;</button>
+        </div>
+
+        <!-- Panel 1: Download Template Kosong & Data Terisi -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 text-xs">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-700 uppercase">1. Unduh Format Excel</span>
+            <button type="button" onclick="downloadTemplateExcelKeluarga()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold uppercase text-[11px] transition">
+              📥 Template Kosong
+            </button>
+          </div>
+          
+          <div class="border-t border-slate-200 pt-3 space-y-2">
+            <p class="font-bold text-emerald-800 uppercase">Unduh Data Terisi Sesuai Wilayah:</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select id="dl_kel_kecamatan" onchange="saatDlKecamatanBerubah()" class="p-2 border rounded-lg bg-white outline-none">
+                <option value="">-- SEMUA KECAMATAN --</option>
+              </select>
+              <select id="dl_kel_desa" class="p-2 border rounded-lg bg-white outline-none">
+                <option value="">-- SEMUA DESA --</option>
+              </select>
+            </div>
+            <button type="button" onclick="downloadExcelKeluargaTerisi()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold uppercase transition">
+              📥 Unduh Data Terisi (.xlsx)
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Form Upload Excel -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 text-xs">
+          <span class="font-bold text-slate-700 uppercase block">2. Unggah Data Excel ke Database</span>
+          <input type="file" id="inputBerkasExcelKeluarga" accept=".xlsx, .xls" class="w-full p-2 border rounded-lg bg-white" />
+          <button type="button" id="btnUploadExcelKeluarga" onclick="eksekusiUploadExcelKeluarga()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold uppercase transition">
+            🚀 Upload ke Database
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Grid Menu Dashboard -->
@@ -4239,6 +4278,607 @@
       }
 
       return { lolos: true };
+    }
+
+    // ========================================================
+    // FITUR AUDIT NIK ISTRI GANDA (LOGIKA DARI INDEX_KAB)
+    // ========================================================
+    async function auditNikIstriGandaKeluarga() {
+      Swal.fire({
+        title: 'Menganalisis NIK Istri...',
+        html: 'Meneliti relasi keluarga dan riwayat mutasi dari database...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        // Tarik data istri (hubungan = 2) beserta status keluarga induknya
+        let query = supabaseClient
+          .from('anggota_keluarga')
+          .select(`
+            nomor_kk,
+            nik,
+            nama_lengkap,
+            hubungan_dengan_kk,
+            keluarga:nomor_kk (
+              nama_kk,
+              nik_kk,
+              status_keluarga,
+              kode_prov,
+              kode_kab,
+              kode_kec,
+              kode_desa,
+              kode_dusun,
+              rt,
+              alamat_detail
+            )
+          `)
+          .eq('hubungan_dengan_kk', '2');
+
+        // Batasi berdasarkan cakupan login
+        if (userAktif.role === 'ADMIN_KABUPATEN') {
+          query = query.eq('keluarga.kode_kab', userAktif.kode_kab);
+        } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+          query = query.eq('keluarga.kode_kec', userAktif.kode_kec);
+        }
+
+        const { data: rows, error } = await query;
+        if (error) throw error;
+
+        if (!rows || rows.length === 0) {
+          Swal.fire('Info', 'Tidak ada data istri yang ditemukan.', 'info');
+          return;
+        }
+
+        // Kelompokkan per NIK
+        const nikMap = new Map();
+        rows.forEach(r => {
+          const nik = String(r.nik || '').trim();
+          if (!nik || nik === '9999999999999999' || nik.length !== 16) return;
+
+          if (!nikMap.has(nik)) nikMap.set(nik, []);
+          const kel = r.keluarga || {};
+
+          nikMap.get(nik).push({
+            nomor_kk: r.nomor_kk,
+            nik_istri: nik,
+            nama_istri: r.nama_lengkap,
+            nama_suami: kel.nama_kk || '-',
+            nik_suami: kel.nik_kk || '-',
+            status_keluarga: String(kel.status_keluarga || '1'),
+            alamat: kel.alamat_detail || '-',
+            kode_kec: kel.kode_kec || '-',
+            kode_desa: kel.kode_desa || '-',
+            kode_dusun: kel.kode_dusun || '-',
+            rt: kel.rt || '-'
+          });
+        });
+
+        // Evaluasi aturan duplikasi
+        const daftarPelanggaran = [];
+        nikMap.forEach((records, nik) => {
+          if (records.length > 1) {
+            // Status: 1 = Ada (Aktif), 2 = Pindah, 3 = Meninggal, 5 = Cerai, 6 = Baru
+            const aktif = records.filter(item => item.status_keluarga === '1' || item.status_keluarga === '6');
+            const pindah = records.filter(item => item.status_keluarga === '2');
+            const ceraiMeninggal = records.filter(item => item.status_keluarga === '3' || item.status_keluarga === '5');
+
+            let isSah = false;
+            // 1. Kasus mutasi pindah domisili sah
+            if (pindah.length >= 1 && aktif.length === 1) isSah = true;
+            // 2. Kasus menikah ulang sah setelah cerai/meninggal dengan suami berbeda
+            if (ceraiMeninggal.length >= 1 && aktif.length === 1) {
+              if (ceraiMeninggal[0].nama_suami !== aktif[0].nama_suami) isSah = true;
+            }
+
+            // Jika bukan mutasi yang sah dan terdapat lebih dari 1 keluarga aktif
+            if (!isSah && aktif.length > 1) {
+              records.forEach(rec => {
+                let statusAudit = 'GANDA AKTIF (Pelanggaran)';
+                if (rec.status_keluarga === '2') statusAudit = 'Riwayat Asal Pindah';
+                else if (rec.status_keluarga === '3') statusAudit = 'Keluarga Meninggal';
+                else if (rec.status_keluarga === '5') statusAudit = 'Keluarga Cerai';
+
+                daftarPelanggaran.push({
+                  ...rec,
+                  keterangan_audit: statusAudit
+                });
+              });
+            }
+          }
+        });
+
+        if (daftarPelanggaran.length === 0) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Basis Data Bersih!',
+            text: 'Tidak ditemukan NIK Istri ganda aktif tanpa riwayat mutasi resmi.',
+            confirmButtonColor: '#059669'
+          });
+          return;
+        }
+
+        // Tampilkan peringatan dan opsi unduh laporan
+        Swal.fire({
+          icon: 'warning',
+          title: `Ditemukan ${daftarPelanggaran.length} Baris NIK Ganda!`,
+          html: `
+            <div class="text-left text-xs space-y-2 text-slate-700">
+              <p>Ditemukan NIK Istri yang terdaftar aktif di lebih dari satu keluarga tanpa alasan mutasi sah.</p>
+              <div class="max-h-40 overflow-y-auto bg-rose-50 border border-rose-200 p-2 rounded-lg font-mono text-[11px] text-rose-800">
+                ${daftarPelanggaran.slice(0, 5).map(d => `• ${d.nama_istri} (${d.nik_istri}) di KK:${d.nomor_kk}`).join('<br>')}
+                ${daftarPelanggaran.length > 5 ? `<br><i>...dan ${daftarPelanggaran.length - 5} data lainnya.</i>` : ''}
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: '📥 Unduh Laporan Excel (.xlsx)',
+          cancelButtonText: 'Tutup',
+          confirmButtonColor: '#e11d48'
+        }).then((res) => {
+          if (res.isConfirmed) {
+            unduhLaporanAuditNikExcel(daftarPelanggaran);
+          }
+        });
+
+      } catch (err) {
+        console.error('Audit Error:', err);
+        Swal.fire('Gagal', err.message || 'Terjadi kesalahan sistem.', 'error');
+      }
+    }
+
+    function unduhLaporanAuditNikExcel(dataList) {
+      const rows = dataList.map((d, idx) => ({
+        "NO": idx + 1,
+        "NOMOR KK": d.nomor_kk,
+        "NIK ISTRI": d.nik_istri,
+        "NAMA ISTRI": d.nama_istri,
+        "NAMA SUAMI (KK)": d.nama_suami,
+        "NIK SUAMI": d.nik_suami,
+        "KD KEC": d.kode_kec,
+        "KD DESA": d.kode_desa,
+        "KD DUSUN": d.kode_dusun,
+        "RT": d.rt,
+        "ALAMAT": d.alamat,
+        "STATUS KELUARGA": d.status_keluarga,
+        "STATUS AUDIT": d.keterangan_audit
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Audit_NIK_Istri");
+      XLSX.writeFile(wb, `Laporan_Audit_NIK_Istri_Ganda_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    // ========================================================
+    // DOWNLOAD EXCEL KELUARGA TERISI BERJENJANG
+    // ========================================================
+    function bukaModalKelolaExcelKeluarga() {
+      document.getElementById('modalKelolaExcelKeluarga').classList.remove('hidden');
+      populateDropdownFilterExcelKeluarga();
+    }
+
+    function tutupModalKelolaExcelKeluarga() {
+      document.getElementById('modalKelolaExcelKeluarga').classList.add('hidden');
+    }
+
+    function populateDropdownFilterExcelKeluarga() {
+      const selKec = document.getElementById('dl_kel_kecamatan');
+      const selDesa = document.getElementById('dl_kel_desa');
+      if (!selKec || !selDesa) return;
+
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKecUnik = [...new Map(dataAkses.map(item => [item.kode_kec, item.kecamatan])).entries()];
+
+      listKecUnik.sort((a, b) => a[1].localeCompare(b[1])).forEach(([kd, nama]) => {
+        selKec.add(new Option(nama.toUpperCase(), kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+        saatDlKecamatanBerubah();
+      } else {
+        selKec.disabled = false;
+      }
+    }
+
+    function saatDlKecamatanBerubah() {
+      const selKec = document.getElementById('dl_kel_kecamatan');
+      const selDesa = document.getElementById('dl_kel_desa');
+      const kdKec = selKec ? selKec.value : '';
+
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = kdKec ? dataAkses.filter(w => String(w.kode_kec).padStart(2, '0') === kdKec) : dataAkses;
+
+      const listDesaUnik = [...new Map(listDesa.map(item => [item.kode_desa, item.desa])).entries()];
+      listDesaUnik.sort((a, b) => a[1].localeCompare(b[1])).forEach(([kd, nama]) => {
+        selDesa.add(new Option(nama.toUpperCase(), kd));
+      });
+    }
+
+    async function downloadExcelKeluargaTerisi() {
+      const filterKec = document.getElementById('dl_kel_kecamatan').value;
+      const filterDesa = document.getElementById('dl_kel_desa').value;
+
+      Swal.fire({
+        title: 'Menyiapkan Berkas...',
+        html: 'Mengambil data keluarga dan seluruh anggota dari database...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        let queryKel = supabaseClient.from('keluarga').select('*');
+
+        if (userAktif.role === 'ADMIN_KABUPATEN') queryKel = queryKel.eq('kode_kab', userAktif.kode_kab);
+        if (filterKec) queryKel = queryKel.eq('kode_kec', filterKec);
+        if (filterDesa) queryKel = queryKel.eq('kode_desa', filterDesa);
+
+        const { data: dataKel, error: errKel } = await queryKel;
+        if (errKel) throw errKel;
+
+        if (!dataKel || dataKel.length === 0) {
+          Swal.fire('Data Kosong', 'Tidak ada data keluarga untuk wilayah yang dipilih.', 'info');
+          return;
+        }
+
+        const listKK = dataKel.map(k => k.nomor_kk);
+
+        // Ambil data seluruh anggota keluarga untuk KK terpilih
+        const { data: dataAng, error: errAng } = await supabaseClient
+          .from('anggota_keluarga')
+          .select('*')
+          .in('nomor_kk', listKK)
+          .order('nomor_anggota_keluarga', { ascending: true });
+
+        if (errAng) throw errAng;
+
+        // Susun Sheet KELUARGA
+        const rowsKeluarga = dataKel.map(k => ({
+          "NOMOR_KK": k.nomor_kk,
+          "NAMA_KK": k.nama_kk,
+          "NIK_KK": k.nik_kk,
+          "KODE_PROV": k.kode_prov,
+          "KODE_KAB": k.kode_kab,
+          "KODE_KEC": k.kode_kec,
+          "KODE_DESA": k.kode_desa,
+          "KODE_DUSUN": k.kode_dusun,
+          "RT": k.rt,
+          "KODE_RUMAH": k.kode_rumah,
+          "NO_URUT_KELUARGA": k.no_urut_keluarga,
+          "STATUS_KELUARGA": k.status_keluarga,
+          "ALAMAT_DETAIL": k.alamat_detail,
+          "NO_HP": k.no_hp,
+          "LATITUDE": k.latitude,
+          "LONGITUDE": k.longitude,
+          "PK_01_IBADAH": k.pk_01_ibadah,
+          "PK_02_AKTA_NIKAH": k.pk_02_akta_nikah,
+          "PK_06_ASET": k.pk_06_aset,
+          "PK_06_ASET_JENIS": k.pk_06_aset_jenis,
+          "PK_17_1_PENERANGAN": k.pk_17_1_penerangan,
+          "PK_18_AIR_MINUM": k.pk_18_air_minum,
+          "PK_19_JAMBAN": k.pk_19_jamban,
+          "KB_01_MELAHIRKAN": k.kb_01_melahirkan,
+          "KB_01_MASIH_LAKI": k.kb_01_masih_laki,
+          "KB_01_MASIH_PEREMPUAN": k.kb_01_masih_perempuan,
+          "KB_02_ANAK_IDEAL": k.kb_02_anak_ideal,
+          "KB_03_SEDANG_HAMIL": k.kb_03_sedang_hamil ? "1" : "2",
+          "KB_04_SEDANG_KB": k.kb_04_sedang_kb ? "1" : "2",
+          "KB_04_MULAI_BULAN": k.kb_04_mulai_bulan,
+          "KB_04_MULAI_TAHUN": k.kb_04_mulai_tahun,
+          "KB_07_JENIS_KB": k.kb_07_jenis_kb
+        }));
+
+        // Susun Sheet ANGGOTA_KELUARGA
+        const rowsAnggota = (dataAng || []).map(a => ({
+          "NOMOR_KK": a.nomor_kk,
+          "NO_URUT": a.nomor_anggota_keluarga,
+          "NAMA_LENGKAP": a.nama_lengkap,
+          "NIK": a.nik,
+          "HUBUNGAN_DENGAN_KK": a.hubungan_dengan_kk,
+          "JENIS_KELAMIN": a.jenis_kelamin,
+          "TANGGAL_LAHIR": a.tanggal_lahir,
+          "STATUS_PERKAWINAN": a.status_perkawinan,
+          "USIA_KAWIN_PERTAMA": a.usia_kawin_pertama,
+          "MEMILIKI_AKTA_LAHIR": a.memiliki_akta_lahir,
+          "KODE_IBU_KANDUNG": a.kode_ibu_kandung,
+          "AGAMA": a.agama,
+          "JENIS_PEKERJAAN": a.jenis_pekerjaan,
+          "PENDIDIKAN": a.pendidikan,
+          "BEKERJA_LUAR_NEGERI": a.bekerja_luar_negeri,
+          "MUTASI_ANGGOTA": a.mutasi_anggota,
+          "GANGGUAN_FUNGSIONAL": a.gangguan_fungsional,
+          "MENGURUS_DIRI": a.kemampuan_mengurus_diri
+        }));
+
+        const wsKel = XLSX.utils.json_to_sheet(rowsKeluarga);
+        const wsAng = XLSX.utils.json_to_sheet(rowsAnggota);
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, wsKel, "KELUARGA");
+        XLSX.utils.book_append_sheet(wb, wsAng, "ANGGOTA_KELUARGA");
+
+        XLSX.writeFile(wb, `Data_Keluarga_Terisi_${filterKec || 'Semua'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        Swal.close();
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Mengunduh', err.message || 'Terjadi kesalahan sistem.', 'error');
+      }
+    }
+
+    // ========================================================
+    // FITUR UPLOAD EXCEL KELUARGA DENGAN LOG DUPLIKASI
+    // ========================================================
+    let logBarisTereliminasi = [];
+
+    function downloadLogDuplikatExcel() {
+      if (logBarisTereliminasi.length === 0) return;
+      const ws = XLSX.utils.json_to_sheet(logBarisTereliminasi);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Log_Eliminasi");
+      XLSX.writeFile(wb, `Log_Duplikat_Dieliminasi_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    async function eksekusiUploadExcelKeluarga() {
+      const fileInput = document.getElementById('inputBerkasExcelKeluarga');
+      const file = fileInput ? fileInput.files[0] : null;
+      if (!file) {
+        Swal.fire('Peringatan', 'Pilih berkas Excel terlebih dahulu!', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btnUploadExcelKeluarga');
+      btn.disabled = true;
+      btn.innerText = "MEMPROSES & MEMVALIDASI...";
+
+      Swal.fire({
+        title: 'Membaca Data Excel...',
+        html: 'Meneliti NIK Istri dan menyusun data keluarga...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const buffer = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(buffer, { type: 'array' });
+
+          const sheetKeluarga = workbook.Sheets["KELUARGA"] || workbook.Sheets[workbook.SheetNames[0]];
+          const sheetAnggota = workbook.Sheets["ANGGOTA_KELUARGA"] || workbook.Sheets[workbook.SheetNames[1]];
+
+          if (!sheetKeluarga || !sheetAnggota) {
+            throw new Error('Berkas Excel wajib memiliki Sheet "KELUARGA" dan Sheet "ANGGOTA_KELUARGA"!');
+          }
+
+          const rawKeluarga = XLSX.utils.sheet_to_json(sheetKeluarga, { defval: '' });
+          const rawAnggota = XLSX.utils.sheet_to_json(sheetAnggota, { defval: '' });
+
+          if (rawKeluarga.length === 0 || rawAnggota.length === 0) {
+            throw new Error('Data pada sheet KELUARGA atau ANGGOTA_KELUARGA masih kosong.');
+          }
+
+          // 1. Tarik seluruh data NIK Istri dari database untuk pembanding
+          const { data: dbIstri, error: errDb } = await supabaseClient
+            .from('anggota_keluarga')
+            .select('nomor_kk, nik, nama_lengkap, keluarga:nomor_kk(status_keluarga, kode_kec, kode_desa)')
+            .eq('hubungan_dengan_kk', '2');
+
+          if (errDb) throw errDb;
+
+          const mapIstriDb = new Map();
+          (dbIstri || []).forEach(item => {
+            const cleanNik = String(item.nik || '').trim();
+            if (cleanNik && cleanNik !== '9999999999999999') {
+              const kel = item.keluarga || {};
+              // Catat istri yang berstatus aktif
+              if (kel.status_keluarga === '1' || kel.status_keluarga === '6') {
+                mapIstriDb.set(cleanNik, {
+                  nama: item.nama_lengkap,
+                  noKK: item.nomor_kk,
+                  wilayah: `Kec ${kel.kode_kec}/Desa ${kel.kode_desa}`
+                });
+              }
+            }
+          });
+
+          // 2. Petakan data anggota per KK
+          const mapAnggotaPerKK = new Map();
+          rawAnggota.forEach((ang, idx) => {
+            const noKK = String(ang.NOMOR_KK || ang.nomor_kk || '').trim();
+            if (!noKK) return;
+            if (!mapAnggotaPerKK.has(noKK)) mapAnggotaPerKK.set(noKK, []);
+            mapAnggotaPerKK.get(noKK).push({ ...ang, barisKe: idx + 2 });
+          });
+
+          // 3. Validasi NIK Istri dan hak akses wilayah
+          logBarisTereliminasi = [];
+          const seenIstriDiExcel = new Map();
+          const kkYangDitolak = new Set();
+
+          mapAnggotaPerKK.forEach((listAnggota, noKK) => {
+            const istri = listAnggota.find(a => String(a.HUBUNGAN_DENGAN_KK || a.hubungan_dengan_kk).trim() === '2');
+            if (istri) {
+              const nikIstri = String(istri.NIK || istri.nik || '').trim();
+              const namaIstri = String(istri.NAMA_LENGKAP || istri.nama_lengkap || '').toUpperCase().trim();
+
+              if (nikIstri && nikIstri !== '9999999999999999') {
+                // Cek benturan dengan database
+                if (mapIstriDb.has(nikIstri)) {
+                  const dbOwner = mapIstriDb.get(nikIstri);
+                  if (dbOwner.noKK !== noKK) {
+                    kkYangDitolak.add(noKK);
+                    logBarisTereliminasi.push({
+                      "NO KK": noKK,
+                      "BARIS": istri.barisKe,
+                      "NIK ISTRI": nikIstri,
+                      "NAMA ISTRI": namaIstri,
+                      "ALASAN ELIMINASI": `Bentrok dengan Istri di Database: ${dbOwner.nama} (KK: ${dbOwner.noKK}, ${dbOwner.wilayah})`,
+                      "STATUS": "DIELIMINASI / DILEWATI"
+                    });
+                    return;
+                  }
+                }
+
+                // Cek benturan dalam berkas Excel yang sama
+                if (seenIstriDiExcel.has(nikIstri)) {
+                  const exOwner = seenIstriDiExcel.get(nikIstri);
+                  kkYangDitolak.add(noKK);
+                  logBarisTereliminasi.push({
+                    "NO KK": noKK,
+                    "BARIS": istri.barisKe,
+                    "NIK ISTRI": nikIstri,
+                    "NAMA ISTRI": namaIstri,
+                    "ALASAN ELIMINASI": `Duplikat NIK Istri di Berkas Excel dengan ${exOwner.nama} (KK: ${exOwner.noKK}, Baris ${exOwner.baris})`,
+                    "STATUS": "DIELIMINASI / DILEWATI"
+                  });
+                  return;
+                }
+
+                seenIstriDiExcel.set(nikIstri, { nama: namaIstri, noKK: noKK, baris: istri.barisKe });
+              }
+            }
+          });
+
+          // 4. Susun Payload Bersih
+          const payloadKeluargaBatch = [];
+          const payloadAnggotaBatch = [];
+
+          rawKeluarga.forEach(k => {
+            const noKK = String(k.NOMOR_KK || k.nomor_kk || '').trim();
+            if (!noKK || kkYangDitolak.has(noKK)) return;
+
+            const kdKab = String(k.KODE_KAB || '01').padStart(2, '0');
+            const kdKec = String(k.KODE_KEC || '08').padStart(2, '0');
+
+            // Validasi otorisasi akun login
+            if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kab) return;
+            if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kec) return;
+
+            const listAng = mapAnggotaPerKK.get(noKK) || [];
+            const kk = listAng.find(a => String(a.HUBUNGAN_DENGAN_KK || a.hubungan_dengan_kk).trim() === '1');
+
+            payloadKeluargaBatch.push({
+              nomor_kk: noKK,
+              nama_kk: kk ? String(kk.NAMA_LENGKAP || kk.nama_lengkap).toUpperCase() : '',
+              nik_kk: kk ? String(kk.NIK || kk.nik) : '',
+              kode_prov: String(k.KODE_PROV || '52').padStart(2, '0'),
+              kode_kab: kdKab,
+              kode_kec: kdKec,
+              kode_desa: String(k.KODE_DESA || '2001').padStart(4, '0'),
+              kode_dusun: String(k.KODE_DUSUN || '0100').padStart(4, '0'),
+              rt: String(k.RT || '001').padStart(3, '0'),
+              kode_rumah: String(k.KODE_RUMAH || '001').padStart(3, '0'),
+              no_urut_keluarga: String(k.NO_URUT_KELUARGA || '001').padStart(3, '0'),
+              status_keluarga: String(k.STATUS_KELUARGA || '1'),
+              alamat_detail: String(k.ALAMAT_DETAIL || '').toUpperCase(),
+              no_hp: String(k.NO_HP || ''),
+              pk_01_ibadah: String(k.PK_01_IBADAH || '') || null,
+              pk_02_akta_nikah: String(k.PK_02_AKTA_NIKAH || '') || null,
+              pk_06_aset: String(k.PK_06_ASET || '') || null,
+              pk_06_aset_jenis: String(k.PK_06_ASET_JENIS || '') || null,
+              pk_17_1_penerangan: String(k.PK_17_1_PENERANGAN || '') || null,
+              pk_18_air_minum: String(k.PK_18_AIR_MINUM || '') || null,
+              pk_19_jamban: String(k.PK_19_JAMBAN || '') || null,
+              kb_01_melahirkan: parseInt(k.KB_01_MELAHIRKAN, 10) || 0,
+              kb_01_masih_laki: parseInt(k.KB_01_MASIH_LAKI, 10) || 0,
+              kb_01_masih_perempuan: parseInt(k.KB_01_MASIH_PEREMPUAN, 10) || 0,
+              kb_02_anak_ideal: parseInt(k.KB_02_ANAK_IDEAL, 10) || 0,
+              kb_03_sedang_hamil: String(k.KB_03_SEDANG_HAMIL) === '1',
+              kb_04_sedang_kb: String(k.KB_04_SEDANG_KB) === '1',
+              kb_04_mulai_bulan: String(k.KB_04_MULAI_BULAN || '') || null,
+              kb_04_mulai_tahun: parseInt(k.KB_04_MULAI_TAHUN, 10) || null,
+              kb_07_jenis_kb: String(k.KB_07_JENIS_KB || '') || null
+            });
+
+            listAng.forEach((a, idx) => {
+              payloadAnggotaBatch.push({
+                nomor_kk: noKK,
+                nomor_anggota_keluarga: parseInt(a.NO_URUT || (idx + 1), 10),
+                nama_lengkap: String(a.NAMA_LENGKAP || a.nama_lengkap).toUpperCase().trim(),
+                nik: String(a.NIK || a.nik).trim(),
+                jenis_kelamin: String(a.JENIS_KELAMIN || a.jenis_kelamin || '1'),
+                tanggal_lahir: a.TANGGAL_LAHIR || a.tanggal_lahir,
+                status_perkawinan: String(a.STATUS_PERKAWINAN || a.status_perkawinan || '1'),
+                usia_kawin_pertama: parseInt(a.USIA_KAWIN_PERTAMA || a.usia_kawin_pertama, 10) || null,
+                memiliki_akta_lahir: String(a.MEMILIKI_AKTA_LAHIR || '1'),
+                hubungan_dengan_kk: String(a.HUBUNGAN_DENGAN_KK || a.hubungan_dengan_kk || '3'),
+                kode_ibu_kandung: String(a.KODE_IBU_KANDUNG || a.kode_ibu_kandung || '00'),
+                agama: String(a.AGAMA || '1'),
+                jenis_pekerjaan: String(a.JENIS_PEKERJAAN || a.jenis_pekerjaan || '1'),
+                pendidikan: String(a.PENDIDIKAN || a.pendidikan || '8'),
+                bekerja_luar_negeri: String(a.BEKERJA_LUAR_NEGERI || '4'),
+                mutasi_anggota: String(a.MUTASI_ANGGOTA || '0'),
+                gangguan_fungsional: String(a.GANGGUAN_FUNGSIONAL || '5'),
+                kemampuan_mengurus_diri: String(a.MENGURUS_DIRI || '4')
+              });
+            });
+          });
+
+          if (payloadKeluargaBatch.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Tidak Ada Data Tersimpan',
+              html: `
+                <div class="text-left text-xs space-y-2 text-slate-700">
+                  <p>Seluruh baris data tertolak karena NIK Istri ganda atau di luar wewenang wilayah login.</p>
+                  ${logBarisTereliminasi.length > 0 ? `
+                    <button type="button" onclick="downloadLogDuplikatExcel()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold uppercase transition text-xs">
+                      📥 Unduh Log Duplikat (${logBarisTereliminasi.length} Data)
+                    </button>
+                  ` : ''}
+                </div>
+              `
+            });
+            return;
+          }
+
+          // 5. Eksekusi simpan ke database
+          const { error: upsertKelErr } = await supabaseClient
+            .from('keluarga')
+            .upsert(payloadKeluargaBatch, { onConflict: 'nomor_kk' });
+          if (upsertKelErr) throw upsertKelErr;
+
+          const savedKKs = payloadKeluargaBatch.map(k => k.nomor_kk);
+          await supabaseClient.from('anggota_keluarga').delete().in('nomor_kk', savedKKs);
+          const { error: insAngErr } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggotaBatch);
+          if (insAngErr) throw insAngErr;
+
+          tutupModalKelolaExcelKeluarga();
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Proses Impor Selesai!',
+            html: `
+              <div class="text-left text-xs space-y-2 text-slate-700">
+                <p>Berhasil menyimpan <b>${payloadKeluargaBatch.length}</b> keluarga dan <b>${payloadAnggotaBatch.length}</b> anggota.</p>
+                ${logBarisTereliminasi.length > 0 ? `
+                  <p class="text-rose-600 font-bold">*Sebanyak ${logBarisTereliminasi.length} data dilewati karena NIK Istri ganda.</p>
+                  <button type="button" onclick="downloadLogDuplikatExcel()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold uppercase transition text-xs">
+                    📥 Unduh Berkas Log Duplikat (.xlsx)
+                  </button>
+                ` : ''}
+              </div>
+            `,
+            confirmButtonColor: '#059669'
+          });
+
+        } catch (err) {
+          console.error(err);
+          Swal.fire('Gagal Memproses', err.message || 'Format data berkas Excel tidak sesuai.', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.innerText = "🚀 UPLOAD KE DATABASE";
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
     }
 
     async function bukaHalamanReview() {
