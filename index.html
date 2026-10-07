@@ -1640,8 +1640,8 @@
               <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tercatat</option>
               <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. Kawin Tidak Tercatat</option>
               <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Hidup Tercatat</option>
-              <option value="5" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Hidup Tidak Tercatat</option>
-              <option value="6" ${defaultKawin === "5" ? 'selected' : ''}>5. Cerai Mati</option>
+              <option value="5" ${defaultKawin === "5" ? 'selected' : ''}>4. Cerai Hidup Tidak Tercatat</option>
+              <option value="6" ${defaultKawin === "6" ? 'selected' : ''}>5. Cerai Mati</option>
             </select>
           </div>
           <div>
@@ -2483,6 +2483,30 @@
       }
     }
 
+    // Cek apakah KK statusnya tidak berpasangan (Belum Kawin / Cerai)
+    function isKepalaKeluargaTidakBerpasangan() {
+      const hal1 = document.getElementById('hal_anggota_1');
+      if (!hal1) return false;
+      const statusKawinKK = hal1.querySelector('[name="status_perkawinan"]')?.value;
+      // 1: Belum Kawin, 4: Cerai Hidup, 5: Cerai Mati (bukan Kawin Tercatat '2' / Tidak Tercatat '3')
+      return (statusKawinKK === '1' || statusKawinKK === '4' || statusKawinKK === '5');
+    }
+
+    // Cek apakah keluarga memiliki anak (berdasarkan riwayat anak lahir hidup/masih hidup atau anggota berstatus anak)
+    function apakahKeluargaPunyaAnak() {
+      const jmlAnakKB = (parseInt(dataNilaiKB.kb_01_masih_laki, 10) || 0) + (parseInt(dataNilaiKB.kb_01_masih_perempuan, 10) || 0);
+      if (jmlAnakKB > 0) return true;
+
+      // Cek di daftar anggota keluarga apakah ada yang berstatus Anak (hubungan '3')
+      let adaAnakDiKK = false;
+      document.querySelectorAll('.item-anggota-page').forEach((hal) => {
+        if (hal.querySelector('[name="hubungan_dengan_kk"]')?.value === '3') {
+          adaAnakDiKK = true;
+        }
+      });
+      return adaAnakDiKK;
+    }
+
     // ========================================================
     // LOGIKA RENDER STEP BLOK KB
     // ========================================================
@@ -2613,6 +2637,87 @@
               ${buatPilHTML('KB', 'kb_09_info_tindakan', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiKB.kb_09_info_tindakan)}
             </div>
           </div>
+        `;
+      }
+
+      // 01. Riwayat Melahirkan (Jika melahirkan > 0, baru muncul Jumlah Anak Masih Hidup)
+      if (q.tipe === 'angka_kelahiran') {
+        const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="space-y-3.5 pt-2">
+            <div>
+              <label class="block text-slate-700 font-semibold mb-1">Berapa kali Ibu pernah melahirkan?</label>
+              <div class="flex items-center gap-2">
+                <input type="number" min="0" value="${dataNilaiKB.kb_01_melahirkan}" 
+                       oninput="dataNilaiKB.kb_01_melahirkan = this.value; tampilkanStepKB();"
+                       placeholder="0"
+                       class="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm font-bold text-center outline-none focus:border-blue-500" />
+                <span class="text-slate-600 font-medium">Kali</span>
+              </div>
+            </div>
+
+            ${jmlLahir > 0 ? `
+            <div class="pt-3 border-t border-slate-200 space-y-2">
+              <label class="block text-slate-700 font-semibold">Jumlah Anak Masih Hidup</label>
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_laki}"
+                         oninput="dataNilaiKB.kb_01_masih_laki = parseInt(this.value, 10) || 0"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
+                  <span class="text-xs font-semibold text-slate-600">Laki-laki</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_perempuan}"
+                         oninput="dataNilaiKB.kb_01_masih_perempuan = parseInt(this.value, 10) || 0"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
+                  <span class="text-xs font-semibold text-slate-600">Perempuan</span>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      // 05. Pernah KB 12 Bulan Terakhir (Jika YA, tampilkan form bulan & tahun mulai serta berhenti)
+      else if (q.tipe === 'pil_pernah_kb') {
+        const opsiPernah = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', 'kb_05_pernah_kb', opsiPernah, dataNilaiKB.kb_05_pernah_kb)}
+
+          ${dataNilaiKB.kb_05_pernah_kb === '1' ? `
+          <div class="space-y-3 pt-3 border-t border-slate-200 text-xs sm:text-sm">
+            <div>
+              <label class="block text-slate-700 font-semibold mb-1">
+                Kapan mulai menggunakan alat/obat/cara kontrasepsi terakhir?
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" maxlength="2" placeholder="Bulan (01-12)" value="${dataNilaiKB.kb_05_mulai_bulan}"
+                       oninput="dataNilaiKB.kb_05_mulai_bulan = this.value"
+                       class="w-28 px-3 py-2 border border-slate-300 rounded-lg text-center font-bold outline-none" />
+                <input type="number" min="1980" max="2035" placeholder="Tahun (YYYY)" value="${dataNilaiKB.kb_05_mulai_tahun}"
+                       oninput="dataNilaiKB.kb_05_mulai_tahun = this.value"
+                       class="w-32 px-3 py-2 border border-slate-300 rounded-lg text-center font-bold outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-700 font-semibold mb-1">
+                Kapan berhenti menggunakan alat/obat/cara kontrasepsi terakhir?
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" maxlength="2" placeholder="Bulan (01-12)" value="${dataNilaiKB.kb_05_berhenti_bulan}"
+                       oninput="dataNilaiKB.kb_05_berhenti_bulan = this.value"
+                       class="w-28 px-3 py-2 border border-slate-300 rounded-lg text-center font-bold outline-none" />
+                <input type="number" min="1980" max="2035" placeholder="Tahun (YYYY)" value="${dataNilaiKB.kb_05_berhenti_tahun}"
+                       oninput="dataNilaiKB.kb_05_berhenti_tahun = this.value"
+                       class="w-32 px-3 py-2 border border-slate-300 rounded-lg text-center font-bold outline-none" />
+              </div>
+            </div>
+          </div>
+          ` : ''}
         `;
       }
 
@@ -2789,6 +2894,75 @@
         html = `
           <div class="judul-tanya-krs">${q.judul}</div>
           ${buatPilHTML('PK', q.id, q.opsi, dataNilaiPK[q.id])}
+        `;
+      }
+
+      // 03. Konflik Dalam Keluarga (Jika KK Tidak Berpasangan, 03.b dikunci ke "Tidak Berlaku")
+      else if (q.tipe === 'konflik_keluarga') {
+        const kkSendiri = isKepalaKeluargaTidakBerpasangan();
+        if (kkSendiri) {
+          dataNilaiPK.pk_03_b_pisah_ranjang = '3'; // Otomatis 3: Tidak Berlaku
+        }
+
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          <div class="space-y-3 pt-2">
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">a. Tanpa tegur sapa (3 hari berturut)?</p>
+              ${buatPilHTML('PK', 'pk_03_a_tanpa_sapa', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_a_tanpa_sapa)}
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">b. Pisah ranjang suami-istri (7 hari berturut)?</p>
+              ${kkSendiri ? `
+                <div class="flex items-center gap-2 pt-1">
+                  <span class="px-3 py-1.5 bg-slate-100 border border-slate-300 text-slate-500 font-bold rounded-lg text-xs cursor-not-allowed">
+                    3. Tidak Berlaku (Terkunci: KK Tidak Berpasangan)
+                  </span>
+                </div>
+              ` : `
+                ${buatPilHTML('PK', 'pk_03_b_pisah_ranjang', [
+                  { val: '1', label: '1. Ya' },
+                  { val: '2', label: '2. Tidak' },
+                  { val: '3', label: '3. Tidak Berlaku' }
+                ], dataNilaiPK.pk_03_b_pisah_ranjang)}
+              `}
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">c. Pergi dari rumah/minggat (2 hari berturut)?</p>
+              ${buatPilHTML('PK', 'pk_03_c_minggat', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_c_minggat)}
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-700 font-semibold mb-1">d. Kekerasan dalam rumah tangga (KDRT)?</p>
+              ${buatPilHTML('PK', 'pk_03_d_kdrt', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_d_kdrt)}
+            </div>
+          </div>
+        `;
+      }
+
+      // 11. Pengasuhan Anak Bersama (Jika tidak ada anak ATAU KK tidak berpasangan, kunci ke "Tidak Berlaku")
+      else if (q.id === 'pk_11_pengasuhan_bersama') {
+        const tidakAdaAnak = !apakahKeluargaPunyaAnak();
+        const kkSendiri = isKepalaKeluargaTidakBerpasangan();
+        const wajibKunci = tidakAdaAnak || kkSendiri;
+
+        if (wajibKunci) {
+          dataNilaiPK.pk_11_pengasuhan_bersama = '3'; // Otomatis 3: Tidak Berlaku
+        }
+
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${wajibKunci ? `
+            <div class="pt-2">
+              <span class="inline-block px-3.5 py-2 bg-slate-100 border border-slate-300 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed">
+                3. Tidak Berlaku (Terkunci: ${tidakAdaAnak ? 'Tidak Memiliki Anak' : 'KK Tidak Berpasangan'})
+              </span>
+            </div>
+          ` : `
+            ${buatPilHTML('PK', 'pk_11_pengasuhan_bersama', q.opsi, dataNilaiPK.pk_11_pengasuhan_bersama)}
+          `}
         `;
       }
 
@@ -3299,7 +3473,6 @@
         // 3. Simpan Blok KB
         const payloadKB = {
           kartu_keluarga_id: kkData.id,
-          // AMBIL LANGSUNG DARI dataNilaiKB:
           jml_melahirkan: parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0,
           anak_lahir_hidup_laki: parseInt(dataNilaiKB.kb_01_hidup_laki, 10) || 0,
           anak_lahir_hidup_perempuan: parseInt(dataNilaiKB.kb_01_hidup_perempuan, 10) || 0,
@@ -3311,13 +3484,18 @@
           usia_kehamilan_minggu: parseInt(dataNilaiKB.kb_03_usia_kehamilan, 10) || null,
           status_keinginan_hamil: dataNilaiKB.kb_03_status_ingin_hamil || null,
           keinginan_anak_lagi: dataNilaiKB.kb_03_keinginan_anak_lagi || null,
+          
+          sedang_pakai_kb: dataNilaiKB.kb_04_sedang_kb === '1',          
+          mulai_kb_bulan: dataNilaiKB.kb_04_sedang_kb === '1' ? dataNilaiKB.kb_04_mulai_bulan : null,
+          mulai_kb_tahun: dataNilaiKB.kb_04_sedang_kb === '1' ? (parseInt(dataNilaiKB.kb_04_mulai_tahun, 10) || null) : null,
+          
+          pernah_pakai_kb_12_bulan: dataNilaiKB.kb_04_sedang_kb === '2' ? (dataNilaiKB.kb_05_pernah_kb === '1') : null,          
+          pernah_mulai_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_mulai_bulan : null,
+          pernah_mulai_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_mulai_tahun, 10) || null) : null,
+          berhenti_kb_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_berhenti_bulan : null,
+          berhenti_kb_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_berhenti_tahun, 10) || null) : null,
 
-          sedang_pakai_kb: dataNilaiKB.kb_04_sedang_kb === '1',
-          mulai_kb_bulan: dataNilaiKB.kb_04_mulai_bulan || null,
-          mulai_kb_tahun: parseInt(dataNilaiKB.kb_04_mulai_tahun, 10) || null,
-          pernah_pakai_kb_12_bulan: dataNilaiKB.kb_05_pernah_kb === '1',
-
-          kode_alasan_tidak_kb: dataNilaiKB.kb_06_alasan_tidak_kb || null,
+          kode_alasan_tidak_kb: dataNilaiKB.kb_04_sedang_kb === '2' ? dataNilaiKB.kb_06_alasan_tidak_kb : null,
           kode_jenis_kb: dataNilaiKB.kb_07_jenis_kb || null,
           kode_sumber_pelayanan: dataNilaiKB.kb_08_sumber_pelayanan || null,
           dapat_info_jenis_kb: dataNilaiKB.kb_09_info_jenis === '1',
