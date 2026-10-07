@@ -1149,64 +1149,105 @@
       const file = event.target.files[0];
       if (!file) return;
 
+      // Reset value input file agar file yang sama bisa dipilih ulang jika diperlukan
       event.target.value = '';
 
       if (!supabaseClient) {
-        Swal.fire('Error', 'Koneksi ke Supabase belum terinisialisasi!', 'error');
+        Swal.fire({
+          icon: 'error',
+          title: 'Koneksi Terputus',
+          text: 'Koneksi Supabase belum terinisialisasi. Silakan refresh halaman!',
+          confirmButtonColor: '#e11d48'
+        });
         return;
       }
 
+      // Tampilkan indikator loading interaktif
       Swal.fire({
         title: 'Membaca File Excel...',
-        html: 'Mohon tunggu, data sedang diproses.',
+        html: '<div class="text-xs text-slate-500 mt-2">Sedang memvalidasi dan memproses data wilayah. Mohon tunggu...</div>',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
       });
 
       const reader = new FileReader();
+
       reader.onload = async (e) => {
         try {
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
+
+          // Ambil sheet pertama
           const firstSheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[firstSheetName];
 
+          // Konversi isi sheet ke Array Objek JSON
           const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
           if (!rawRows || rawRows.length === 0) {
-            Swal.fire('Perhatian', 'File Excel kosong atau format tidak sesuai!', 'warning');
+            Swal.fire({
+              icon: 'warning',
+              title: 'File Kosong',
+              text: 'File Excel tidak memiliki data atau baris baris kosong!',
+              confirmButtonColor: '#059669'
+            });
             return;
           }
 
-          const payloadBatch = [];
+          // Gunakan Map untuk deduplikasi data (mencegah error ON CONFLICT PostgreSQL)
+          const mapUnik = new Map();
+          let barisDilewatiRole = 0;
+
           for (let row of rawRows) {
+            // Helper membaca nama kolom header yang fleksibel
             const getVal = (colNames) => {
               for (let key of Object.keys(row)) {
-                if (colNames.includes(key.trim().toUpperCase())) {
-                  return String(row[key]).trim();
+                const cleanKey = key.trim().toUpperCase().replace(/\s+/g, '_');
+                for (let target of colNames) {
+                  const cleanTarget = target.trim().toUpperCase().replace(/\s+/g, '_');
+                  if (cleanKey === cleanTarget) {
+                    return String(row[key]).trim();
+                  }
                 }
               }
               return '';
             };
 
-            const prov = getVal(['PROVINSI']).toUpperCase();
-            const kdProv = getVal(['KODE_PROV', 'KD_PROV', 'KODE PROVINSI']).padStart(2, '0');
-            const kab = getVal(['KABUPATEN']).toUpperCase();
-            const kdKab = getVal(['KODE_KAB', 'KD_KAB', 'KODE KABUPATEN']).padStart(2, '0');
-            const kec = getVal(['KECAMATAN']).toUpperCase();
-            const kdKec = getVal(['KODE_KEC', 'KD_KEC', 'KODE KECAMATAN']).padStart(2, '0');
+            const prov = getVal(['PROVINSI', 'PROV']).toUpperCase();
+            const kdProv = getVal(['KODE_PROV', 'KD_PROV', 'KODE_PROVINSI']).padStart(2, '0');
+            const kab = getVal(['KABUPATEN', 'KAB']).toUpperCase();
+            const kdKab = getVal(['KODE_KAB', 'KD_KAB', 'KODE_KABUPATEN']).padStart(2, '0');
+            const kec = getVal(['KECAMATAN', 'KEC']).toUpperCase();
+            const kdKec = getVal(['KODE_KEC', 'KD_KEC', 'KODE_KECAMATAN']).padStart(2, '0');
             const desa = getVal(['DESA', 'KELURAHAN']).toUpperCase();
-            const kdDesa = getVal(['KODE_DESA', 'KD_DESA', 'KODE DESA']).padStart(4, '0');
+            const kdDesa = getVal(['KODE_DESA', 'KD_DESA', 'KODE_KELURAHAN']).padStart(4, '0');
             const dusun = getVal(['DUSUN', 'LINGKUNGAN', 'RW']).toUpperCase();
-            const kdDusun = getVal(['KODE_DUSUN', 'KD_DUSUN', 'KODE DUSUN']).padStart(4, '0');
+            const kdDusun = getVal(['KODE_DUSUN', 'KD_DUSUN', 'KODE_LINGKUNGAN']).padStart(4, '0');
             const jmlRt = parseInt(getVal(['JUMLAH_RT', 'JML_RT', 'RT']), 10) || 1;
 
-            if (!desa || !dusun) continue;
+            // Lewati baris yang kosong pada identitas pokok
+            if (!desa || !dusun || !kdKec || !kdDesa || !kdDusun) continue;
 
-            if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kab) continue;
-            if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kec) continue;
+            // Validasi hak akses akun (hanya boleh upload sesuai wilayahnya)
+            if (userAktif && userAktif.role === 'ADMIN_KABUPATEN') {
+              const userKab = String(userAktif.kode_kab || '').padStart(2, '0');
+              if (kdKab !== userKab) {
+                barisDilewatiRole++;
+                continue;
+              }
+            } else if (userAktif && userAktif.role === 'ADMIN_KECAMATAN') {
+              const userKec = String(userAktif.kode_kec || '').padStart(2, '0');
+              if (kdKec !== userKec) {
+                barisDilewatiRole++;
+                continue;
+              }
+            }
 
-            payloadBatch.push({
+            // Kunci unik gabungan (kode_kec + kode_desa + kode_dusun)
+            const keyUnik = `${kdKec}_${kdDesa}_${kdDusun}`;
+
+            // Timpa jika ada duplikat dalam sheet yang sama
+            mapUnik.set(keyUnik, {
               provinsi: prov || 'NUSA TENGGARA BARAT',
               kode_prov: kdProv || '52',
               kabupaten: kab || 'LOMBOK BARAT',
@@ -1221,31 +1262,62 @@
             });
           }
 
+          // Ambil hasil array yang sudah bebas dari duplikasi
+          const payloadBatch = Array.from(mapUnik.values());
+
           if (payloadBatch.length === 0) {
-            Swal.fire('Gagal', 'Tidak ada baris data wilayah yang valid untuk disimpan atau wilayah tidak sesuai hak akses Anda!', 'error');
+            Swal.fire({
+              icon: 'warning',
+              title: 'Tidak Ada Data Valid',
+              text: barisDilewatiRole > 0 
+                ? `Data di file Excel tidak sesuai dengan cakupan wilayah akses akun Anda (${barisDilewatiRole} baris dilewati).`
+                : 'Format kolom file Excel tidak cocok dengan template sistem!',
+              confirmButtonColor: '#e11d48'
+            });
             return;
           }
 
+          // Eksekusi Upsert massal ke Supabase
           const { error } = await supabaseClient
             .from('master_wilayah')
             .upsert(payloadBatch, { onConflict: 'kode_kec,kode_desa,kode_dusun' });
 
-          if (error) throw error;
+          if (error) {
+            console.error("Supabase Upsert Error:", error);
+            throw error;
+          }
 
+          // Tampilkan pesan sukses
           Swal.fire({
             icon: 'success',
             title: 'Berhasil Upload!',
-            text: `Sebanyak ${payloadBatch.length} wilayah berhasil diimpor ke sistem.`,
+            html: `
+              <div class="text-xs text-slate-600 space-y-1">
+                <p>Sebanyak <b>${payloadBatch.length}</b> data wilayah berhasil disimpan / diperbarui ke database.</p>
+                ${barisDilewatiRole > 0 ? `<p class="text-amber-600 font-semibold">*${barisDilewatiRole} baris dilewati karena di luar otoritas wilayah akun Anda.</p>` : ''}
+              </div>
+            `,
             confirmButtonColor: '#059669'
           });
 
+          // Muat ulang data terbaru ke memori dan perbarui tabel wilayah di layar
           await loadMasterWilayahFromDB();
           tampilkanTabelMasterWilayah();
 
         } catch (err) {
-          console.error("Error Upload Excel:", err);
-          Swal.fire('Gagal Memproses Excel', err.message || 'Terjadi kesalahan format data.', 'error');
+          console.error("Detail Error Upload:", err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memproses Excel',
+            text: err.message || 'Terjadi kesalahan saat memproses file Excel ke database.',
+            confirmButtonColor: '#e11d48'
+          });
         }
+      };
+
+      reader.onerror = (err) => {
+        console.error("FileReader Error:", err);
+        Swal.fire('Error', 'Gagal membaca file dari perangkat!', 'error');
       };
 
       reader.readAsArrayBuffer(file);
