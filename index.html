@@ -1579,10 +1579,13 @@
     // DOWNLOAD TEMPLATE EXCEL KELUARGA & ANGGOTA KELUARGA
     // ========================================================
     function downloadTemplateExcelKeluarga() {
-      // 1. Data Sampel Induk Keluarga
+      // 1. DATA SHEET: KELUARGA (Seluruh kolom tabel keluarga)
       const dataKeluarga = [
         {
+          // Identitas Wilayah & KK
           "NOMOR_KK": "5201082001010001",
+          "NAMA_KK": "AHMAD SUAMI",
+          "NIK_KK": "5201080101850001",
           "KODE_PROV": "52",
           "KODE_KAB": "01",
           "KODE_KEC": "08",
@@ -1591,49 +1594,96 @@
           "RT": "001",
           "KODE_RUMAH": "001",
           "NO_URUT_KELUARGA": "001",
-          "STATUS_KELUARGA": "1",
+          "STATUS_KELUARGA": "1", // 1: Ada, 2: Pindah, 3: Meninggal, 4: Tdk Ditemukan, 5: Cerai, 6: Baru
           "ALAMAT_DETAIL": "JL. RAYA LEMBAR NO. 12",
           "NO_HP": "081234567890",
-          // Blok PK Ringkas
-          "PK_01_IBADAH": "1",
-          "PK_02_AKTA_NIKAH": "1",
-          "PK_06_ASET": "1",
-          "PK_06_ASET_JENIS": "1,3,6", // Boleh jamak (pisahkan koma)
-          "PK_17_1_PENERANGAN": "1",
-          "PK_18_AIR_MINUM": "3",
-          "PK_19_JAMBAN": "1",
-          // Blok KB
-          "KB_01_MELAHIRKAN": 2,
-          "KB_01_MASIH_LAKI": 1,
-          "KB_01_MASIH_PEREMPUAN": 1,
-          "KB_02_ANAK_IDEAL": 2,
-          "KB_03_SEDANG_HAMIL": "2",
-          "KB_04_SEDANG_KB": "1",
+          "LATITUDE": -8.7034414,
+          "LONGITUDE": 116.0927055,
+
+          // Blok IV: Pembangunan Keluarga (PK)
+          "PK_01_IBADAH": "1", // 1: Ya, 2: Tidak
+          "PK_02_AKTA_NIKAH": "1", // 1: Ya, 2: Tidak
+          "PK_03_A_TANPA_SAPA": "2", // 1: Ya, 2: Tidak
+          "PK_03_B_PISAH_RANJANG": "2", // 1: Ya, 2: Tidak, 3: Tidak Berlaku
+          "PK_03_C_MINGGAT": "2", // 1: Ya, 2: Tidak
+          "PK_03_D_KDRT": "2", // 1: Ya, 2: Tidak
+          "PK_04_PENGHASILAN": "1", // 1: Ya, 2: Tidak
+          "PK_05_MAKANAN_BERAGAM": "1", // 1: Ya, 2: Tidak
+          "PK_06_ASET": "1", // 1: Ya, 2: Tidak
+          "PK_06_ASET_JENIS": "1,3,6", // 1:Tabungan, 2:AC, 3:TV, 4:Kulkas, 5:Laptop, 6:Motor, dll (pisah koma)
+          "PK_07_PENYAKIT_KRONIS": "2", // 1: Ya, 2: Tidak
+          "PK_08_DISABILITAS": "2", // 1: Ya, 2: Tidak
+          "PK_09_INTERNET": "1", // 1: Ya, 2: Tidak
+          "PK_10_INTERAKSI": "1", // 1: Ya, 2: Tidak
+          "PK_11_PENGASUHAN_BERSAMA": "1", // 1: Ya, 2: Tidak, 3: Tidak Berlaku
+          "PK_12_REKREASI": "1", // 1: Ya, 2: Tidak
+          "PK_13_GOTONG_ROYONG": "1", // 1: Ya, 2: Tidak
+          "PK_14_1_ATAP": "2", // 1:Beton, 2:Genteng, 3:Seng, 4:Asbes, 5:Kayu, 6:Bambu, 7:Daun, 8:Lainnya
+          "PK_14_2_KONDISI_ATAP": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
+          "PK_15_1_DINDING": "1", // 1:Tembok, 2:Plesteran, 3:Kayu, 4:Anyaman, 5:Batang, 6:Bambu, 7:Lainnya
+          "PK_15_2_KONDISI_DINDING": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
+          "PK_16_1_LANTAI": "2", // 1:Granit, 2:Keramik, 3:Parket, 4:Ubin, 5:Kayu, 6:Semen, 7:Bambu, 8:Tanah, 9:Lainnya
+          "PK_16_2_KONDISI_LANTAI": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
+          "PK_17_1_PENERANGAN": "1", // 1:PLN Meteran, 2:PLN Non-Meteran, 3:Non-PLN, 4:Bukan Listrik
+          "PK_17_2_DAYA_PLN": "2", // 1:450W, 2:900W, 3:1300W, 4:>1300W
+          "PK_18_AIR_MINUM": "3", // 1:Kemasan, 2:Isi Ulang, 3:PAM, 4:Sumur Bor, 5:Sumur Terlindung, dst
+          "PK_19_JAMBAN": "1", // 1:Milik Sendiri dgn Septik tank disedot, 2:Sendiri Septik, 3:Komunal, 4:Lainnya, 5:Tidak Ada
+          "PK_20_LUAS_RUMAH": 45, // m2
+          "PK_21_JUMLAH_PENGHUNI": 4, // Jiwa
+          "PK_22_BAHAN_BAKAR": "4", // 1:Listrik, 2:Gas 12kg, 3:Gas 5.5kg, 4:Gas 3kg, 5:Minyak tanah, 6:Kayu, 7:Lainnya
+          "PK_23_KEPEMILIKAN_RUMAH": "1", // 1:Milik Sendiri, 2:Kontrak, 3:Bebas Sewa, 4:Dinas, 5:Lainnya
+          "PK_24_INFO_MEDIA": "1", // 1: Ya, 2: Tidak
+          "PK_25_MEDIA_SUMBER": "2,3", // 1:Koran, 2:TV/Radio, 3:Medsos, 4:Penyuluhan, 5:Spanduk, 6:Pentas
+          "PK_26_INFO_PETUGAS": "1", // 1: Ya, 2: Tidak
+          "PK_27_PETUGAS_SUMBER": "2,7,9", // 1:Pejabat, 2:PKB, 3:Guru, 4:Toga, 5:Toma, 6:Dokter, 7:Bidan, 8:Kades, 9:Kader, 10:TPK
+
+          // Blok III: Keluarga Berencana (KB)
+          "KB_01_MELAHIRKAN": 2, // Berapa kali melahirkan
+          "KB_01_MASIH_LAKI": 1, // Jumlah anak masih hidup (laki)
+          "KB_01_MASIH_PEREMPUAN": 1, // Jumlah anak masih hidup (perempuan)
+          "KB_02_ANAK_IDEAL": 2, // Anak ideal
+          "KB_03_SEDANG_HAMIL": "2", // 1: Ya, 2: Tidak
+          "KB_03_USIA_KEHAMILAN": "", // Minggu (jika hamil)
+          "KB_03_STATUS_INGIN_HAMIL": "", // 1: Ingin saat itu, 2: Ingin nanti, 3: Tidak ingin lagi
+          "KB_03_KEINGINAN_ANAK_LAGI": "3", // 1: Ingin segera (<=2 th), 2: Ingin nanti (>2 th), 3: Tidak ingin lagi
+          "KB_04_SEDANG_KB": "1", // 1: Ya, 2: Tidak
           "KB_04_MULAI_BULAN": "01",
           "KB_04_MULAI_TAHUN": 2024,
-          "KB_07_JENIS_KB": "4" // Implant
+          "KB_05_PERNAH_KB_12_BULAN": "", // 1: Ya, 2: Tidak (jika tidak sedang KB)
+          "KB_05_MULAI_BULAN": "",
+          "KB_05_MULAI_TAHUN": "",
+          "KB_05_BERHENTI_BULAN": "",
+          "KB_05_BERHENTI_TAHUN": "",
+          "KB_06_ALASAN_TIDAK_KB": "", // 1 s.d 16
+          "KB_07_JENIS_KB": "4", // 1:MOW, 2:MOP, 3:IUD, 4:Implant, 5:Suntik, 6:Pil, 7:Kondom, 8:MAL, 9:Tradisional
+          "KB_08_SUMBER_PELAYANAN": "6", // 1:RS Pem, 2:RS Swasta, 3:Puskesmas, 4:Klinik, 5:Dokter, 6:Bidan Desa, 7:PMB, dst
+          "KB_09_INFO_JENIS": "1", // 1: Ya, 2: Tidak
+          "KB_09_INFO_EFEK_SAMPING": "1", // 1: Ya, 2: Tidak
+          "KB_09_INFO_TINDAKAN": "1" // 1: Ya, 2: Tidak
         }
       ];
 
-      // 2. Data Sampel Anggota Keluarga
+      // 2. DATA SHEET: ANGGOTA_KELUARGA (17 Variabel Lengkap)
       const dataAnggota = [
         {
           "NOMOR_KK": "5201082001010001",
           "NO_URUT": 1,
           "NAMA_LENGKAP": "AHMAD SUAMI",
           "NIK": "5201080101850001",
-          "HUBUNGAN_DENGAN_KK": "1", // 1: KK
-          "JENIS_KELAMIN": "1", // 1: Laki-laki
+          "HUBUNGAN_DENGAN_KK": "1", // 1: Kepala Keluarga, 2: Istri, 3: Anak, 4: Lainnya
+          "JENIS_KELAMIN": "1", // 1: Laki-laki, 2: Perempuan
           "TANGGAL_LAHIR": "1985-01-01",
-          "STATUS_PERKAWINAN": "2", // 2: Kawin Tercatat
+          "STATUS_PERKAWINAN": "2", // 1: Belum Kawin, 2: Kawin Tercatat, 3: Tdk Tercatat, 4: Cerai Hidup, 5: Cerai Mati
           "USIA_KAWIN_PERTAMA": 24,
-          "KODE_IBU_KANDUNG": "00",
-          "JENIS_PEKERJAAN": "8", // Wiraswasta
-          "PENDIDIKAN": "8",
-          "BEKERJA_LUAR_NEGERI": "4",
-          "MUTASI_ANGGOTA": "0",
-          "GANGGUAN_FUNGSIONAL": "5",
-          "MENGURUS_DIRI": "4"
+          "MEMILIKI_AKTA_LAHIR": "1", // 1: Ya, 2: Tidak
+          "KODE_IBU_KANDUNG": "00", // 00: Lainnya, atau 02 (Nomor urut ibu)
+          "AGAMA": "1", // 1: Islam, 2: Kristen, 3: Katolik, 4: Hindu, 5: Buddha, 6: Konghucu
+          "JENIS_PEKERJAAN": "8", // 1: Tdk Bekerja, 2: Petani, 3: Nelayan, 4: Pedagang, 5: Pejabat, 6: PNS/TNI/Polri, 7: Swasta, 8: Wiraswasta, dst
+          "PENDIDIKAN": "8", // 1: Tdk Sekolah, 2: Tdk Tamat SD, 3: SD, 4: Tamat SD, 5: SLTP, 6: Tamat SLTP, 7: SLTA, 8: Tamat SLTA, 9: PT, 10: Tamat PT
+          "BEKERJA_LUAR_NEGERI": "4", // 1: Pernah, 2: Sedang, 3: Akan, 4: Tidak
+          "MUTASI_ANGGOTA": "0", // 0: Tetap/Tidak Ada, 1: Pindah Keluar, 2: Meninggal, 3: Lahir Baru, 4: Pindah Datang
+          "GANGGUAN_FUNGSIONAL": "5", // 1: Fisik, 2: Sensorik, 3: Mental, 4: Intelektual, 5: Tidak
+          "MENGURUS_DIRI": "4" // 1: Tdk Dapat, 2: Banyak Kesulitan, 3: Sedikit Kesulitan, 4: Tdk Mengalami Kesulitan
         },
         {
           "NOMOR_KK": "5201082001010001",
@@ -1645,7 +1695,9 @@
           "TANGGAL_LAHIR": "1990-01-01",
           "STATUS_PERKAWINAN": "2",
           "USIA_KAWIN_PERTAMA": 19,
+          "MEMILIKI_AKTA_LAHIR": "1",
           "KODE_IBU_KANDUNG": "00",
+          "AGAMA": "1",
           "JENIS_PEKERJAAN": "1",
           "PENDIDIKAN": "8",
           "BEKERJA_LUAR_NEGERI": "4",
@@ -1663,7 +1715,9 @@
           "TANGGAL_LAHIR": "2015-10-10",
           "STATUS_PERKAWINAN": "1",
           "USIA_KAWIN_PERTAMA": "",
-          "KODE_IBU_KANDUNG": "02", // Kode Istri
+          "MEMILIKI_AKTA_LAHIR": "1",
+          "KODE_IBU_KANDUNG": "02", // Menginduk ke No. Urut 2 (Siti Istri)
+          "AGAMA": "1",
           "JENIS_PEKERJAAN": "1",
           "PENDIDIKAN": "3",
           "BEKERJA_LUAR_NEGERI": "4",
@@ -1673,14 +1727,52 @@
         }
       ];
 
+      // 3. SHEET PETUNJUK PENGISIAN KODE
+      const petunjuk = [
+        ["PANDUAN FORMAT KODE IMPORT DATA KRS"],
+        [""],
+        ["KOLOM", "PILIHAN KODE", "KETERANGAN"],
+        ["HUBUNGAN_DENGAN_KK", "1", "Kepala Keluarga"],
+        ["", "2", "Istri"],
+        ["", "3", "Anak"],
+        ["", "4", "Lainnya"],
+        ["JENIS_KELAMIN", "1", "Laki-laki"],
+        ["", "2", "Perempuan"],
+        ["STATUS_PERKAWINAN", "1", "Belum Kawin"],
+        ["", "2", "Kawin Tercatat"],
+        ["", "3", "Kawin Tidak Tercatat"],
+        ["", "4", "Cerai Hidup Tercatat"],
+        ["", "5", "Cerai Hidup Tidak Tercatat"],
+        ["", "6", "Cerai Mati"],
+        ["KB_07_JENIS_KB", "1: MOW | 2: MOP | 3: IUD | 4: Implant | 5: Suntik | 6: Pil | 7: Kondom | 8: MAL | 9: Tradisional", "Pilihan Alkon"],
+        ["NIK_ISTRI", "Harus 16 Digit Unik", "Tidak boleh ganda dengan istri keluarga lain, kecuali angka dummy: 9999999999999999"]
+      ];
+
       const wsKeluarga = XLSX.utils.json_to_sheet(dataKeluarga);
-      const wsAnggota = XLSX.utils.json_to_sheet(dataAnggota);
+      const wsAnggota  = XLSX.utils.json_to_sheet(dataAnggota);
+      const wsPetunjuk = XLSX.utils.aoa_to_sheet(petunjuk);
+
+      // Kunci format teks string pada kolom nomor identitas agar angka 0 di depan dan 16 digit tidak terpotong
+      const setColText = (ws, colList) => {
+        if (!ws['!ref']) return;
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          for (let C of colList) {
+            const cell = XLSX.utils.encode_cell({ r: R, c: C });
+            if (ws[cell]) ws[cell].t = 's';
+          }
+        }
+      };
+
+      setColText(wsKeluarga, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13]);
+      setColText(wsAnggota, [0, 3, 9]);
 
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, wsKeluarga, "KELUARGA");
       XLSX.utils.book_append_sheet(wb, wsAnggota, "ANGGOTA_KELUARGA");
+      XLSX.utils.book_append_sheet(wb, wsPetunjuk, "PETUNJUK_KODE");
 
-      XLSX.writeFile(wb, "Template_Pendataan_Keluarga_KRS.xlsx");
+      XLSX.writeFile(wb, "Template_Pendataan_Keluarga_KRS_Lengkap.xlsx");
     }
 
     // ========================================================
@@ -1845,22 +1937,72 @@
               status_keluarga: String(k.STATUS_KELUARGA || '1'),
               alamat_detail: String(k.ALAMAT_DETAIL || '').toUpperCase(),
               no_hp: String(k.NO_HP || ''),
-              pk_01_ibadah: String(k.PK_01_IBADAH || ''),
-              pk_02_akta_nikah: String(k.PK_02_AKTA_NIKAH || ''),
-              pk_06_aset: String(k.PK_06_ASET || ''),
-              pk_06_aset_jenis: String(k.PK_06_ASET_JENIS || ''),
-              pk_17_1_penerangan: String(k.PK_17_1_PENERANGAN || ''),
-              pk_18_air_minum: String(k.PK_18_AIR_MINUM || ''),
-              pk_19_jamban: String(k.PK_19_JAMBAN || ''),
+              latitude: parseFloat(k.LATITUDE) || null,
+              longitude: parseFloat(k.LONGITUDE) || null,
+
+              // Blok IV: PK
+              pk_01_ibadah: String(k.PK_01_IBADAH || '') || null,
+              pk_02_akta_nikah: String(k.PK_02_AKTA_NIKAH || '') || null,
+              pk_03_a_tanpa_sapa: String(k.PK_03_A_TANPA_SAPA || '') || null,
+              pk_03_b_pisah_ranjang: String(k.PK_03_B_PISAH_RANJANG || '') || null,
+              pk_03_c_minggat: String(k.PK_03_C_MINGGAT || '') || null,
+              pk_03_d_kdrt: String(k.PK_03_D_KDRT || '') || null,
+              pk_04_penghasilan: String(k.PK_04_PENGHASILAN || '') || null,
+              pk_05_makanan_beragam: String(k.PK_05_MAKANAN_BERAGAM || '') || null,
+              pk_06_aset: String(k.PK_06_ASET || '') || null,
+              pk_06_aset_jenis: String(k.PK_06_ASET_JENIS || '') || null,
+              pk_07_penyakit_kronis: String(k.PK_07_PENYAKIT_KRONIS || '') || null,
+              pk_08_disabilitas: String(k.PK_08_DISABILITAS || '') || null,
+              pk_09_internet: String(k.PK_09_INTERNET || '') || null,
+              pk_10_interaksi: String(k.PK_10_INTERAKSI || '') || null,
+              pk_11_pengasuhan_bersama: String(k.PK_11_PENGASUHAN_BERSAMA || '') || null,
+              pk_12_rekreasi: String(k.PK_12_REKREASI || '') || null,
+              pk_13_gotong_royong: String(k.PK_13_GOTONG_ROYONG || '') || null,
+              pk_14_1_atap: String(k.PK_14_1_ATAP || '') || null,
+              pk_14_2_kondisi_atap: String(k.PK_14_2_KONDISI_ATAP || '') || null,
+              pk_15_1_dinding: String(k.PK_15_1_DINDING || '') || null,
+              pk_15_2_kondisi_dinding: String(k.PK_15_2_KONDISI_DINDING || '') || null,
+              pk_16_1_lantai: String(k.PK_16_1_LANTAI || '') || null,
+              pk_16_2_kondisi_lantai: String(k.PK_16_2_KONDISI_LANTAI || '') || null,
+              pk_17_1_penerangan: String(k.PK_17_1_PENERANGAN || '') || null,
+              pk_17_2_daya_pln: String(k.PK_17_2_DAYA_PLN || '') || null,
+              pk_18_air_minum: String(k.PK_18_AIR_MINUM || '') || null,
+              pk_19_jamban: String(k.PK_19_JAMBAN || '') || null,
+              pk_20_luas_rumah: parseInt(k.PK_20_LUAS_RUMAH, 10) || null,
+              pk_21_jumlah_penghuni: parseInt(k.PK_21_JUMLAH_PENGHUNI, 10) || null,
+              pk_22_bahan_bakar: String(k.PK_22_BAHAN_BAKAR || '') || null,
+              pk_23_kepemilikan_rumah: String(k.PK_23_KEPEMILIKAN_RUMAH || '') || null,
+              pk_24_info_media: String(k.PK_24_INFO_MEDIA || '') || null,
+              pk_25_media_sumber: String(k.PK_25_MEDIA_SUMBER || '') || null,
+              pk_26_info_petugas: String(k.PK_26_INFO_PETUGAS || '') || null,
+              pk_27_petugas_sumber: String(k.PK_27_PETUGAS_SUMBER || '') || null,
+
+              // Blok III: KB
               kb_01_melahirkan: parseInt(k.KB_01_MELAHIRKAN, 10) || 0,
+              kb_01_hidup_laki: parseInt(k.KB_01_MASIH_LAKI, 10) || 0,
+              kb_01_hidup_perempuan: parseInt(k.KB_01_MASIH_PEREMPUAN, 10) || 0,
               kb_01_masih_laki: parseInt(k.KB_01_MASIH_LAKI, 10) || 0,
               kb_01_masih_perempuan: parseInt(k.KB_01_MASIH_PEREMPUAN, 10) || 0,
               kb_02_anak_ideal: parseInt(k.KB_02_ANAK_IDEAL, 10) || 0,
               kb_03_sedang_hamil: String(k.KB_03_SEDANG_HAMIL) === '1',
+              kb_03_usia_kehamilan: parseInt(k.KB_03_USIA_KEHAMILAN, 10) || null,
+              kb_03_status_ingin_hamil: String(k.KB_03_STATUS_INGIN_HAMIL || '') || null,
+              kb_03_keinginan_anak_lagi: String(k.KB_03_KEINGINAN_ANAK_LAGI || '') || null,
               kb_04_sedang_kb: String(k.KB_04_SEDANG_KB) === '1',
-              kb_04_mulai_bulan: String(k.KB_04_MULAI_BULAN || ''),
+              kb_04_mulai_bulan: String(k.KB_04_MULAI_BULAN || '') || null,
               kb_04_mulai_tahun: parseInt(k.KB_04_MULAI_TAHUN, 10) || null,
-              kb_07_jenis_kb: String(k.KB_07_JENIS_KB || '')
+              kb_05_pernah_kb_12_bulan: String(k.KB_05_PERNAH_KB_12_BULAN) === '1',
+              kb_05_mulai_bulan: String(k.KB_05_MULAI_BULAN || '') || null,
+              kb_05_mulai_tahun: parseInt(k.KB_05_MULAI_TAHUN, 10) || null,
+              kb_05_berhenti_bulan: String(k.KB_05_BERHENTI_BULAN || '') || null,
+              kb_05_berhenti_tahun: parseInt(k.KB_05_BERHENTI_TAHUN, 10) || null,
+              kb_06_alasan_tidak_kb: String(k.KB_06_ALASAN_TIDAK_KB || '') || null,
+              kb_07_jenis_kb: String(k.KB_07_JENIS_KB || '') || null,
+              kb_08_sumber_pelayanan: String(k.KB_08_SUMBER_PELAYANAN || '') || null,
+              kb_09_info_jenis: String(k.KB_09_INFO_JENIS) === '1',
+              kb_09_info_efek_samping: String(k.KB_09_INFO_EFEK_SAMPING) === '1',
+              kb_09_info_tindakan: String(k.KB_09_INFO_TINDAKAN) === '1',
+              diperbarui_pada: new Date()
             });
 
             // Susun anggota keluarga
