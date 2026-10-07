@@ -3360,10 +3360,15 @@
         const statusKeluarga = document.getElementById('status_keluarga').value;
         const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
         const noHp = document.getElementById('no_hp').value.trim();
+        const halKK = document.getElementById('hal_anggota_1');
+        const namaKK = halKK ? halKK.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() : '';
+        const nikKK = halKK ? halKK.querySelector('[name="nik"]')?.value.trim() : '';
 
         // 1. Siapkan Payload Satu Pintu ke Tabel "keluarga" (Gabungan Wilayah, PK, dan KB)
         const payloadKeluarga = {
           nomor_kk: noKK,
+          nama_kk: namaKK,
+          nik_kk: nikKK,
           kode_prov: kdProv,
           kode_kab: kdKab,
           kode_kec: kdKec,
