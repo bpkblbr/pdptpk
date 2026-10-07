@@ -337,11 +337,37 @@
       <!-- Tabel Wilayah -->
       <div class="space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <h2 class="text-sm font-black text-slate-800 uppercase">LIST WILAYAH TERDAFTAR</h2>
-          <input type="text" id="cariTabelWilayah" oninput="filterTabelWilayah()" placeholder="CARI DESA / DUSUN..." class="px-3 py-1.5 border rounded-lg text-xs uppercase w-full sm:w-64" />
+          <h2 class="text-sm font-black text-slate-800 uppercase">DAFTAR MASTER WILAYAH TERDAFTAR</h2>
+          <input type="text" id="cariTabelWilayah" oninput="filterTabelWilayah()" placeholder="CARI DUSUN / DESA..." 
+                 class="px-3 py-1.5 border rounded-lg text-xs uppercase w-full sm:w-64 outline-none focus:ring-1 focus:ring-emerald-500" />
         </div>
 
-        <div class="overflow-x-auto border rounded-2xl shadow-sm">
+        <!-- DROPDOWN FILTER WILAYAH SESUAI ROLE LOGIN -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Filter Kecamatan</label>
+            <select id="filter_mw_kecamatan" onchange="saatFilterKecamatanBerubah()" 
+                    class="w-full p-2 bg-white border border-slate-300 rounded-lg outline-none font-semibold text-slate-800">
+              <option value="">-- SEMUA KECAMATAN --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 uppercase mb-1">Filter Kelurahan / Desa</label>
+            <select id="filter_mw_desa" onchange="saatFilterDesaBerubah()" 
+                    class="w-full p-2 bg-white border border-slate-300 rounded-lg outline-none font-semibold text-slate-800">
+              <option value="">-- SEMUA DESA --</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="button" onclick="resetFilterTabelWilayah()" 
+                    class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg transition uppercase text-xs flex items-center justify-center gap-1">
+              🔄 RESET FILTER
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabel Wilayah -->
+        <div class="overflow-x-auto border rounded-2xl shadow-sm bg-white">
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-slate-100 text-slate-600 uppercase font-bold border-b">
               <tr>
@@ -885,6 +911,287 @@
       });
     }
 
+    // ========================================================
+    // 1. INISIALISASI & KONTROL FILTER SESUAI ROLE LOGIN
+    // ========================================================
+    function populateDropdownFilterWilayah() {
+      const selKec = document.getElementById('filter_mw_kecamatan');
+      const selDesa = document.getElementById('filter_mw_desa');
+      if (!selKec || !selDesa) return;
+
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      // Ambil daftar unik kecamatan dari data yang boleh diakses akun
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKecUnik = [...new Map(dataAkses.map(item => [item.kode_kec, item.kecamatan])).entries()];
+
+      listKecUnik.sort((a, b) => a[1].localeCompare(b[1])).forEach(([kd, nama]) => {
+        selKec.add(new Option(nama.toUpperCase(), kd));
+      });
+
+      // ATURAN PENGUNCIAN BERDASARKAN ROLE LOGIN
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        const kdKecUser = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.value = kdKecUser;
+        selKec.disabled = true; // Kunci dropdown kecamatan
+        selKec.classList.add('bg-slate-100', 'cursor-not-allowed');
+        saatFilterKecamatanBerubah();
+      } else {
+        selKec.disabled = false;
+        selKec.classList.remove('bg-slate-100', 'cursor-not-allowed');
+      }
+    }
+
+    function saatFilterKecamatanBerubah() {
+      const selKec = document.getElementById('filter_mw_kecamatan');
+      const selDesa = document.getElementById('filter_mw_desa');
+      const kdKecTerpilih = selKec ? selKec.value : '';
+
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesaSaring = kdKecTerpilih 
+        ? dataAkses.filter(w => String(w.kode_kec).padStart(2, '0') === kdKecTerpilih)
+        : dataAkses;
+
+      const listDesaUnik = [...new Map(listDesaSaring.map(item => [item.kode_desa, item.desa])).entries()];
+      listDesaUnik.sort((a, b) => a[1].localeCompare(b[1])).forEach(([kd, nama]) => {
+        selDesa.add(new Option(nama.toUpperCase(), kd));
+      });
+
+      tampilkanTabelMasterWilayah();
+    }
+
+    function saatFilterDesaBerubah() {
+      tampilkanTabelMasterWilayah();
+    }
+
+    function resetFilterTabelWilayah() {
+      const selKec = document.getElementById('filter_mw_kecamatan');
+      const selDesa = document.getElementById('filter_mw_desa');
+      const inputCari = document.getElementById('cariTabelWilayah');
+
+      if (inputCari) inputCari.value = '';
+
+      if (userAktif.role !== 'ADMIN_KECAMATAN' && selKec) {
+        selKec.value = '';
+      }
+      if (selDesa) {
+        selDesa.value = '';
+      }
+
+      saatFilterKecamatanBerubah();
+    }
+
+    // ========================================================
+    // 2. RENDER TABEL MASTER WILAYAH (TERDAPAT TOMBOL EDIT & HAPUS)
+    // ========================================================
+    function tampilkanTabelMasterWilayah() {
+      const tbody = document.getElementById('tbodyMasterWilayah');
+      if (!tbody) return;
+
+      const filterKec = document.getElementById('filter_mw_kecamatan')?.value || '';
+      const filterDesa = document.getElementById('filter_mw_desa')?.value || '';
+      const keyword = (document.getElementById('cariTabelWilayah')?.value || '').toLowerCase().trim();
+
+      // Filter berdasarkan role login
+      let data = getWilayahTersaringSesuaiRole();
+
+      // Filter berdasarkan dropdown kecamatan
+      if (filterKec) {
+        data = data.filter(w => String(w.kode_kec || w.kode_kecamatan || '').padStart(2, '0') === filterKec);
+      }
+
+      // Filter berdasarkan dropdown desa
+      if (filterDesa) {
+        data = data.filter(w => String(w.kode_desa || '').padStart(4, '0') === filterDesa);
+      }
+
+      // Filter berdasarkan input teks pencarian
+      if (keyword) {
+        data = data.filter(w => 
+          (w.dusun || '').toLowerCase().includes(keyword) ||
+          (w.desa || '').toLowerCase().includes(keyword) ||
+          (w.kecamatan || '').toLowerCase().includes(keyword)
+        );
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-center text-slate-400 font-medium uppercase">
+              Tidak ada data wilayah yang sesuai filter / pencarian.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let baris = '';
+      data.forEach(item => {
+        const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
+        const kdDesa = String(item.kode_desa || '').padStart(4, '0');
+        const kdDsn = String(item.kode_dusun || '').padStart(4, '0');
+
+        baris += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-3 font-semibold text-slate-800">${(item.kecamatan || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdKec}</td>
+            <td class="p-3 font-semibold text-emerald-800">${(item.desa || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdDesa}</td>
+            <td class="p-3 font-bold text-slate-900">${(item.dusun || '').toUpperCase()}</td>
+            <td class="p-3 font-mono text-center text-slate-600 font-bold">${kdDsn}</td>
+            <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <!-- Tombol Edit -->
+                <button type="button" onclick="bukaModalEditWilayah('${item.id}')" 
+                        class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold uppercase text-[10px] transition">
+                  ✏️ Edit
+                </button>
+                <!-- Tombol Hapus -->
+                <button type="button" onclick="hapusWilayah('${item.id}', '${item.dusun}')" 
+                        class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold uppercase text-[10px] transition">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = baris;
+    }
+
+    function filterTabelWilayah() {
+      tampilkanTabelMasterWilayah();
+    }
+
+    // ========================================================
+    // 3. FITUR EDIT WILAYAH INTERAKTIF (SWEETALERT2 MODAL)
+    // ========================================================
+    async function bukaModalEditWilayah(idWilayah) {
+      const wilayah = rawWilayahList.find(w => String(w.id) === String(idWilayah));
+      if (!wilayah) {
+        Swal.fire('Error', 'Data wilayah tidak ditemukan!', 'error');
+        return;
+      }
+
+      // Kunci Kecamatan jika login sebagai ADMIN_KECAMATAN
+      const kunciKec = (userAktif.role === 'ADMIN_KECAMATAN');
+
+      Swal.fire({
+        title: `
+          <div class="text-base font-black text-slate-800 uppercase">
+            Edit Data Wilayah
+          </div>
+        `,
+        html: `
+          <div class="text-left space-y-3 pt-2 text-xs">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Kecamatan</label>
+                <input type="text" id="edit_kecamatan" value="${wilayah.kecamatan || ''}" ${kunciKec ? 'readonly' : ''}
+                       class="w-full p-2 border rounded-lg uppercase ${kunciKec ? 'bg-slate-100 cursor-not-allowed' : ''}" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Kode Kec</label>
+                <input type="text" id="edit_kode_kec" maxlength="2" value="${String(wilayah.kode_kec || '').padStart(2, '0')}" ${kunciKec ? 'readonly' : ''}
+                       class="w-full p-2 border rounded-lg font-mono text-center ${kunciKec ? 'bg-slate-100 cursor-not-allowed' : ''}" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Desa / Kelurahan</label>
+                <input type="text" id="edit_desa" value="${wilayah.desa || ''}" 
+                       class="w-full p-2 border rounded-lg uppercase" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Kode Desa</label>
+                <input type="text" id="edit_kode_desa" maxlength="4" value="${String(wilayah.kode_desa || '').padStart(4, '0')}" 
+                       class="w-full p-2 border rounded-lg font-mono text-center" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Dusun / Lingkungan</label>
+                <input type="text" id="edit_dusun" value="${wilayah.dusun || ''}" 
+                       class="w-full p-2 border rounded-lg uppercase" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 uppercase mb-1">Kode Dusun</label>
+                <input type="text" id="edit_kode_dusun" maxlength="4" value="${String(wilayah.kode_dusun || '').padStart(4, '0')}" 
+                       class="w-full p-2 border rounded-lg font-mono text-center" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-600 uppercase mb-1">Jumlah RT</label>
+              <input type="number" id="edit_jumlah_rt" min="1" max="50" value="${wilayah.jumlah_rt || 1}" 
+                     class="w-full p-2 border rounded-lg font-bold text-center" />
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '💾 Simpan Perubahan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#059669',
+        cancelButtonColor: '#64748b',
+        focusConfirm: false,
+        preConfirm: () => {
+          const kec = document.getElementById('edit_kecamatan').value.trim().toUpperCase();
+          const kdKec = document.getElementById('edit_kode_kec').value.trim().padStart(2, '0');
+          const desa = document.getElementById('edit_desa').value.trim().toUpperCase();
+          const kdDesa = document.getElementById('edit_kode_desa').value.trim().padStart(4, '0');
+          const dusun = document.getElementById('edit_dusun').value.trim().toUpperCase();
+          const kdDsn = document.getElementById('edit_kode_dusun').value.trim().padStart(4, '0');
+          const jmlRt = parseInt(document.getElementById('edit_jumlah_rt').value, 10) || 1;
+
+          if (!kec || !kdKec || !desa || !kdDesa || !dusun || !kdDsn) {
+            Swal.showValidationMessage('Semua isian wajib dilengkapi!');
+            return false;
+          }
+
+          return {
+            id: wilayah.id,
+            kecamatan: kec,
+            kode_kec: kdKec,
+            desa: desa,
+            kode_desa: kdDesa,
+            dusun: dusun,
+            kode_dusun: kdDsn,
+            jumlah_rt: jmlRt
+          };
+        }
+      }).then(async (result) => {
+        if (result.isConfirmed && result.value) {
+          Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+          try {
+            const { error } = await supabaseClient
+              .from('master_wilayah')
+              .update(result.value)
+              .eq('id', result.value.id);
+
+            if (error) throw error;
+
+            Swal.fire('Berhasil', 'Data wilayah berhasil diperbarui!', 'success');
+            await loadMasterWilayahFromDB();
+            populateDropdownFilterWilayah();
+            tampilkanTabelMasterWilayah();
+          } catch (err) {
+            Swal.fire('Gagal Memperbarui', err.message || 'Terjadi kesalahan.', 'error');
+          }
+        }
+      });
+    }
+
+    // ========================================================
+    // 4. PEMANGGILAN FILTER PADA SAAT BUKA KELOLA WILAYAH
+    // ========================================================
     async function bukaKelolaWilayah() {
       if (userAktif.role === 'USER_DESA') {
         Swal.fire({
@@ -921,7 +1228,7 @@
       } catch (e) {
         console.error(e);
       } finally {
-        // Pastikan tabel SELALU dirender meskipun terjadi error jaringan
+        populateDropdownFilterWilayah();
         tampilkanTabelMasterWilayah();
       }
     }
