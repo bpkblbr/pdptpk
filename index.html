@@ -1116,7 +1116,9 @@
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
       inisialisasiWilayahSesuaiRole();
       indexStepKB = 0;
+      riwayatStepKB = [];
       indexStepPK = 0;
+      riwayatStepPK = [];
       tampilkanStepKB();
       tampilkanStepPK();
     }
@@ -4056,6 +4058,7 @@
     // DATA PERTANYAAN STEP-BY-STEP BLOK KB
     // ========================================================
     let indexStepKB = 0;
+    let riwayatStepKB = [];
     const daftarPertanyaanKB = [
       {
         id: 'kb_step_1',
@@ -4151,6 +4154,7 @@
     // DATA PERTANYAAN STEP-BY-STEP BLOK PEMBANGUNAN KELUARGA
     // ========================================================
     let indexStepPK = 0;
+    let riwayatStepPK = [];
     const daftarPertanyaanPK = [
       {
         id: 'pk_01_ibadah',
@@ -4690,43 +4694,52 @@
     }
 
     function majuStepKB() {
-      // Skip logic berdasarkan jawaban
+      // 1. Simpan index saat ini ke dalam riwayat sebelum berpindah
+      riwayatStepKB.push(indexStepKB);
+
+      // 2. Evaluasi lompatan logika
       if (indexStepKB === 2 && dataNilaiKB.kb_03_sedang_hamil === '1') {
-        indexStepKB = 4; // Jika hamil, lompat lewati 04
+        indexStepKB = 4; // Jika hamil, lompat langsung ke 05 (melewati 04)
       } else if (indexStepKB === 3 && dataNilaiKB.kb_04_sedang_kb === '1') {
-        indexStepKB = 6; // Jika sedang KB, langsung ke jenis KB (lewati 05 & 06)
+        indexStepKB = 6; // Jika sedang KB, langsung ke 07 (melewati 05 & 06)
       } else if (indexStepKB === 4 && dataNilaiKB.kb_05_pernah_kb === '2' && dataNilaiKB.kb_04_sedang_kb === '2') {
-        indexStepKB = 5; // Jawab alasan tidak KB
+        indexStepKB = 5; // Jawab alasan tidak KB (06)
       } else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {
         // Jika 04=Tidak dan 05=Tidak, selesai blok KB langsung ke Pembangunan Keluarga
         indexStepPK = 0;
+        riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
       } else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {
         // Jika Tradisional (9), selesai lanjut ke Blok Pembangunan Keluarga
         indexStepPK = 0;
+        riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
       } else if (indexStepKB >= daftarPertanyaanKB.length - 1) {
         // Selesai Blok KB
         indexStepPK = 0;
+        riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
       } else {
         indexStepKB++;
       }
+      
       tampilkanStepKB();
     }
 
     function mundurStepKB() {
-      if (indexStepKB <= 0) {
-        bukaHalamanAnggota(totalHalamanAnggota);
-      } else {
-        indexStepKB--;
+      // Jika masih ada riwayat langkah sebelumnya, ambil langkah terakhir
+      if (riwayatStepKB.length > 0) {
+        indexStepKB = riwayatStepKB.pop();
         tampilkanStepKB();
+      } else {
+        // Jika riwayat sudah kosong (berada di pertanyaan pertama), kembali ke data anggota terakhir
+        bukaHalamanAnggota(totalHalamanAnggota);
       }
     }
 
@@ -4922,19 +4935,23 @@
       if (indexStepPK >= daftarPertanyaanPK.length - 1) {
         bukaHalamanReview();
       } else {
+        // Simpan index saat ini ke dalam riwayat
+        riwayatStepPK.push(indexStepPK);
         indexStepPK++;
         tampilkanStepPK();
       }
     }
 
     function mundurStepPK() {
-      if (indexStepPK <= 0) {
+      if (riwayatStepPK.length > 0) {
+        // Kembali ke pertanyaan asal sesuai riwayat
+        indexStepPK = riwayatStepPK.pop();
+        tampilkanStepPK();
+      } else {
+        // Jika di pertanyaan pertama PK, mundur ke pertanyaan KB terakhir yang dijawab
         indexStepKB = daftarPertanyaanKB.length - 1;
         pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
         tampilkanStepKB();
-      } else {
-        indexStepPK--;
-        tampilkanStepPK();
       }
     }
 
