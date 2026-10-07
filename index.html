@@ -1500,7 +1500,7 @@
               };
 
               const { error: errUpsertKK } = await supabaseClient
-                .from('kartu_keluarga')
+                .from('keluarga')
                 .upsert([payloadKKNonAktif], { onConflict: 'nomor_kk' });
 
               if (errUpsertKK) throw errUpsertKK;
@@ -3340,7 +3340,7 @@
       tampilkanStepPK();
     }
 
-    // --- SUBMIT PENUH KE DATABASE (MENCAKUP 17 KOLOM) ---
+    // --- SUBMIT PENUH KE DATABASE (TABEL KELUARGA & ANGGOTA KELUARGA) ---
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btnSimpan = document.getElementById('btnSimpan');
@@ -3361,20 +3361,106 @@
         const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
         const noHp = document.getElementById('no_hp').value.trim();
 
+        // 1. Siapkan Payload Satu Pintu ke Tabel "keluarga" (Gabungan Wilayah, PK, dan KB)
+        const payloadKeluarga = {
+          nomor_kk: noKK,
+          kode_prov: kdProv,
+          kode_kab: kdKab,
+          kode_kec: kdKec,
+          kode_desa: kdDesa,
+          kode_dusun: kdDusun,
+          rt: rt,
+          kode_rumah: kodeRumah,
+          no_urut_keluarga: noUrutKel,
+          status_keluarga: statusKeluarga,
+          alamat_detail: alamat,
+          no_hp: noHp,
+          latitude: parseFloat(document.getElementById('review_lat')?.innerText) || null,
+          longitude: parseFloat(document.getElementById('review_lng')?.innerText) || null,
+
+          // Blok IV: Pembangunan Keluarga
+          pk_01_ibadah: dataNilaiPK.pk_01_ibadah || null,
+          pk_02_akta_nikah: dataNilaiPK.pk_02_akta_nikah || null,
+          pk_03_a_tanpa_sapa: dataNilaiPK.pk_03_a_tanpa_sapa || null,
+          pk_03_b_pisah_ranjang: dataNilaiPK.pk_03_b_pisah_ranjang || null,
+          pk_03_c_minggat: dataNilaiPK.pk_03_c_minggat || null,
+          pk_03_d_kdrt: dataNilaiPK.pk_03_d_kdrt || null,
+          pk_04_penghasilan: dataNilaiPK.pk_04_penghasilan || null,
+          pk_05_makanan_beragam: dataNilaiPK.pk_05_makanan_beragam || null,
+          pk_06_aset: dataNilaiPK.pk_06_aset || null,
+          pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? (Array.isArray(dataNilaiPK.pk_06_aset_jenis) ? dataNilaiPK.pk_06_aset_jenis.join(',') : dataNilaiPK.pk_06_aset_jenis) : null,
+          pk_07_penyakit_kronis: dataNilaiPK.pk_07_penyakit_kronis || null,
+          pk_08_disabilitas: dataNilaiPK.pk_08_disabilitas || null,
+          pk_09_internet: dataNilaiPK.pk_09_internet || null,
+          pk_10_interaksi: dataNilaiPK.pk_10_interaksi || null,
+          pk_11_pengasuhan_bersama: dataNilaiPK.pk_11_pengasuhan_bersama || null,
+          pk_12_rekreasi: dataNilaiPK.pk_12_rekreasi || null,
+          pk_13_gotong_royong: dataNilaiPK.pk_13_gotong_royong || null,
+          pk_14_1_atap: dataNilaiPK.pk_14_1_atap || null,
+          pk_14_2_kondisi_atap: dataNilaiPK.pk_14_2_kondisi_atap || null,
+          pk_15_1_dinding: dataNilaiPK.pk_15_1_dinding || null,
+          pk_15_2_kondisi_dinding: dataNilaiPK.pk_15_2_kondisi_dinding || null,
+          pk_16_1_lantai: dataNilaiPK.pk_16_1_lantai || null,
+          pk_16_2_kondisi_lantai: dataNilaiPK.pk_16_2_kondisi_lantai || null,
+          pk_17_1_penerangan: dataNilaiPK.pk_17_1_penerangan || null,
+          pk_17_2_daya_pln: dataNilaiPK.pk_17_1_penerangan === '1' ? dataNilaiPK.pk_17_2_daya_pln : null,
+          pk_18_air_minum: dataNilaiPK.pk_18_air_minum || null,
+          pk_19_jamban: dataNilaiPK.pk_19_jamban || null,
+          pk_20_luas_rumah: parseInt(dataNilaiPK.pk_20_luas_rumah, 10) || null,
+          pk_21_jumlah_penghuni: parseInt(dataNilaiPK.pk_21_jumlah_penghuni, 10) || null,
+          pk_22_bahan_bakar: dataNilaiPK.pk_22_bahan_bakar || null,
+          pk_23_kepemilikan_rumah: dataNilaiPK.pk_23_kepemilikan_rumah || null,
+          pk_24_info_media: dataNilaiPK.pk_24_info_media || null,
+          pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? (Array.isArray(dataNilaiPK.pk_25_media_sumber) ? dataNilaiPK.pk_25_media_sumber.join(',') : dataNilaiPK.pk_25_media_sumber) : null,
+          pk_26_info_petugas: dataNilaiPK.pk_26_info_petugas || null,
+          pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? (Array.isArray(dataNilaiPK.pk_27_petugas_sumber) ? dataNilaiPK.pk_27_petugas_sumber.join(',') : dataNilaiPK.pk_27_petugas_sumber) : null,
+
+          // Blok III: Keluarga Berencana
+          kb_01_melahirkan: parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0,
+          kb_01_hidup_laki: parseInt(dataNilaiKB.kb_01_hidup_laki, 10) || 0,
+          kb_01_hidup_perempuan: parseInt(dataNilaiKB.kb_01_hidup_perempuan, 10) || 0,
+          kb_01_masih_laki: parseInt(dataNilaiKB.kb_01_masih_laki, 10) || 0,
+          kb_01_masih_perempuan: parseInt(dataNilaiKB.kb_01_masih_perempuan, 10) || 0,
+          kb_02_anak_ideal: parseInt(dataNilaiKB.kb_02_anak_ideal, 10) || 0,
+          kb_03_sedang_hamil: dataNilaiKB.kb_03_sedang_hamil === '1',
+          kb_03_usia_kehamilan: parseInt(dataNilaiKB.kb_03_usia_kehamilan, 10) || null,
+          kb_03_status_ingin_hamil: dataNilaiKB.kb_03_status_ingin_hamil || null,
+          kb_03_keinginan_anak_lagi: dataNilaiKB.kb_03_keinginan_anak_lagi || null,
+          kb_04_sedang_kb: dataNilaiKB.kb_04_sedang_kb === '1',
+          kb_04_mulai_bulan: dataNilaiKB.kb_04_sedang_kb === '1' ? dataNilaiKB.kb_04_mulai_bulan : null,
+          kb_04_mulai_tahun: dataNilaiKB.kb_04_sedang_kb === '1' ? (parseInt(dataNilaiKB.kb_04_mulai_tahun, 10) || null) : null,
+          kb_05_pernah_kb_12_bulan: dataNilaiKB.kb_04_sedang_kb === '2' ? (dataNilaiKB.kb_05_pernah_kb === '1') : null,
+          kb_05_mulai_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_mulai_bulan : null,
+          kb_05_mulai_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_mulai_tahun, 10) || null) : null,
+          kb_05_berhenti_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_berhenti_bulan : null,
+          kb_05_berhenti_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_berhenti_tahun, 10) || null) : null,
+          kb_06_alasan_tidak_kb: dataNilaiKB.kb_04_sedang_kb === '2' ? dataNilaiKB.kb_06_alasan_tidak_kb : null,
+          kb_07_jenis_kb: dataNilaiKB.kb_07_jenis_kb || null,
+          kb_08_sumber_pelayanan: dataNilaiKB.kb_08_sumber_pelayanan || null,
+          kb_09_info_jenis: dataNilaiKB.kb_09_info_jenis === '1',
+          kb_09_info_efek_samping: dataNilaiKB.kb_09_info_efek_samping === '1',
+          kb_09_info_tindakan: dataNilaiKB.kb_09_info_tindakan === '1',
+          diperbarui_pada: new Date()
+        };
+
+        // Simpan/Upsert tabel keluarga terlebih dahulu (induk)
+        const { error: errKeluarga } = await supabaseClient
+          .from('keluarga')
+          .upsert([payloadKeluarga], { onConflict: 'nomor_kk' });
+
+        if (errKeluarga) throw errKeluarga;
+
+        // 2. Siapkan Payload Anggota Keluarga
         const listHalAnggota = document.querySelectorAll('.item-anggota-page');
         const payloadAnggota = [];
 
         listHalAnggota.forEach((hal, idx) => {
           const noUrut = idx + 1;
-          
-          // Ambil nilai hubungan & perkawinan (tangani kondisi disabled)
           let valHub = hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3';
           let valJk = hal.querySelector('[name="jenis_kelamin"]')?.value || '1';
           let valKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
 
-          if (noUrut === 1) {
-            valHub = '1';
-          }
+          if (noUrut === 1) valHub = '1';
 
           payloadAnggota.push({
             nomor_kk: noKK,
@@ -3398,121 +3484,15 @@
           });
         });
 
-        // 1. Simpan Seluruh Anggota Keluarga
-        const { error: errAnggota } = await supabaseClient
-          .from('anggota_keluarga')
-          .insert(payloadAnggota);
-
+        // Hapus anggota keluarga lama untuk KK ini (jika edit/replace) lalu masukkan yang baru
+        await supabaseClient.from('anggota_keluarga').delete().eq('nomor_kk', noKK);
+        const { error: errAnggota } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggota);
         if (errAnggota) throw errAnggota;
 
-        // 2. Update Kondisi Rumah & Header KK
-        const payloadKondisiRumah = {
-          nomor_kk: noKK,
-          kode_prov: kdProv,
-          kode_kab: kdKab,
-          kode_kec: kdKec,
-          kode_desa: kdDesa,
-          kode_dusun: kdDusun,
-          rt: rt,
-          kode_rumah: kodeRumah,
-          no_urut_keluarga: noUrutKel,
-          status_keluarga: statusKeluarga,
-          alamat_detail: alamat,
-          no_hp: noHp,
-
-          // AMBIL LANGSUNG DARI dataNilaiPK:
-          pk_01_ibadah: dataNilaiPK.pk_01_ibadah,
-          pk_02_akta_nikah: dataNilaiPK.pk_02_akta_nikah,
-          pk_03_a_tanpa_sapa: dataNilaiPK.pk_03_a_tanpa_sapa,
-          pk_03_b_pisah_ranjang: dataNilaiPK.pk_03_b_pisah_ranjang,
-          pk_03_c_minggat: dataNilaiPK.pk_03_c_minggat,
-          pk_03_d_kdrt: dataNilaiPK.pk_03_d_kdrt,
-          pk_04_penghasilan: dataNilaiPK.pk_04_penghasilan,
-          pk_05_makanan_beragam: dataNilaiPK.pk_05_makanan_beragam,
-          pk_06_aset: dataNilaiPK.pk_06_aset,
-          pk_06_aset_jenis: dataNilaiPK.pk_06_aset === '1' ? (Array.isArray(dataNilaiPK.pk_06_aset_jenis) ? dataNilaiPK.pk_06_aset_jenis.join(',') : dataNilaiPK.pk_06_aset_jenis) : null,
-          pk_07_penyakit_kronis: dataNilaiPK.pk_07_penyakit_kronis,
-          pk_08_disabilitas: dataNilaiPK.pk_08_disabilitas,
-          pk_09_internet: dataNilaiPK.pk_09_internet,
-          pk_10_interaksi: dataNilaiPK.pk_10_interaksi,
-          pk_11_pengasuhan_bersama: dataNilaiPK.pk_11_pengasuhan_bersama,
-          pk_12_rekreasi: dataNilaiPK.pk_12_rekreasi,
-          pk_13_gotong_royong: dataNilaiPK.pk_13_gotong_royong,
-
-          pk_14_1_atap: dataNilaiPK.pk_14_1_atap,
-          pk_14_2_kondisi_atap: dataNilaiPK.pk_14_2_kondisi_atap,
-          pk_15_1_dinding: dataNilaiPK.pk_15_1_dinding,
-          pk_15_2_kondisi_dinding: dataNilaiPK.pk_15_2_kondisi_dinding,
-          pk_16_1_lantai: dataNilaiPK.pk_16_1_lantai,
-          pk_16_2_kondisi_lantai: dataNilaiPK.pk_16_2_kondisi_lantai,
-          pk_17_1_penerangan: dataNilaiPK.pk_17_1_penerangan,
-          pk_17_2_daya_pln: dataNilaiPK.pk_17_1_penerangan === '1' ? dataNilaiPK.pk_17_2_daya_pln : null,
-          pk_18_air_minum: dataNilaiPK.pk_18_air_minum,
-          pk_19_jamban: dataNilaiPK.pk_19_jamban,
-          pk_20_luas_rumah: parseInt(dataNilaiPK.pk_20_luas_rumah, 10) || null,
-          pk_21_jumlah_penghuni: parseInt(dataNilaiPK.pk_21_jumlah_penghuni, 10) || null,
-          pk_22_bahan_bakar: dataNilaiPK.pk_22_bahan_bakar,
-          pk_23_kepemilikan_rumah: dataNilaiPK.pk_23_kepemilikan_rumah,
-
-          pk_24_info_media: dataNilaiPK.pk_24_info_media,
-          pk_25_media_sumber: dataNilaiPK.pk_24_info_media === '1' ? (Array.isArray(dataNilaiPK.pk_25_media_sumber) ? dataNilaiPK.pk_25_media_sumber.join(',') : dataNilaiPK.pk_25_media_sumber) : null,
-          pk_26_info_petugas: dataNilaiPK.pk_26_info_petugas,
-          pk_27_petugas_sumber: dataNilaiPK.pk_26_info_petugas === '1' ? (Array.isArray(dataNilaiPK.pk_27_petugas_sumber) ? dataNilaiPK.pk_27_petugas_sumber.join(',') : dataNilaiPK.pk_27_petugas_sumber) : null,
-
-          diperbarui_pada: new Date()
-        };
-
-        const { data: kkData, error: errKkUpdate } = await supabaseClient
-          .from('kartu_keluarga')
-          .upsert([payloadKondisiRumah], { onConflict: 'nomor_kk' })
-          .select('id')
-          .single();
-
-        if (errKkUpdate) throw errKkUpdate;
-
-        // 3. Simpan Blok KB
-        const payloadKB = {
-          kartu_keluarga_id: kkData.id,
-          jml_melahirkan: parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0,
-          anak_lahir_hidup_laki: parseInt(dataNilaiKB.kb_01_hidup_laki, 10) || 0,
-          anak_lahir_hidup_perempuan: parseInt(dataNilaiKB.kb_01_hidup_perempuan, 10) || 0,
-          anak_masih_hidup_laki: parseInt(dataNilaiKB.kb_01_masih_laki, 10) || 0,
-          anak_masih_hidup_perempuan: parseInt(dataNilaiKB.kb_01_masih_perempuan, 10) || 0,
-          anak_ideal_diinginkan: parseInt(dataNilaiKB.kb_02_anak_ideal, 10) || 0,
-
-          sedang_hamil: dataNilaiKB.kb_03_sedang_hamil === '1',
-          usia_kehamilan_minggu: parseInt(dataNilaiKB.kb_03_usia_kehamilan, 10) || null,
-          status_keinginan_hamil: dataNilaiKB.kb_03_status_ingin_hamil || null,
-          keinginan_anak_lagi: dataNilaiKB.kb_03_keinginan_anak_lagi || null,
-          
-          sedang_pakai_kb: dataNilaiKB.kb_04_sedang_kb === '1',          
-          mulai_kb_bulan: dataNilaiKB.kb_04_sedang_kb === '1' ? dataNilaiKB.kb_04_mulai_bulan : null,
-          mulai_kb_tahun: dataNilaiKB.kb_04_sedang_kb === '1' ? (parseInt(dataNilaiKB.kb_04_mulai_tahun, 10) || null) : null,
-          
-          pernah_pakai_kb_12_bulan: dataNilaiKB.kb_04_sedang_kb === '2' ? (dataNilaiKB.kb_05_pernah_kb === '1') : null,          
-          pernah_mulai_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_mulai_bulan : null,
-          pernah_mulai_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_mulai_tahun, 10) || null) : null,
-          berhenti_kb_bulan: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? dataNilaiKB.kb_05_berhenti_bulan : null,
-          berhenti_kb_tahun: (dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '1') ? (parseInt(dataNilaiKB.kb_05_berhenti_tahun, 10) || null) : null,
-
-          kode_alasan_tidak_kb: dataNilaiKB.kb_04_sedang_kb === '2' ? dataNilaiKB.kb_06_alasan_tidak_kb : null,
-          kode_jenis_kb: dataNilaiKB.kb_07_jenis_kb || null,
-          kode_sumber_pelayanan: dataNilaiKB.kb_08_sumber_pelayanan || null,
-          dapat_info_jenis_kb: dataNilaiKB.kb_09_info_jenis === '1',
-          dapat_info_efek_samping: dataNilaiKB.kb_09_info_efek_samping === '1',
-          dapat_info_penanganan: dataNilaiKB.kb_09_info_tindakan === '1'
-        };
-
-        const { error: errKB } = await supabaseClient
-          .from('keluarga_berencana_pus')
-          .insert([payloadKB]);
-
-        if (errKB) throw errKB;
-        
         Swal.fire({
           icon: 'success',
           title: 'BERHASIL DISIMPAN!',
-          text: 'Seluruh data keluarga dan 17 indikator anggota keluarga telah tersimpan.',
+          text: 'Data keluarga dan seluruh anggota berhasil disimpan ke database.',
           confirmButtonColor: '#059669'
         }).then(() => {
           document.getElementById('pendataanForm').reset();
@@ -3530,7 +3510,7 @@
         });
       } finally {
         btnSimpan.disabled = false;
-        btnSimpan.innerText = "SIMPAN SELURUH DATA KELUARGA";
+        btnSimpan.innerText = "SIMPAN";
       }
     });
 
