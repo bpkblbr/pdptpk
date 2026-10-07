@@ -167,6 +167,10 @@
             <span id="badgeStatusKoneksi" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">
               🟢 Online
             </span>
+            <button type="button" onclick="picuSinkronisasiManual()" 
+                    class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-full text-[10px] font-bold uppercase transition flex items-center gap-1 shadow-sm active:scale-95">
+              🔄 Sinkronkan
+            </button>
           </div>
         </div>
       </div>
@@ -1073,6 +1077,28 @@
         badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-rose-100 text-rose-800";
         badge.innerText = "🔴 Offline";
       }
+    }
+
+    async function picuSinkronisasiManual() {
+      if (!navigator.onLine) {
+        Swal.fire('Koneksi Terputus', 'Perangkat masih offline. Hubungkan ke internet terlebih dahulu untuk sinkronisasi.', 'warning');
+        return;
+      }
+
+      const antrean = await ambilSemuaAntreanOffline();
+      if (antrean.length === 0) {
+        Swal.fire('Antrean Bersih', 'Semua data lokal sudah tersinkronkan ke server.', 'info');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Menyinkronkan Data...',
+        html: `Mengirim ${antrean.length} data antrean ke database...`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      await sinkronkanDataOffline();
     }
 
     // Pantau perubahan jaringan
