@@ -437,6 +437,182 @@
   </div>
 
   <!-- ========================================================
+       MODAL KELOLA USER (GAYA INDEX_KAB)
+       ======================================================== -->
+  <div id="modalKelolaUser" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto">
+      
+      <!-- Header Modal -->
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-sm sm:text-base font-black text-slate-800 uppercase flex items-center gap-2">
+          <span>🔑 KELOLA USER PENGGUNA</span>
+        </h3>
+        <button type="button" onclick="tutupModalKelolaUser()" class="text-slate-400 hover:text-slate-700 font-bold text-xl px-2">&times;</button>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="flex gap-2 border-b pb-3 text-xs font-bold">
+        <button type="button" id="tabBtnUserForm" onclick="gantiTabUser('form')" 
+                class="px-4 py-2 rounded-xl bg-amber-600 text-white transition shadow-sm uppercase">
+          ➕ Input / Edit Akun
+        </button>
+        <button type="button" id="tabBtnUserList" onclick="gantiTabUser('list')" 
+                class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition uppercase">
+          📋 Daftar Akun
+        </button>
+      </div>
+
+      <!-- TAB 1: FORM INPUT & EDIT AKUN -->
+      <div id="userTabForm" class="space-y-4 text-xs">
+        <form id="formUserAkun" onsubmit="event.preventDefault(); simpanAkunUser();" class="space-y-3">
+          <input type="hidden" id="user_id" value="" />
+
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Nama Lengkap</label>
+            <input type="text" id="user_namalengkap" placeholder="Contoh: Budi Santoso"
+                   class="w-full p-2.5 border rounded-xl outline-none focus:ring-1 focus:ring-amber-500 font-medium" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Username *</label>
+              <input type="text" id="user_username" required placeholder="kader_lembar_01"
+                     class="w-full p-2.5 border rounded-xl outline-none focus:ring-1 focus:ring-amber-500 font-mono font-bold" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Password *</label>
+              <input type="text" id="user_password" required placeholder="Min 6 karakter"
+                     class="w-full p-2.5 border rounded-xl outline-none focus:ring-1 focus:ring-amber-500 font-mono" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Peran / Role Pengguna *</label>
+            <select id="user_role" required onchange="saatRoleUserBerubah()" 
+                    class="w-full p-2.5 border rounded-xl bg-white outline-none font-bold text-slate-800">
+              <option value="">-- PILIH ROLE --</option>
+              <option value="Admin Kec">Admin Kecamatan</option>
+              <option value="User Desa">User Desa (Kader)</option>
+            </select>
+          </div>
+
+          <!-- Pilihan Wilayah Bertingkat -->
+          <div id="userRowKab" class="hidden">
+            <label class="block font-bold text-slate-700 uppercase mb-1">Kabupaten / Kota *</label>
+            <select id="user_kab" onchange="saatUserKabBerubah()" 
+                    class="w-full p-2.5 border rounded-xl bg-white outline-none font-semibold">
+              <option value="">-- PILIH KABUPATEN --</option>
+            </select>
+          </div>
+
+          <div id="userRowKec" class="hidden">
+            <label class="block font-bold text-slate-700 uppercase mb-1">Kecamatan Otoritas *</label>
+            <select id="user_kec" onchange="saatUserKecBerubah()" 
+                    class="w-full p-2.5 border rounded-xl bg-white outline-none font-semibold">
+              <option value="">-- PILIH KECAMATAN --</option>
+            </select>
+          </div>
+
+          <div id="userRowDesa" class="hidden">
+            <label class="block font-bold text-slate-700 uppercase mb-1">Desa Otoritas *</label>
+            <select id="user_desa" onchange="saatUserDesaBerubah()" 
+                    class="w-full p-2.5 border rounded-xl bg-white outline-none font-semibold">
+              <option value="">-- PILIH DESA --</option>
+            </select>
+          </div>
+
+          <div id="userRowDusun" class="hidden space-y-1.5">
+            <label class="block font-bold text-slate-700 uppercase">Hak Akses Dusun Spesifik</label>
+            <div id="userDusunContainer" class="max-h-28 overflow-y-auto border border-slate-200 rounded-xl p-2.5 bg-slate-50 space-y-1.5">
+              <span class="text-slate-400 italic">Pilih Desa terlebih dahulu...</span>
+            </div>
+            <p class="text-[10px] text-slate-500">*Kosongkan centang jika akun diizinkan mengelola SEMUA dusun di desa tersebut.</p>
+          </div>
+
+          <!-- Tombol Aksi Form -->
+          <div class="flex gap-2 pt-2">
+            <button type="submit" id="btnSimpanAkun" 
+                    class="flex-1 py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl shadow transition uppercase">
+              💾 SIMPAN AKUN
+            </button>
+            <button type="button" onclick="resetFormUser()" 
+                    class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition uppercase">
+              Bersihkan
+            </button>
+          </div>
+        </form>
+
+        <!-- Template & Upload Massal Akun via Excel -->
+        <div class="border-t pt-3 space-y-2">
+          <div class="flex justify-between items-center bg-slate-50 border p-3 rounded-xl">
+            <span class="font-bold text-slate-700 uppercase">Kelola Akun Massal:</span>
+            <button type="button" onclick="downloadTemplateUserExcel()" 
+                    class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold uppercase text-[11px] transition">
+              📥 Unduh Template
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <input type="file" id="inputExcelUser" accept=".xlsx, .xls" class="flex-1 p-2 border rounded-xl bg-white text-xs" />
+            <button type="button" onclick="uploadUserExcel(document.getElementById('inputExcelUser').files[0])" 
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl uppercase transition">
+              🚀 Upload
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: DAFTAR AKUN TERDAFTAR -->
+      <div id="userTabList" class="hidden space-y-3 text-xs">
+        <!-- Filter Baris -->
+        <div class="bg-slate-50 border rounded-2xl p-3 grid grid-cols-1 sm:grid-cols-4 gap-2">
+          <select id="filterAkunRole" onchange="renderTabelUser()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA ROLE --</option>
+            <option value="Admin Kab">Admin Kabupaten</option>
+            <option value="Admin Kec">Admin Kecamatan</option>
+            <option value="User Desa">User Desa</option>
+          </select>
+          <select id="filterAkunKab" onchange="onFilterAkunKabChange()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA KABUPATEN --</option>
+          </select>
+          <select id="filterAkunKec" onchange="onFilterAkunKecChange()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA KECAMATAN --</option>
+          </select>
+          <select id="filterAkunDesa" onchange="renderTabelUser()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA DESA --</option>
+          </select>
+        </div>
+
+        <div class="flex gap-2">
+          <input type="text" id="cariAkunKeyword" oninput="renderTabelUser()" placeholder="Cari Nama / Username / Wilayah..."
+                 class="flex-1 p-2 border rounded-xl outline-none font-medium uppercase" />
+          <button type="button" onclick="muatDaftarAkunUser()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">
+            🔄 Segarkan
+          </button>
+        </div>
+
+        <!-- Tabel Daftar Akun -->
+        <div class="overflow-x-auto border rounded-2xl max-h-80 overflow-y-auto">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold sticky top-0 border-b">
+              <tr>
+                <th class="p-2.5 text-center">NO</th>
+                <th class="p-2.5">NAMA & USERNAME</th>
+                <th class="p-2.5 text-center">ROLE</th>
+                <th class="p-2.5">WILAYAH OTORITAS</th>
+                <th class="p-2.5 text-center">AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDaftarUser" class="divide-y divide-slate-100">
+              <tr><td colspan="5" class="p-4 text-center text-slate-400">Memuat data akun...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
        4. HALAMAN WIZARD FORMULIR PENDATAAN KELUARGA
        ======================================================== -->
   <div id="tampilan_formulir" class="halaman-tampilan max-w-5xl mx-auto p-3 sm:p-6 lg:p-8">
@@ -839,9 +1015,9 @@
 
       const uLow = user.toLowerCase();
 
-      // PEMETAAN AKUN UJI COBA BERJENJANG
+      // PEMETAAN AKUN SESUAI TINGKATAN OTORITAS
       if (uLow.includes('superadmin')) {
-        // SUPER ADMIN: Bebas memilih semua wilayah
+        // SUPER ADMIN: Bebas memilih semua wilayah & provinsi
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
           role: 'SUPER_ADMIN',
@@ -854,8 +1030,22 @@
           desa: '',
           kode_desa: ''
         };
+      } else if (uLow.includes('prov')) {
+        // ADMIN PROVINSI: Terkunci di Provinsi NTB (Kode: 52), membawahi seluruh Kabupaten/Kota
+        userAktif = {
+          username: 'ADMIN PROVINSI NTB',
+          role: 'ADMIN_PROVINSI',
+          provinsi: 'NUSA TENGGARA BARAT',
+          kode_prov: '52',
+          kabupaten: '',
+          kode_kab: '',
+          kecamatan: '',
+          kode_kec: '',
+          desa: '',
+          kode_desa: ''
+        };
       } else if (uLow.includes('kab')) {
-        // ADMIN KABUPATEN: Terkunci di NTB & Lombok Barat
+        // ADMIN KABUPATEN: Terkunci di NTB & Lombok Barat (Kode: 52, 01)
         userAktif = {
           username: 'ADMIN KABUPATEN LOMBOK BARAT',
           role: 'ADMIN_KABUPATEN',
@@ -869,7 +1059,7 @@
           kode_desa: ''
         };
       } else if (uLow.includes('kec')) {
-        // ADMIN KECAMATAN: Terkunci sampai Kecamatan Lembar
+        // ADMIN KECAMATAN: Terkunci sampai Kecamatan Lembar (Kode: 52, 01, 08)
         userAktif = {
           username: 'ADMIN KECAMATAN LEMBAR',
           role: 'ADMIN_KECAMATAN',
@@ -1333,19 +1523,41 @@
       if (!Array.isArray(rawWilayahList)) return [];
       if (userAktif.role === 'SUPER_ADMIN') return rawWilayahList;
 
-      if (userAktif.role === 'ADMIN_KABUPATEN') {
-        const targetKab = String(userAktif.kode_kab || '').padStart(2, '0');
+      // 1. Filter Tingkat Provinsi
+      if (userAktif.role === 'ADMIN_PROVINSI') {
+        const targetProv = String(userAktif.kode_prov || '').padStart(2, '0');
         return rawWilayahList.filter(w => {
-          const kKab = String(w.kode_kab || w.kode_kabupaten || '').padStart(2, '0');
-          return kKab === targetKab;
+          const kProv = String(w.kode_prov || w.kode_provinsi || '').padStart(2, '0');
+          return kProv === targetProv;
         });
       }
 
+      // 2. Filter Tingkat Kabupaten
+      if (userAktif.role === 'ADMIN_KABUPATEN') {
+        const targetProv = String(userAktif.kode_prov || '').padStart(2, '0');
+        const targetKab = String(userAktif.kode_kab || '').padStart(2, '0');
+        return rawWilayahList.filter(w => {
+          const kProv = String(w.kode_prov || w.kode_provinsi || '').padStart(2, '0');
+          const kKab = String(w.kode_kab || w.kode_kabupaten || '').padStart(2, '0');
+          return (kProv === targetProv || !kProv) && kKab === targetKab;
+        });
+      }
+
+      // 3. Filter Tingkat Kecamatan
       if (userAktif.role === 'ADMIN_KECAMATAN') {
         const targetKec = String(userAktif.kode_kec || '').padStart(2, '0');
         return rawWilayahList.filter(w => {
           const kKec = String(w.kode_kec || w.kode_kecamatan || '').padStart(2, '0');
           return kKec === targetKec;
+        });
+      }
+
+      // 4. Tingkat Desa
+      if (userAktif.role === 'USER_DESA') {
+        const targetDesa = String(userAktif.kode_desa || '').padStart(4, '0');
+        return rawWilayahList.filter(w => {
+          const kDesa = String(w.kode_desa || '').padStart(4, '0');
+          return kDesa === targetDesa;
         });
       }
 
@@ -1604,6 +1816,601 @@
         Swal.fire('Error', 'Gagal membaca file dari perangkat!', 'error');
       };
 
+      reader.readAsArrayBuffer(file);
+    }
+
+    // ========================================================
+    // MODUL KELOLA USER (MENGADOPSI LOGIKA INDEX_KAB.HTML)
+    // ========================================================
+    let dataAkunUserCache = [];
+
+    // Trigger tombol menu "KELOLA USER" di dashboard
+    function navigasiKe(menu) {
+      if (menu === 'kelola_login') {
+        bukaModalKelolaUser();
+      } else {
+        Swal.fire({
+          icon: 'info',
+          title: 'Menu Terpilih',
+          text: `Fitur [${menu.toUpperCase()}] siap dihubungkan ke modul database.`,
+          confirmButtonColor: '#059669'
+        });
+      }
+    }
+
+    function bukaModalKelolaUser() {
+      if (userAktif.role === 'USER_DESA') {
+        Swal.fire('Akses Ditolak', 'Akun Desa tidak memiliki hak akses mengelola user!', 'error');
+        return;
+      }
+
+      document.getElementById('modalKelolaUser').classList.remove('hidden');
+      gantiTabUser('form', true);
+
+      const selRole = document.getElementById('user_role');
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        selRole.innerHTML = `<option value="User Desa" selected>User Desa (Kader)</option>`;
+        selRole.disabled = true;
+      } else if (userAktif.role === 'ADMIN_KABUPATEN') {
+        selRole.innerHTML = `
+          <option value="">-- PILIH ROLE --</option>
+          <option value="Admin Kec">Admin Kecamatan</option>
+          <option value="User Desa">User Desa (Kader)</option>
+        `;
+        selRole.disabled = false;
+      } else {
+        // SUPER_ADMIN atau ADMIN_PROVINSI (Dapat mengelola Admin Kab, Admin Kec, dan User Desa)
+        selRole.innerHTML = `
+          <option value="">-- PILIH ROLE --</option>
+          <option value="Admin Kab">Admin Kabupaten</option>
+          <option value="Admin Kec">Admin Kecamatan</option>
+          <option value="User Desa">User Desa (Kader)</option>
+        `;
+        selRole.disabled = false;
+      }
+
+      saatRoleUserBerubah();
+    }
+
+    function tutupModalKelolaUser() {
+      document.getElementById('modalKelolaUser').classList.add('hidden');
+      resetFormUser();
+    }
+
+    function gantiTabUser(tab, reset = true) {
+      const isForm = (tab === 'form');
+      document.getElementById('userTabForm').classList.toggle('hidden', !isForm);
+      document.getElementById('userTabList').classList.toggle('hidden', isForm);
+
+      const btnForm = document.getElementById('tabBtnUserForm');
+      const btnList = document.getElementById('tabBtnUserList');
+
+      if (isForm) {
+        btnForm.className = "px-4 py-2 rounded-xl bg-amber-600 text-white transition shadow-sm uppercase";
+        btnList.className = "px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition uppercase";
+        if (reset) resetFormUser();
+      } else {
+        btnForm.className = "px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition uppercase";
+        btnList.className = "px-4 py-2 rounded-xl bg-amber-600 text-white transition shadow-sm uppercase";
+        muatDaftarAkunUser();
+      }
+    }
+
+    function saatRoleUserBerubah() {
+      const role = document.getElementById('user_role').value;
+      const rowKab = document.getElementById('userRowKab');
+      const rowKec = document.getElementById('userRowKec');
+      const rowDesa = document.getElementById('userRowDesa');
+      const rowDusun = document.getElementById('userRowDusun');
+      const selKab = document.getElementById('user_kab');
+
+      rowKab.classList.add('hidden');
+      rowKec.classList.add('hidden');
+      rowDesa.classList.add('hidden');
+      rowDusun.classList.add('hidden');
+
+      if (!role) return;
+
+      // 1. Tampilkan baris Kabupaten
+      rowKab.classList.remove('hidden');
+      selKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
+      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKab.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      // Kunci jika admin kabupaten atau kecamatan
+      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN') {
+        selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
+        selKab.disabled = true;
+      } else {
+        selKab.disabled = false;
+      }
+
+      // Jika role yang dipilih adalah Admin Kab, berhenti di pilihan kabupaten
+      if (role === 'Admin Kab') return;
+
+      // Jika Admin Kec atau User Desa, buka baris Kecamatan
+      rowKec.classList.remove('hidden');
+      saatUserKabBerubah();
+
+      if (role === 'User Desa') {
+        rowDesa.classList.remove('hidden');
+        rowDusun.classList.remove('hidden');
+      }
+    }
+
+    function saatUserKabBerubah() {
+      const kdKab = document.getElementById('user_kab').value;
+      const selKec = document.getElementById('user_kec');
+      selKec.innerHTML = '<option value="">-- PILIH KECAMATAN --</option>';
+
+      if (!kdKab) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKec = dataAkses.filter(w => String(w.kode_kab).padStart(2, '0') === kdKab);
+      const listKecUnik = [...new Map(listKec.map(w => [w.kode_kec, w.kecamatan])).entries()];
+
+      listKecUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKec.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+      } else {
+        selKec.disabled = false;
+      }
+
+      saatUserKecBerubah();
+    }
+
+    function saatUserKecBerubah() {
+      const kdKab = document.getElementById('user_kab').value;
+      const kdKec = document.getElementById('user_kec').value;
+      const selDesa = document.getElementById('user_desa');
+      selDesa.innerHTML = '<option value="">-- PILIH DESA --</option>';
+
+      if (!kdKec) {
+        document.getElementById('userDusunContainer').innerHTML = '<span class="text-slate-400 italic">Pilih Desa terlebih dahulu...</span>';
+        return;
+      }
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec
+      );
+      const listDesaUnik = [...new Map(listDesa.map(w => [w.kode_desa, w.desa])).entries()];
+
+      listDesaUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selDesa.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      saatUserDesaBerubah();
+    }
+
+    function saatUserDesaBerubah() {
+      const kdKab = document.getElementById('user_kab').value;
+      const kdKec = document.getElementById('user_kec').value;
+      const kdDesa = document.getElementById('user_desa').value;
+      const container = document.getElementById('userDusunContainer');
+
+      if (!kdKab || !kdKec || !kdDesa) {
+        container.innerHTML = '<span class="text-slate-400 italic">Pilih Desa terlebih dahulu...</span>';
+        return;
+      }
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDsn = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec && 
+        String(w.kode_desa).padStart(4, '0') === kdDesa
+      );
+
+      if (listDsn.length === 0) {
+        container.innerHTML = '<span class="text-rose-500 font-semibold">Tidak ada dusun terdaftar pada desa ini.</span>';
+        return;
+      }
+
+      let html = '';
+      listDsn.forEach(d => {
+        const cleanKd = String(d.kode_dusun).padStart(4, '0');
+        html += `
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <input type="checkbox" name="cb_user_dusun" value="${cleanKd}" class="rounded text-amber-600 focus:ring-0" />
+            <span>[${cleanKd}] ${d.dusun}</span>
+          </label>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function resetFormUser() {
+      document.getElementById('formUserAkun').reset();
+      document.getElementById('user_id').value = '';
+      document.getElementById('user_username').readOnly = false;
+      document.getElementById('btnSimpanAkun').innerText = '💾 SIMPAN AKUN';
+      saatRoleUserBerubah();
+    }
+
+    // Simpan Akun ke Supabase
+    async function simpanAkunUser() {
+      const btn = document.getElementById('btnSimpanAkun');
+      btn.disabled = true;
+      btn.innerText = 'MENYIMPAN...';
+
+      const userId = document.getElementById('user_id').value;
+      const nama = document.getElementById('user_namalengkap').value.trim();
+      const username = document.getElementById('user_username').value.trim();
+      const password = document.getElementById('user_password').value.trim();
+      const role = document.getElementById('user_role').value;
+
+      const kdKab = (role === 'Admin Kab' || role === 'Admin Kec' || role === 'User Desa') 
+        ? (document.getElementById('user_kab').value || userAktif.kode_kab || null) 
+        : null;
+
+      const kdKec = (role === 'Admin Kec' || role === 'User Desa') 
+        ? (document.getElementById('user_kec').value || null) 
+        : null;
+
+      const kdDesa = (role === 'User Desa') 
+        ? (document.getElementById('user_desa').value || null) 
+        : null;
+
+      const cbs = document.querySelectorAll('input[name="cb_user_dusun"]:checked');
+      const selectedDusun = Array.from(cbs).map(c => c.value);
+      const allowedDusun = (role === 'User Desa' && selectedDusun.length > 0) ? selectedDusun.join(',') : null;
+
+      const payload = {
+        username: username,
+        nama_lengkap: nama || null,
+        password_hash: password,
+        role: role,
+        kode_prov: userAktif.kode_prov || '52',
+        kode_kab: kdKab,
+        kode_kec: kdKec,
+        kode_desa: kdDesa,
+        allowed_dusun: allowedDusun
+      };
+
+      try {
+        let res;
+        if (userId) {
+          res = await supabaseClient.from('users').update(payload).eq('id', userId);
+        } else {
+          res = await supabaseClient.from('users').insert([payload]);
+        }
+
+        if (res.error) throw res.error;
+
+        Swal.fire('Berhasil!', `Akun ${username} berhasil disimpan.`, 'success');
+        resetFormUser();
+        gantiTabUser('list');
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
+      }
+    }
+
+    // Muat data akun di bawah provinsi akun login
+    async function muatDaftarAkunUser() {
+      const tbody = document.getElementById('tbodyDaftarUser');
+      tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Memuat data akun dari database...</td></tr>`;
+
+      try {
+        let query = supabaseClient.from('users').select('*').order('username', { ascending: true });
+
+        // Batasi berdasarkan hirarki
+        if (userAktif.role === 'ADMIN_KECAMATAN') {
+          query = query.eq('kode_kec', userAktif.kode_kec).eq('role', 'User Desa');
+        } else if (userAktif.role === 'ADMIN_KABUPATEN') {
+          query = query.eq('kode_kab', userAktif.kode_kab).neq('role', 'Admin Kab');
+        } else if (userAktif.role === 'ADMIN_PROVINSI') {
+          query = query.eq('kode_prov', userAktif.kode_prov).neq('role', 'Admin Prov');
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        dataAkunUserCache = data || [];
+        initDropdownFilterTabelUser();
+        renderTabelUser();
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-500 font-semibold">Gagal memuat: ${err.message}</td></tr>`;
+      }
+    }
+
+    function initDropdownFilterTabelUser() {
+      const selKab = document.getElementById('filterAkunKab');
+      const selKec = document.getElementById('filterAkunKec');
+      const selDesa = document.getElementById('filterAkunDesa');
+
+      selKab.innerHTML = '<option value="">-- SEMUA KABUPATEN --</option>';
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
+      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKab.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN') {
+        selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
+        selKab.disabled = true;
+        onFilterAkunKabChange();
+      } else {
+        selKab.disabled = false;
+      }
+    }
+
+    function onFilterAkunKabChange() {
+      const kdKab = document.getElementById('filterAkunKab').value;
+      const selKec = document.getElementById('filterAkunKec');
+      const selDesa = document.getElementById('filterAkunDesa');
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKec = kdKab ? dataAkses.filter(w => String(w.kode_kab).padStart(2, '0') === kdKab) : dataAkses;
+      const listKecUnik = [...new Map(listKec.map(w => [w.kode_kec, w.kecamatan])).entries()];
+
+      listKecUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKec.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KECAMATAN') {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+        onFilterAkunKecChange();
+      } else {
+        selKec.disabled = false;
+      }
+
+      renderTabelUser();
+    }
+
+    function onFilterAkunKecChange() {
+      const kdKab = document.getElementById('filterAkunKab').value;
+      const kdKec = document.getElementById('filterAkunKec').value;
+      const selDesa = document.getElementById('filterAkunDesa');
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = kdKec ? dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec
+      ) : [];
+
+      const listDesaUnik = [...new Map(listDesa.map(w => [w.kode_desa, w.desa])).entries()];
+      listDesaUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selDesa.add(new Option(nm.toUpperCase(), kd));
+      });
+
+      renderTabelUser();
+    }
+
+    function renderTabelUser() {
+      const tbody = document.getElementById('tbodyDaftarUser');
+      const roleFilter = document.getElementById('filterAkunRole').value;
+      const kabFilter = document.getElementById('filterAkunKab').value;
+      const kecFilter = document.getElementById('filterAkunKec').value;
+      const desaFilter = document.getElementById('filterAkunDesa').value;
+      const keyword = (document.getElementById('cariAkunKeyword').value || '').toLowerCase().trim();
+
+      let data = dataAkunUserCache;
+
+      if (roleFilter) data = data.filter(u => u.role === roleFilter);
+      if (kabFilter) data = data.filter(u => String(u.kode_kab || '').padStart(2, '0') === kabFilter);
+      if (kecFilter) data = data.filter(u => String(u.kode_kec || '').padStart(2, '0') === kecFilter);
+      if (desaFilter) data = data.filter(u => String(u.kode_desa || '').padStart(4, '0') === desaFilter);
+      if (keyword) {
+        data = data.filter(u => 
+          (u.nama_lengkap || '').toLowerCase().includes(keyword) ||
+          (u.username || '').toLowerCase().includes(keyword) ||
+          (u.role || '').toLowerCase().includes(keyword)
+        );
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium uppercase">Tidak ada akun yang sesuai kriteria.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      data.forEach((u, idx) => {
+        let wilText = '-';
+        if (u.role === 'Admin Kab') {
+          wilText = `Kab. Kode ${u.kode_kab || '-'}`;
+        } else if (u.role === 'Admin Kec') {
+          wilText = `Kab. ${u.kode_kab || '-'} / Kec. ${u.kode_kec || '-'}`;
+        } else {
+          wilText = `Kec. ${u.kode_kec || '-'} / Desa ${u.kode_desa || '-'} ${u.allowed_dusun ? `(Dsn: ${u.allowed_dusun})` : '(Semua Dusun)'}`;
+        }
+
+        html += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5">
+              <p class="font-bold text-slate-800">${u.nama_lengkap || '-'}</p>
+              <p class="font-mono text-xs text-slate-500">${u.username}</p>
+            </td>
+            <td class="p-2.5 text-center">
+              <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${u.role === 'Admin Kab' ? 'bg-rose-100 text-rose-800' : (u.role === 'Admin Kec' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800')}">
+                ${u.role}
+              </span>
+            </td>
+            <td class="p-2.5 text-slate-600 font-medium">${wilText}</td>
+            <td class="p-2.5 text-center">
+              <div class="flex items-center justify-center gap-1">
+                <button type="button" onclick="editAkunUser('${u.id}')" 
+                        class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold text-[10px] transition">
+                  ✏️ Edit
+                </button>
+                <button type="button" onclick="hapusAkunUser('${u.id}', '${u.username}')" 
+                        class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold text-[10px] transition">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function editAkunUser(id) {
+      const u = dataAkunUserCache.find(x => String(x.id) === String(id));
+      if (!u) return;
+
+      gantiTabUser('form', false);
+
+      document.getElementById('user_id').value = u.id;
+      document.getElementById('user_namalengkap').value = u.nama_lengkap || '';
+      document.getElementById('user_username').value = u.username;
+      document.getElementById('user_username').readOnly = true;
+      document.getElementById('user_password').value = u.password_hash || '';
+      document.getElementById('user_role').value = u.role;
+
+      saatRoleUserBerubah();
+
+      if (u.kode_kec) {
+        document.getElementById('user_kec').value = String(u.kode_kec).padStart(2, '0');
+        saatUserKecBerubah();
+      }
+      if (u.kode_desa) {
+        document.getElementById('user_desa').value = String(u.kode_desa).padStart(4, '0');
+        saatUserDesaBerubah();
+
+        if (u.allowed_dusun) {
+          const listDsn = u.allowed_dusun.split(',').map(s => s.trim().padStart(4, '0'));
+          document.querySelectorAll('input[name="cb_user_dusun"]').forEach(cb => {
+            cb.checked = listDsn.includes(cb.value);
+          });
+        }
+      }
+
+      document.getElementById('btnSimpanAkun').innerText = '💾 PERBARUI AKUN';
+    }
+
+    async function hapusAkunUser(id, username) {
+      Swal.fire({
+        title: 'Hapus Akun?',
+        text: `Apakah Anda yakin ingin menghapus user [${username}]?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus'
+      }).then(async (res) => {
+        if (res.isConfirmed) {
+          const { error } = await supabaseClient.from('users').delete().eq('id', id);
+          if (error) {
+            Swal.fire('Gagal', error.message, 'error');
+          } else {
+            Swal.fire('Terhapus', `Akun ${username} berhasil dihapus.`, 'success');
+            muatDaftarAkunUser();
+          }
+        }
+      });
+    }
+
+    // Unduh Template & Upload Akun via Excel
+    function downloadTemplateUserExcel() {
+      const data = [
+        {
+          "NAMA_LENGKAP": "Kader Dusun Hubbal",
+          "USERNAME": "kader_hubbal_01",
+          "PASSWORD": "password123",
+          "ROLE": "User Desa",
+          "KODE_KEC": "08",
+          "KODE_DESA": "2001",
+          "ALLOWED_DUSUN": "0100"
+        },
+        {
+          "NAMA_LENGKAP": "Admin Kecamatan Lembar",
+          "USERNAME": "adminkec_lembar",
+          "PASSWORD": "password123",
+          "ROLE": "Admin Kec",
+          "KODE_KEC": "08",
+          "KODE_DESA": "",
+          "ALLOWED_DUSUN": ""
+        }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Template_Users");
+      XLSX.writeFile(wb, "Template_Akun_Pengguna.xlsx");
+    }
+
+    async function uploadUserExcel(file) {
+      if (!file) {
+        Swal.fire('Peringatan', 'Pilih file Excel akun terlebih dahulu!', 'warning');
+        return;
+      }
+
+      Swal.fire({ title: 'Memproses Akun...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const buffer = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(buffer, { type: 'array' });
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '' });
+
+          if (!rows || rows.length === 0) throw new Error('File Excel tidak memiliki baris data.');
+
+          const payload = [];
+          for (let r of rows) {
+            const username = String(r.USERNAME || r.username || '').trim();
+            const password = String(r.PASSWORD || r.password || '').trim();
+            if (!username || !password) continue;
+
+            const role = String(r.ROLE || r.role || 'User Desa').trim();
+            const kdKec = String(r.KODE_KEC || r.kode_kec || '').padStart(2, '0');
+            const kdDesa = String(r.KODE_DESA || r.kode_desa || '').padStart(4, '0');
+            const allowedDusun = String(r.ALLOWED_DUSUN || r.allowed_dusun || '').trim() || null;
+
+            // Batasi sesuai peran login
+            if (userAktif.role === 'ADMIN_KECAMATAN' && (role !== 'User Desa' || kdKec !== userAktif.kode_kec)) {
+              continue;
+            }
+
+            payload.push({
+              username: username,
+              nama_lengkap: String(r.NAMA_LENGKAP || r.nama_lengkap || '').trim() || null,
+              password_hash: password,
+              role: role,
+              kode_kab: userAktif.kode_kab || '01',
+              kode_kec: kdKec || null,
+              kode_desa: (role === 'User Desa') ? (kdDesa || null) : null,
+              allowed_dusun: allowedDusun
+            });
+          }
+
+          if (payload.length === 0) throw new Error('Tidak ada baris akun yang valid sesuai wewenang Anda.');
+
+          const { error } = await supabaseClient.from('users').upsert(payload, { onConflict: 'username' });
+          if (error) throw error;
+
+          Swal.fire('Berhasil', `Sebanyak ${payload.length} akun pengguna berhasil disinkronkan.`, 'success');
+          document.getElementById('inputExcelUser').value = '';
+          gantiTabUser('list');
+
+        } catch (err) {
+          console.error(err);
+          Swal.fire('Gagal Upload', err.message || 'Terjadi kesalahan.', 'error');
+        }
+      };
       reader.readAsArrayBuffer(file);
     }
 
@@ -4285,7 +5092,6 @@
       });
 
       try {
-        // Tarik data istri (hubungan = 2) beserta status keluarga induknya
         let query = supabaseClient
           .from('anggota_keluarga')
           .select(`
@@ -4308,8 +5114,10 @@
           `)
           .eq('hubungan_dengan_kk', '2');
 
-        // Batasi berdasarkan cakupan login
-        if (userAktif.role === 'ADMIN_KABUPATEN') {
+        // Batasi cakupan query sesuai tingkatan login
+        if (userAktif.role === 'ADMIN_PROVINSI') {
+          query = query.eq('keluarga.kode_prov', userAktif.kode_prov);
+        } else if (userAktif.role === 'ADMIN_KABUPATEN') {
           query = query.eq('keluarga.kode_kab', userAktif.kode_kab);
         } else if (userAktif.role === 'ADMIN_KECAMATAN') {
           query = query.eq('keluarga.kode_kec', userAktif.kode_kec);
