@@ -264,13 +264,13 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="unduhTemplateWilayahExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
-            📥 DOWNLOAD TEMPLATE EXCEL (.XLSX)
+          <button type="button" onclick="downloadTemplateWilayahExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+            📥 DOWNLOAD TEMPLATE EXCEL
           </button>
           
           <label class="cursor-pointer px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
-            📤 UPLOAD EXCEL (.XLSX)
-            <input type="file" id="inputUploadExcel" accept=".xlsx, .xls" onchange="unggahFileWilayahExcel(event)" class="hidden" />
+            📤 UPLOAD EXCEL
+            <input type="file" id="inputUploadExcel" accept=".xlsx, .xls" onchange="uploadFileWilayahExcel(event)" class="hidden" />
           </label>
         </div>
       </div>
@@ -911,15 +911,19 @@
 
       resetMwForm();
 
-      // Beri tanda memuat di tabel terlebih dahulu
       const tbody = document.getElementById('tbodyMasterWilayah');
       if (tbody) {
         tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500 font-semibold animate-pulse uppercase">Mengambil data master wilayah dari database...</td></tr>`;
       }
 
-      // Ambil data terbaru dari Supabase dan tunggu selesai
-      await loadMasterWilayahFromDB();
-      tampilkanTabelMasterWilayah();
+      try {
+        await loadMasterWilayahFromDB();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        // Pastikan tabel SELALU dirender meskipun terjadi error jaringan
+        tampilkanTabelMasterWilayah();
+      }
     }
 
     function resetMwForm() {
@@ -1104,21 +1108,180 @@
       }
     }
 
+    function downloadTemplateWilayahExcel() {
+      const templateData = [
+        {
+          "PROVINSI": "NUSA TENGGARA BARAT",
+          "KODE_PROV": "52",
+          "KABUPATEN": "LOMBOK BARAT",
+          "KODE_KAB": "01",
+          "KECAMATAN": "LEMBAR",
+          "KODE_KEC": "08",
+          "DESA": "EYAT MAYANG",
+          "KODE_DESA": "2001",
+          "DUSUN": "HUBBAL KHAIR",
+          "KODE_DUSUN": "0100",
+          "JUMLAH_RT": 4
+        },
+        {
+          "PROVINSI": "NUSA TENGGARA BARAT",
+          "KODE_PROV": "52",
+          "KABUPATEN": "LOMBOK BARAT",
+          "KODE_KAB": "01",
+          "KECAMATAN": "LEMBAR",
+          "KODE_KEC": "08",
+          "DESA": "EYAT MAYANG",
+          "KODE_DESA": "2001",
+          "DUSUN": "SELAMPANG",
+          "KODE_DUSUN": "0200",
+          "JUMLAH_RT": 3
+        }
+      ];
+
+      const ws = XLSX.utils.json_to_sheet(templateData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "MasterWilayah");
+
+      XLSX.writeFile(wb, "Template_Master_Wilayah_KRS.xlsx");
+    }
+    
+    async function uploadFileWilayahExcel(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      event.target.value = '';
+
+      if (!supabaseClient) {
+        Swal.fire('Error', 'Koneksi ke Supabase belum terinisialisasi!', 'error');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Membaca File Excel...',
+        html: 'Mohon tunggu, data sedang diproses.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+
+          const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+          if (!rawRows || rawRows.length === 0) {
+            Swal.fire('Perhatian', 'File Excel kosong atau format tidak sesuai!', 'warning');
+            return;
+          }
+
+          const payloadBatch = [];
+          for (let row of rawRows) {
+            const getVal = (colNames) => {
+              for (let key of Object.keys(row)) {
+                if (colNames.includes(key.trim().toUpperCase())) {
+                  return String(row[key]).trim();
+                }
+              }
+              return '';
+            };
+
+            const prov = getVal(['PROVINSI']).toUpperCase();
+            const kdProv = getVal(['KODE_PROV', 'KD_PROV', 'KODE PROVINSI']).padStart(2, '0');
+            const kab = getVal(['KABUPATEN']).toUpperCase();
+            const kdKab = getVal(['KODE_KAB', 'KD_KAB', 'KODE KABUPATEN']).padStart(2, '0');
+            const kec = getVal(['KECAMATAN']).toUpperCase();
+            const kdKec = getVal(['KODE_KEC', 'KD_KEC', 'KODE KECAMATAN']).padStart(2, '0');
+            const desa = getVal(['DESA', 'KELURAHAN']).toUpperCase();
+            const kdDesa = getVal(['KODE_DESA', 'KD_DESA', 'KODE DESA']).padStart(4, '0');
+            const dusun = getVal(['DUSUN', 'LINGKUNGAN', 'RW']).toUpperCase();
+            const kdDusun = getVal(['KODE_DUSUN', 'KD_DUSUN', 'KODE DUSUN']).padStart(4, '0');
+            const jmlRt = parseInt(getVal(['JUMLAH_RT', 'JML_RT', 'RT']), 10) || 1;
+
+            if (!desa || !dusun) continue;
+
+            if (userAktif.role === 'ADMIN_KABUPATEN' && kdKab !== userAktif.kode_kab) continue;
+            if (userAktif.role === 'ADMIN_KECAMATAN' && kdKec !== userAktif.kode_kec) continue;
+
+            payloadBatch.push({
+              provinsi: prov || 'NUSA TENGGARA BARAT',
+              kode_prov: kdProv || '52',
+              kabupaten: kab || 'LOMBOK BARAT',
+              kode_kab: kdKab || '01',
+              kecamatan: kec,
+              kode_kec: kdKec,
+              desa: desa,
+              kode_desa: kdDesa,
+              dusun: dusun,
+              kode_dusun: kdDusun,
+              jumlah_rt: jmlRt
+            });
+          }
+
+          if (payloadBatch.length === 0) {
+            Swal.fire('Gagal', 'Tidak ada baris data wilayah yang valid untuk disimpan atau wilayah tidak sesuai hak akses Anda!', 'error');
+            return;
+          }
+
+          const { error } = await supabaseClient
+            .from('master_wilayah')
+            .upsert(payloadBatch, { onConflict: 'kode_kec,kode_desa,kode_dusun' });
+
+          if (error) throw error;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil Upload!',
+            text: `Sebanyak ${payloadBatch.length} wilayah berhasil diimpor ke sistem.`,
+            confirmButtonColor: '#059669'
+          });
+
+          await loadMasterWilayahFromDB();
+          tampilkanTabelMasterWilayah();
+
+        } catch (err) {
+          console.error("Error Upload Excel:", err);
+          Swal.fire('Gagal Memproses Excel', err.message || 'Terjadi kesalahan format data.', 'error');
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    let rawWilayahList = [];
+    let dataProvinsi = {};
+    let dataKabupaten = {};
+    let dataKecamatan = {};
+    let dataDesa = {};
+    let dataDusun = {};
+
     async function loadMasterWilayahFromDB() {
-      if (!supabaseClient) return;
+      if (!supabaseClient) {
+        console.warn("Supabase client belum siap.");
+        return;
+      }
+
       try {
         const { data, error } = await supabaseClient
           .from('master_wilayah')
           .select('*')
-          .order('desa', { ascending: true });
+          .order('provinsi', { ascending: true });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Gagal kueri master_wilayah:", error);
+          throw error;
+        }
+
         rawWilayahList = data || [];
 
-        dataProvinsi = {}; 
-        dataKabupaten = {}; 
-        dataKecamatan = {}; 
-        dataDesa = {}; 
+        // Reset objek hierarki
+        dataProvinsi = {};
+        dataKabupaten = {};
+        dataKecamatan = {};
+        dataDesa = {};
         dataDusun = {};
 
         rawWilayahList.forEach(r => {
@@ -1128,29 +1291,31 @@
           let kdDesa = String(r.kode_desa || '').padStart(4, '0');
           let kdDsn  = String(r.kode_dusun || '').padStart(4, '0');
 
-          dataProvinsi[kdProv] = r.provinsi;
+          if (kdProv) dataProvinsi[kdProv] = r.provinsi || '';
           
           if (!dataKabupaten[kdProv]) dataKabupaten[kdProv] = {};
-          dataKabupaten[kdProv][kdKab] = r.kabupaten;
+          if (kdKab) dataKabupaten[kdProv][kdKab] = r.kabupaten || '';
 
           if (!dataKecamatan[kdKab]) dataKecamatan[kdKab] = {};
-          dataKecamatan[kdKab][kdKec] = r.kecamatan;
+          if (kdKec) dataKecamatan[kdKab][kdKec] = r.kecamatan || '';
           
           let desaKey = kdKab + "_" + kdKec;
           if (!dataDesa[desaKey]) dataDesa[desaKey] = {};
-          dataDesa[desaKey][kdDesa] = r.desa;      
+          if (kdDesa) dataDesa[desaKey][kdDesa] = r.desa || '';      
           
           let dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
           if (!dataDusun[dsnKey]) dataDusun[dsnKey] = {};
-          dataDusun[dsnKey][kdDsn] = { 
-            nama: r.dusun, 
-            jumlah_rt: parseInt(r.jumlah_rt, 10) || 1 
-          };
+          if (kdDsn) {
+            dataDusun[dsnKey][kdDsn] = { 
+              nama: r.dusun || '', 
+              jumlah_rt: parseInt(r.jumlah_rt, 10) || 1 
+            };
+          }
         });
 
         populateFormProvinsi();
       } catch (err) {
-        console.warn("Gagal mengambil master wilayah:", err);
+        console.error("Error saat memuat master wilayah:", err);
       }
     }
 
