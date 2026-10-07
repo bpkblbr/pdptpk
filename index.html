@@ -991,24 +991,34 @@
       const tbody = document.getElementById('tbodyMasterWilayah');
       if (!tbody) return;
 
-      const filterKec = document.getElementById('filter_mw_kecamatan')?.value || '';
-      const filterDesa = document.getElementById('filter_mw_desa')?.value || '';
-      const keyword = (document.getElementById('cariTabelWilayah')?.value || '').toLowerCase().trim();
+      const selKec = document.getElementById('filter_mw_kecamatan');
+      const selDesa = document.getElementById('filter_mw_desa');
+      const inputCari = document.getElementById('cariTabelWilayah');
 
-      // Filter berdasarkan role login
+      const filterKec = selKec ? String(selKec.value || '').trim() : '';
+      const filterDesa = selDesa ? String(selDesa.value || '').trim() : '';
+      const keyword = inputCari ? inputCari.value.toLowerCase().trim() : '';
+
+      // 1. Ambil data dasar sesuai batasan role user login
       let data = getWilayahTersaringSesuaiRole();
 
-      // Filter berdasarkan dropdown kecamatan
+      // 2. Filter berdasarkan Kecamatan terpilih
       if (filterKec) {
-        data = data.filter(w => String(w.kode_kec || w.kode_kecamatan || '').padStart(2, '0') === filterKec);
+        data = data.filter(w => {
+          const kKec = String(w.kode_kec || w.kode_kecamatan || '').padStart(2, '0');
+          return kKec === filterKec.padStart(2, '0');
+        });
       }
 
-      // Filter berdasarkan dropdown desa
+      // 3. Filter berdasarkan Desa terpilih
       if (filterDesa) {
-        data = data.filter(w => String(w.kode_desa || '').padStart(4, '0') === filterDesa);
+        data = data.filter(w => {
+          const kDesa = String(w.kode_desa || '').padStart(4, '0');
+          return kDesa === filterDesa.padStart(4, '0');
+        });
       }
 
-      // Filter berdasarkan input teks pencarian
+      // 4. Filter berdasarkan teks pencarian
       if (keyword) {
         data = data.filter(w => 
           (w.dusun || '').toLowerCase().includes(keyword) ||
@@ -1017,17 +1027,19 @@
         );
       }
 
+      // Jika data kosong setelah difilter
       if (!data || data.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="8" class="p-6 text-center text-slate-400 font-medium uppercase">
-              Tidak ada data wilayah yang sesuai filter / pencarian.
+              Tidak ada data wilayah yang sesuai dengan filter atau pencarian.
             </td>
           </tr>
         `;
         return;
       }
 
+      // Render baris data
       let baris = '';
       data.forEach(item => {
         const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
@@ -1045,14 +1057,12 @@
             <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
             <td class="p-3 text-center">
               <div class="flex items-center justify-center gap-1.5">
-                <!-- Tombol Edit -->
                 <button type="button" onclick="bukaModalEditWilayah('${item.id}')" 
-                        class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold uppercase text-[10px] transition">
+                        class="px-2.5 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold uppercase text-[10px] transition">
                   ✏️ Edit
                 </button>
-                <!-- Tombol Hapus -->
                 <button type="button" onclick="hapusWilayah('${item.id}', '${item.dusun}')" 
-                        class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold uppercase text-[10px] transition">
+                        class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold uppercase text-[10px] transition">
                   🗑️ Hapus
                 </button>
               </div>
@@ -1297,83 +1307,7 @@
       }
 
       return [];
-    }
-
-    function tampilkanTabelMasterWilayah() {
-      const tbody = document.getElementById('tbodyMasterWilayah');
-      if (!tbody) return;
-
-      const dataSaring = getWilayahTersaringSesuaiRole();
-
-      if (!dataSaring || dataSaring.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="8" class="p-6 text-center text-slate-400 font-medium uppercase">
-              Belum ada data wilayah terdaftar. Silakan tambah data manual di atas atau unggah file Excel.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      let baris = '';
-      dataSaring.forEach(item => {
-        const kdKec = String(item.kode_kec || item.kode_kecamatan || '').padStart(2, '0');
-        const kdDesa = String(item.kode_desa || '').padStart(4, '0');
-        const kdDsn = String(item.kode_dusun || '').padStart(4, '0');
-
-        baris += `
-          <tr class="hover:bg-slate-50 transition border-b">
-            <td class="p-3 font-semibold text-slate-800">${(item.kecamatan || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdKec}</td>
-            <td class="p-3 font-semibold text-emerald-800">${(item.desa || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdDesa}</td>
-            <td class="p-3 font-bold text-slate-900">${(item.dusun || '').toUpperCase()}</td>
-            <td class="p-3 font-mono text-center text-slate-600 font-bold">${kdDsn}</td>
-            <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
-            <td class="p-3 text-center">
-              <button type="button" onclick="hapusWilayah('${item.id}', '${item.dusun}')" 
-                      class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold uppercase text-[10px] transition">
-                Hapus
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      tbody.innerHTML = baris;
-    }
-
-    function filterTabelWilayah() {
-      const keyword = document.getElementById('cariTabelWilayah').value.toLowerCase();
-      const trList = document.querySelectorAll('#tbodyMasterWilayah tr');
-      trList.forEach(tr => {
-        const text = tr.innerText.toLowerCase();
-        tr.style.display = text.includes(keyword) ? '' : 'none';
-      });
-    }
-
-    async function hapusWilayah(id, namaDusun) {
-      Swal.fire({
-        title: 'Konfirmasi Hapus',
-        text: `Hapus wilayah dusun ${namaDusun}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e11d48',
-        confirmButtonText: 'Ya, Hapus'
-      }).then(async (res) => {
-        if (res.isConfirmed && supabaseClient) {
-          const { error } = await supabaseClient.from('master_wilayah').delete().eq('id', id);
-          if (error) {
-            Swal.fire('Gagal', error.message, 'error');
-          } else {
-            Swal.fire('Sukses', 'Data wilayah terhapus.', 'success');
-            await loadMasterWilayahFromDB();
-            tampilkanTabelMasterWilayah();
-          }
-        }
-      });
-    }
+    }    
 
     async function simpanWilayahManual() {
       const btn = document.getElementById('btnSimpanManualWilayah');
