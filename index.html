@@ -885,7 +885,7 @@
       });
     }
 
-    function bukaKelolaWilayah() {
+    async function bukaKelolaWilayah() {
       if (userAktif.role === 'USER_DESA') {
         Swal.fire({
           icon: 'error',
@@ -910,6 +910,15 @@
       }
 
       resetMwForm();
+
+      // Beri tanda memuat di tabel terlebih dahulu
+      const tbody = document.getElementById('tbodyMasterWilayah');
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500 font-semibold animate-pulse uppercase">Mengambil data master wilayah dari database...</td></tr>`;
+      }
+
+      // Ambil data terbaru dari Supabase dan tunggu selesai
+      await loadMasterWilayahFromDB();
       tampilkanTabelMasterWilayah();
     }
 
@@ -957,23 +966,42 @@
     }
 
     function getWilayahTersaringSesuaiRole() {
+      if (!Array.isArray(rawWilayahList)) return [];
       if (userAktif.role === 'SUPER_ADMIN') return rawWilayahList;
+
       if (userAktif.role === 'ADMIN_KABUPATEN') {
-        return rawWilayahList.filter(w => String(w.kode_kab || w.kode_kabupaten).padStart(2, '0') === userAktif.kode_kab);
+        const targetKab = String(userAktif.kode_kab || '').padStart(2, '0');
+        return rawWilayahList.filter(w => {
+          const kKab = String(w.kode_kab || w.kode_kabupaten || '').padStart(2, '0');
+          return kKab === targetKab;
+        });
       }
+
       if (userAktif.role === 'ADMIN_KECAMATAN') {
-        return rawWilayahList.filter(w => String(w.kode_kec || w.kode_kecamatan).padStart(2, '0') === userAktif.kode_kec);
+        const targetKec = String(userAktif.kode_kec || '').padStart(2, '0');
+        return rawWilayahList.filter(w => {
+          const kKec = String(w.kode_kec || w.kode_kecamatan || '').padStart(2, '0');
+          return kKec === targetKec;
+        });
       }
+
       return [];
     }
 
     function tampilkanTabelMasterWilayah() {
       const tbody = document.getElementById('tbodyMasterWilayah');
       if (!tbody) return;
+
       const dataSaring = getWilayahTersaringSesuaiRole();
 
       if (!dataSaring || dataSaring.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 uppercase">Belum ada data wilayah. Silakan tambah data manual atau upload Excel.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-6 text-center text-slate-400 font-medium uppercase">
+              Belum ada data wilayah terdaftar. Silakan tambah data manual di atas atau unggah file Excel.
+            </td>
+          </tr>
+        `;
         return;
       }
 
@@ -985,21 +1013,23 @@
 
         baris += `
           <tr class="hover:bg-slate-50 transition border-b">
-            <td class="p-3 font-semibold">${(item.kecamatan || '').toUpperCase()}</td>
+            <td class="p-3 font-semibold text-slate-800">${(item.kecamatan || '').toUpperCase()}</td>
             <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdKec}</td>
             <td class="p-3 font-semibold text-emerald-800">${(item.desa || '').toUpperCase()}</td>
             <td class="p-3 font-mono text-center text-slate-500 font-bold">${kdDesa}</td>
-            <td class="p-3 font-bold">${(item.dusun || '').toUpperCase()}</td>
+            <td class="p-3 font-bold text-slate-900">${(item.dusun || '').toUpperCase()}</td>
             <td class="p-3 font-mono text-center text-slate-600 font-bold">${kdDsn}</td>
             <td class="p-3 text-center font-black">${item.jumlah_rt || 0}</td>
             <td class="p-3 text-center">
-              <button onclick="hapusWilayah('${item.id}', '${item.dusun}')" class="text-rose-600 hover:text-rose-800 font-bold uppercase text-[11px]">
+              <button type="button" onclick="hapusWilayah('${item.id}', '${item.dusun}')" 
+                      class="px-2.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold uppercase text-[10px] transition">
                 Hapus
               </button>
             </td>
           </tr>
         `;
       });
+
       tbody.innerHTML = baris;
     }
 
