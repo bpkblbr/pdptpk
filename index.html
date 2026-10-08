@@ -2018,9 +2018,9 @@
         String(w.kode_kab).padStart(2, '0') === kdKab && 
         String(w.kode_kec).padStart(2, '0') === kdKec
       );
-      const listDesaUnik = [...new Map(listDesa.map(w => [w.kode_desa, w.desa])).entries()];
-
-      listDesaUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+      const listDesaUnik = [...new Map(listDesa.map(w => [String(w.kode_desa).padStart(4, '0'), w.desa])).entries()];
+      
+      listDesaUnik.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true })).forEach(([kd, nm]) => {
         selDesa.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
       });
 
@@ -2048,9 +2048,12 @@
         String(w.kode_kec).padStart(2, '0') === kdKec && 
         String(w.kode_desa).padStart(4, '0') === kdDesa
       );
-
-      listDsn.forEach(d => {
-        selDusun.add(new Option(`${d.kode_dusun} - ${d.dusun.toUpperCase()}`, d.kode_dusun));
+      
+      listDsn.sort((a, b) => 
+        String(a.kode_dusun).localeCompare(String(b.kode_dusun), undefined, { numeric: true })
+      ).forEach(d => {
+        const cleanKd = String(d.kode_dusun).padStart(4, '0');
+        selDusun.add(new Option(`${cleanKd} - ${d.dusun.toUpperCase()}`, cleanKd));
       });
     }
 
@@ -4481,12 +4484,16 @@
         elDesa.disabled = true;
         return;
       }
+      
+      const listKodeDesa = Object.keys(dataDesa[desaKey]).sort((a, b) => 
+        a.localeCompare(b, undefined, { numeric: true })
+      );
 
-      for (let kd in dataDesa[desaKey]) {
-        elDesa.add(new Option(dataDesa[desaKey][kd].toUpperCase(), kd));
-      }
+      listKodeDesa.forEach(kd => {
+        elDesa.add(new Option(`${kd} - ${dataDesa[desaKey][kd].toUpperCase()}`, kd));
+      });
 
-      elDesa.disabled = false; // Aktifkan dropdown desa
+      elDesa.disabled = false;
     }
 
     function updateFormDusun() {
@@ -4511,15 +4518,19 @@
         elDusun.disabled = true;
         return;
       }
+      
+      const listKodeDsn = Object.keys(dataDusun[dsnKey]).sort((a, b) => 
+        a.localeCompare(b, undefined, { numeric: true })
+      );
 
-      for (let kd in dataDusun[dsnKey]) {
+      listKodeDsn.forEach(kd => {
         const item = dataDusun[dsnKey][kd];
         const opt = new Option(`${kd} - ${item.nama.toUpperCase()}`, kd);
         opt.setAttribute('data-rt', item.jumlah_rt || 1);
         elDusun.add(opt);
-      }
+      });
 
-      elDusun.disabled = false; // Aktifkan dropdown dusun
+      elDusun.disabled = false;
     }
 
     function updateFormRT() {
