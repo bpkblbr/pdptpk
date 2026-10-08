@@ -3958,10 +3958,17 @@
         for (let R = range.s.r; R <= range.e.r; ++R) {
           for (let C of colList) {
             const cell = XLSX.utils.encode_cell({ r: R, c: C });
-            if (ws[cell]) ws[cell].t = 's';
+            if (ws[cell]) {
+              ws[cell].t = 's'; // Tipe string
+              ws[cell].z = '@'; // Format cell text bawaan Excel
+            }
           }
         }
       };
+      
+      setColText(wsKeluarga, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]);
+      
+      setColText(wsAnggota, [0, 3, 10]);
 
       setColText(wsKeluarga, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13]);
       setColText(wsAnggota, [0, 3, 9]);
