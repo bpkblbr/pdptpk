@@ -1892,7 +1892,17 @@
     function bukaHalamanBNBA() {
       tampilkanLayar('tampilan_bnba');
       initFilterWilayahBnba();
-      muatDataBnbaKeluarga();
+      
+      // Kosongkan cache dan tampilkan instruksi awal di tabel
+      dataBnbaCache = [];
+      document.getElementById('labelTotalBnba').innerText = 'Total: 0 Keluarga';
+      document.getElementById('tbodyBnbaKeluarga').innerHTML = `
+        <tr>
+          <td colspan="7" class="p-8 text-center text-slate-400 font-semibold">
+            Silakan pilih <b>Kecamatan</b> dan <b>Desa/Kelurahan</b> terlebih dahulu, lalu klik tombol <b>Cari</b>.
+          </td>
+        </tr>
+      `;
     }
 
     function initFilterWilayahBnba() {
@@ -1997,10 +2007,28 @@
 
     // Ambil Data KK dari Supabase
     async function muatDataBnbaKeluarga() {
+      const kdDesa = document.getElementById('bnba_desa').value;
+
+      // Validasi wajib pilih desa
+      if (!kdDesa) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Pilih Desa Terlebih Dahulu',
+          text: 'Untuk mempercepat pencarian data, silakan pilih Kecamatan dan Desa/Kelurahan sebelum mencari!',
+          confirmButtonColor: '#0284c7'
+        });
+        return;
+      }
+
       const tbody = document.getElementById('tbodyBnbaKeluarga');
-      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-semibold">Mengambil data keluarga...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500 font-semibold animate-pulse">Mengambil data keluarga di desa terpilih...</td></tr>`;
 
       try {
+        const kdKab = document.getElementById('bnba_kab').value;
+        const kdKec = document.getElementById('bnba_kec').value;
+        const kdDusun = document.getElementById('bnba_dusun').value;
+        const noRt = document.getElementById('bnba_rt').value.trim();
+
         let query = supabaseClient.from('keluarga').select(`
           nomor_kk,
           nama_kk,
@@ -2017,18 +2045,10 @@
           kb_04_sedang_kb,
           kb_03_sedang_hamil,
           anggota_keluarga (*)
-        `).order('nomor_kk', { ascending: true });
-
-        // Terapkan batas wilayah akun
-        const kdKab = document.getElementById('bnba_kab').value;
-        const kdKec = document.getElementById('bnba_kec').value;
-        const kdDesa = document.getElementById('bnba_desa').value;
-        const kdDusun = document.getElementById('bnba_dusun').value;
-        const noRt = document.getElementById('bnba_rt').value.trim();
+        `).eq('kode_desa', kdDesa).order('nomor_kk', { ascending: true });
 
         if (kdKab) query = query.eq('kode_kab', kdKab);
         if (kdKec) query = query.eq('kode_kec', kdKec);
-        if (kdDesa) query = query.eq('kode_desa', kdDesa);
         if (kdDusun) query = query.eq('kode_dusun', kdDusun);
         if (noRt) query = query.eq('rt', noRt);
 
