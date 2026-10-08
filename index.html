@@ -2515,6 +2515,30 @@
                      class="w-full p-2.5 border rounded-xl font-semibold text-slate-800 outline-none focus:ring-1 focus:ring-emerald-500" />
             </div>
 
+            <!-- Baris: Memiliki Akta Lahir & Agama -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Memiliki Akta Lahir *</label>
+                <select id="ed_memiliki_akta_lahir" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="1" ${String(targetAnggota.memiliki_akta_lahir) === '1' ? 'selected' : ''}>1. Ya</option>
+                  <option value="2" ${String(targetAnggota.memiliki_akta_lahir) === '2' ? 'selected' : ''}>2. Tidak</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Agama *</label>
+                <select id="ed_agama" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="1" ${String(targetAnggota.agama) === '1' ? 'selected' : ''}>1. Islam</option>
+                  <option value="2" ${String(targetAnggota.agama) === '2' ? 'selected' : ''}>2. Kristen</option>
+                  <option value="3" ${String(targetAnggota.agama) === '3' ? 'selected' : ''}>3. Katolik</option>
+                  <option value="4" ${String(targetAnggota.agama) === '4' ? 'selected' : ''}>4. Hindu</option>
+                  <option value="5" ${String(targetAnggota.agama) === '5' ? 'selected' : ''}>5. Budha</option>
+                  <option value="6" ${String(targetAnggota.agama) === '6' ? 'selected' : ''}>6. Khonghucu</option>
+                  <option value="7" ${String(targetAnggota.agama) === '7' ? 'selected' : ''}>7. Penghayat Kepercayaan</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Baris: Jenis Pekerjaan & Pendidikan -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Pekerjaan *</label>
@@ -2548,7 +2572,17 @@
               </div>
             </div>
 
+            <!-- Baris: Kepesertaan JKN & Bekerja di Luar Negeri -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Kepesertaan JKN *</label>
+                <select id="ed_kepesertaan_jkn" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="1" ${String(targetAnggota.kepesertaan_jkn) === '1' ? 'selected' : ''}>PBI</option>
+                  <option value="2" ${String(targetAnggota.kepesertaan_jkn) === '2' ? 'selected' : ''}>Bukan PBI</option>
+                  <option value="3" ${String(targetAnggota.kepesertaan_jkn) === '3' ? 'selected' : ''}>Swasta</option>
+                  <option value="4" ${String(targetAnggota.kepesertaan_jkn) === '4' ? 'selected' : ''}>Tidak Memiliki</option>
+                </select>
+              </div>
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Bekerja di Luar Negeri *</label>
                 <select id="ed_bekerja_luar_negeri" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
@@ -2557,7 +2591,7 @@
                   <option value="3" ${String(targetAnggota.bekerja_luar_negeri) === '3' ? 'selected' : ''}>3. Akan (dlm 3 thn)</option>
                   <option value="4" ${String(targetAnggota.bekerja_luar_negeri) === '4' ? 'selected' : ''}>4. Tidak</option>
                 </select>
-              </div>
+              </div>           
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Mutasi Anggota</label>
                 <select id="ed_mutasi_anggota" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
@@ -4815,7 +4849,30 @@
           <div class="h-px bg-slate-300 w-1/3"></div>
         </div>
 
-        <!-- Jenis Pekerjaan & Pendidikan (2 Kolom) -->
+        <!-- Baris: Memiliki Akta Lahir & Agama -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 font-medium mb-1">Memiliki Akta Lahir *</label>
+            <select name="memiliki_akta_lahir" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="1" selected>1. Ya</option>
+              <option value="2">2. Tidak</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-700 font-medium mb-1">Agama *</label>
+            <select name="agama" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="1" selected>1. Islam</option>
+              <option value="2">2. Kristen</option>
+              <option value="3">3. Katolik</option>
+              <option value="4">4. Hindu</option>
+              <option value="5">5. Budha</option>
+              <option value="6">6. Khonghucu</option>
+              <option value="7">7. Penghayat Kepercayaan</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Baris: Jenis Pekerjaan & Pendidikan -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-700 font-medium mb-1">Jenis Pekerjaan *</label>
@@ -4849,8 +4906,17 @@
           </div>
         </div>
 
-        <!-- Bekerja di Luar Negeri & Mutasi Anggota (2 Kolom Terpisah) -->
+        <!-- Baris: Kepesertaan JKN & Bekerja di Luar Negeri -->
         <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 font-medium mb-1">Kepesertaan JKN *</label>
+            <select name="kepesertaan_jkn" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="1" selected>PBI</option>
+              <option value="2">Bukan PBI</option>
+              <option value="3">Swasta</option>
+              <option value="4">Tidak Memiliki</option>
+            </select>
+          </div>
           <div>
             <label class="block text-slate-700 font-medium mb-1">Bekerja di Luar Negeri *</label>
             <select name="bekerja_luar_negeri" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
@@ -4860,6 +4926,10 @@
               <option value="4" selected>4. Tidak</option>
             </select>
           </div>
+        </div>
+
+        <!-- Baris: Mutasi Anggota & Kesulitan Fungsional -->
+        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-700 font-medium mb-1">Mutasi Anggota</label>
             <select name="mutasi_anggota" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
@@ -4870,10 +4940,6 @@
               <option value="4">4. Anggota baru pindah datang</option>
             </select>
           </div>
-        </div>
-
-        <!-- Disabilitas & Mengurus Diri Sendiri (2 Kolom) -->
-        <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-700 font-medium mb-1">Kesulitan Fungsional</label>
             <select name="gangguan_fungsional" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
@@ -4884,15 +4950,17 @@
               <option value="4">4. Intelektual</option>
             </select>
           </div>
-          <div>
-            <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri</label>
-            <select name="kemampuan_mengurus_diri" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
-              <option value="4" selected>4. Tidak Mengalami Kesulitan</option>
-              <option value="1">1. Tidak Dapat Mengurus</option>
-              <option value="2">2. Banyak Kesulitan</option>
-              <option value="3">3. Sedikit Kesulitan</option>
-            </select>
-          </div>
+        </div>
+
+        <!-- Baris: Mengurus Diri Sendiri (1 Kolom Penuh) -->
+        <div>
+          <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri</label>
+          <select name="kemampuan_mengurus_diri" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
+            <option value="4" selected>4. Tidak Mengalami Kesulitan</option>
+            <option value="1">1. Tidak Dapat Mengurus</option>
+            <option value="2">2. Banyak Kesulitan</option>
+            <option value="3">3. Sedikit Kesulitan</option>
+          </select>
         </div>
 
         <!-- Hidden input skema database -->
@@ -7192,6 +7260,7 @@
             agama: hal.querySelector('[name="agama"]')?.value || '1',
             jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
             pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '8',
+            kepesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
             bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
             mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0',
             gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
