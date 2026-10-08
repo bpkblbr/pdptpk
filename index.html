@@ -1038,7 +1038,7 @@
             <label class="block text-xs text-slate-700 font-medium mb-1">Status Keluarga</label>
             <select id="status_keluarga" required onchange="evaluasiStatusKeluarga()" 
                     class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm text-slate-800 outline-none focus:border-blue-500">
-              <option value="1" selected>1. Keluarga Ada</option>
+              <option value="1">1. Keluarga Ada</option>
               <option value="2">2. Pindah</option>
               <option value="3">3. Seluruh Anggota Meninggal Dunia</option>
               <option value="4">4. Tidak Ditemukan</option>
@@ -4767,28 +4767,25 @@
       const no = totalHalamanAnggota;
       const container = document.getElementById('area_anggota_keluarga');
 
-      let defaultJk = "1";
-      let defaultKawin = "1";
-      let defaultHubungan = "3";
+      // Default awal dibuat KOSONG untuk semua individu
+      let defaultJk = "";
+      let defaultKawin = "";
+      let defaultHubungan = (no === 1) ? "1" : ""; // No 1 otomatis Kepala Keluarga
+      let isJkLocked = false;
+      let isKawinLocked = false;
 
-      if (no === 1) {
-        defaultJk = "1";        // Laki-laki
-        defaultKawin = "2";     // Kawin Tercatat
-        defaultHubungan = "1";  // Kepala Keluarga
-      } else if (no === 2) {
+      // Pengecualian khusus anggota ke-2 jika KK laki-laki dan kawin
+      if (no === 2) {
         const hal1 = document.getElementById('hal_anggota_1');
-        const jkKK = hal1 ? hal1.querySelector('[name="jenis_kelamin"]')?.value : "1";
-        const kawinKK = hal1 ? hal1.querySelector('[name="status_perkawinan"]')?.value : "2";
+        const jkKK = hal1 ? hal1.querySelector('[name="jenis_kelamin"]')?.value : "";
+        const kawinKK = hal1 ? hal1.querySelector('[name="status_perkawinan"]')?.value : "";
 
-        // Jika KK Laki-laki dan Kawin (Tercatat / Tidak Tercatat)
         if (jkKK === "1" && (kawinKK === "2" || kawinKK === "3")) {
-          defaultJk = "2";            // Perempuan
-          defaultKawin = kawinKK;     // Menyesuaikan KK (2 / 3)
-          defaultHubungan = "2";      // Istri
-        } else {
-          defaultJk = "2";
-          defaultKawin = "1";
-          defaultHubungan = "3";
+          defaultJk = "2";            // Otomatis Perempuan
+          defaultKawin = kawinKK;     // Mengikuti status KK (2 / 3)
+          defaultHubungan = "2";      // Otomatis Istri
+          isJkLocked = true;
+          isKawinLocked = true;
         }
       }
 
@@ -4798,7 +4795,7 @@
       hal.setAttribute('data-urutan', no);
 
       hal.innerHTML = `
-        <!-- Header Form Keluarga -->
+        <!-- Header & Info -->
         <div class="border-b pb-2 flex justify-between items-center">
           <h2 class="text-base font-bold text-slate-800">Form Keluarga</h2>
           ${no > 1 ? `
@@ -4817,31 +4814,34 @@
 
         <!-- (2) NAMA LENGKAP -->
         <div>
-          <label class="block text-slate-700 font-medium mb-1">Nama Anggota Keluarga *</label>
+          <label class="block text-slate-700 font-medium mb-1">Nama Anggota Keluarga (2) *</label>
           <input type="text" name="nama_lengkap" required oninput="perbaruiSemuaOpsiIbuKandung()" placeholder="Masukkan Nama Lengkap"
                  class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none uppercase font-semibold text-slate-800 focus:border-blue-500" />
         </div>
 
         <!-- (2) NIK -->
         <div>
-          <label class="block text-slate-700 font-medium mb-1">NIK *</label>
+          <label class="block text-slate-700 font-medium mb-1">NIK (2) *</label>
           <input type="text" name="nik" required maxlength="16" placeholder="Masukkan 16 Digit NIK"
                  class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-mono font-semibold text-slate-800 focus:border-blue-500" />
         </div>
 
-        <!-- BARIS 1: (3) JENIS KELAMIN & (4) TANGGAL LAHIR -->
+        <!-- (3) JENIS KELAMIN -->
+        <div>
+          <label class="block text-slate-700 font-medium mb-1">Jenis Kelamin (3) *</label>
+          <select name="jenis_kelamin" onchange="sinkronisasiPasanganKK(${no})" required
+                  ${isJkLocked ? 'disabled' : ''}
+                  class="w-full px-2.5 py-2.5 ${isJkLocked ? 'bg-slate-100 cursor-not-allowed' : 'bg-white'} border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
+            <option value="" ${defaultJk === "" ? 'selected' : ''}>-- PILIH JENIS KELAMIN --</option>
+            <option value="1" ${defaultJk === "1" ? 'selected' : ''}>1. Laki-laki</option>
+            <option value="2" ${defaultJk === "2" ? 'selected' : ''}>2. Perempuan</option>
+          </select>
+        </div>
+
+        <!-- (4) TANGGAL LAHIR & USIA -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Jenis Kelamin *</label>
-            <select name="jenis_kelamin" onchange="sinkronisasiPasanganKK(${no})"
-                    class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
-              <option value="1" ${defaultJk === "1" ? 'selected' : ''}>1. Laki-laki</option>
-              <option value="2" ${defaultJk === "2" ? 'selected' : ''}>2. Perempuan</option>
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-slate-700 font-medium mb-1">Tanggal Lahir *</label>
+            <label class="block text-slate-700 font-medium mb-1">Tanggal Lahir (4) *</label>
             <input type="date" name="tanggal_lahir" required onchange="hitungUsiaAnggota(this, ${no})"
                    class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500" />
           </div>
@@ -4850,42 +4850,46 @@
             <input type="text" name="display_usia" readonly placeholder="Otomatis"
                    class="w-full px-2.5 py-2.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-700 text-xs sm:text-sm outline-none cursor-not-allowed text-center" />
           </div>
-        </div>          
+        </div>
 
-        <!-- BARIS 2: (5) STATUS PERKAWINAN & (6) USIA KAWIN PERTAMA -->
+        <!-- (5) STATUS PERKAWINAN & (6) USIA KAWIN PERTAMA -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Status Perkawinan *</label>
-            <select name="status_perkawinan" onchange="evaluasiUsiaKawin(this, ${no}); sinkronisasiPasanganKK(${no});"
-                    class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
+            <label class="block text-slate-700 font-medium mb-1">Status Perkawinan (5) *</label>
+            <select name="status_perkawinan" onchange="evaluasiUsiaKawin(this, ${no}); sinkronisasiPasanganKK(${no});" required
+                    ${isKawinLocked ? 'disabled' : ''}
+                    class="w-full px-2.5 py-2.5 ${isKawinLocked ? 'bg-slate-100 cursor-not-allowed' : 'bg-white'} border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
+              <option value="" ${defaultKawin === "" ? 'selected' : ''}>-- PILIH STATUS --</option>
               <option value="1" ${defaultKawin === "1" ? 'selected' : ''}>1. Belum Kawin</option>
               <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tercatat</option>
               <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. Kawin Tidak Tercatat</option>
               <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Hidup Tercatat</option>
-              <option value="5" ${defaultKawin === "5" ? 'selected' : ''}>5. Cerai Hidup Tidak Tercatat</option>
-              <option value="6" ${defaultKawin === "6" ? 'selected' : ''}>6. Cerai Mati</option>
+              <option value="5" ${defaultKawin === "5" ? 'selected' : ''}>4. Cerai Hidup Tidak Tercatat</option>
+              <option value="6" ${defaultKawin === "6" ? 'selected' : ''}>5. Cerai Mati</option>
             </select>
           </div>
-          <div id="wrapper_usia_kawin_${no}" class="${defaultKawin === '1' ? 'opacity-40 pointer-events-none' : ''}">
-            <label class="block text-slate-700 font-medium mb-1">Usia Kawin Pertama *</label>
+          <div id="wrapper_usia_kawin_${no}" class="${(!defaultKawin || defaultKawin === '1') ? 'opacity-40 pointer-events-none' : ''}">
+            <label class="block text-slate-700 font-medium mb-1">Usia Kawin Pertama (6) *</label>
             <input type="number" name="usia_kawin_pertama" min="10" max="70" placeholder="Contoh: 21"
                    class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-semibold text-slate-800 focus:border-blue-500 text-xs sm:text-sm" />
           </div>
         </div>
 
-        <!-- BARIS 3: (7) MEMILIKI AKTA LAHIR & (8) HUBUNGAN DENGAN KEPALA KELUARGA -->
+        <!-- (7) MEMILIKI AKTA LAHIR & (8) HUBUNGAN DENGAN KK -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Memiliki Akta Lahir *</label>
-            <select name="memiliki_akta_lahir" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
-              <option value="1" selected>1. Ya</option>
+            <label class="block text-slate-700 font-medium mb-1">Memiliki Akta Lahir (7) *</label>
+            <select name="memiliki_akta_lahir" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH --</option>
+              <option value="1">1. Ya</option>
               <option value="2">2. Tidak</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Hubungan Dengan KK *</label>
-            <select name="hubungan_dengan_kk" onchange="sinkronisasiPasanganKK(${no}); perbaruiSemuaOpsiIbuKandung();" ${no === 1 ? 'disabled' : ''}
+            <label class="block text-slate-700 font-medium mb-1">Hubungan Dengan KK (8) *</label>
+            <select name="hubungan_dengan_kk" onchange="sinkronisasiPasanganKK(${no}); perbaruiSemuaOpsiIbuKandung();" required ${no === 1 ? 'disabled' : ''}
                     class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
+              <option value="" ${defaultHubungan === "" ? 'selected' : ''}>-- PILIH HUBUNGAN --</option>
               <option value="1" ${defaultHubungan === "1" ? 'selected' : ''}>1. Kepala Keluarga</option>
               <option value="2" ${defaultHubungan === "2" ? 'selected' : ''}>2. Istri</option>
               <option value="3" ${defaultHubungan === "3" ? 'selected' : ''}>3. Anak</option>
@@ -4894,18 +4898,19 @@
           </div>
         </div>
 
-        <!-- BARIS 4: (9) KODE IBU KANDUNG & (10) AGAMA -->
+        <!-- (9) KODE IBU KANDUNG & (10) AGAMA -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Kode Ibu Kandung</label>
+            <label class="block text-slate-700 font-medium mb-1">Kode Ibu Kandung (9)</label>
             <select name="kode_ibu_kandung" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none font-medium text-slate-800 text-xs sm:text-sm focus:border-blue-500">
               <option value="00">00 - LAINNYA</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Agama *</label>
-            <select name="agama" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
-              <option value="1" selected>1. Islam</option>
+            <label class="block text-slate-700 font-medium mb-1">Agama (10) *</label>
+            <select name="agama" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH AGAMA --</option>
+              <option value="1">1. Islam</option>
               <option value="2">2. Kristen</option>
               <option value="3">3. Katolik</option>
               <option value="4">4. Hindu</option>
@@ -4916,11 +4921,12 @@
           </div>
         </div>
 
-        <!-- BARIS 5: (11) JENIS PEKERJAAN & (13) PENDIDIKAN -->
+        <!-- (11) JENIS PEKERJAAN & (13) PENDIDIKAN -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Jenis Pekerjaan *</label>
-            <select name="jenis_pekerjaan" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+            <label class="block text-slate-700 font-medium mb-1">Jenis Pekerjaan (11) *</label>
+            <select name="jenis_pekerjaan" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH PEKERJAAN --</option>
               <option value="1">1. Tidak/Belum Bekerja</option>
               <option value="2">2. Petani</option>
               <option value="3">3. Nelayan</option>
@@ -4934,8 +4940,9 @@
             </select>
           </div>
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Pendidikan *</label>
-            <select name="pendidikan" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+            <label class="block text-slate-700 font-medium mb-1">Pendidikan (13) *</label>
+            <select name="pendidikan" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH PENDIDIKAN --</option>
               <option value="1">1. Tidak/Belum Sekolah</option>
               <option value="2">2. Tidak Tamat SD/Sederajat</option>
               <option value="3">3. Masih SD/Sederajat</option>
@@ -4943,28 +4950,30 @@
               <option value="5">5. Masih SLTP/Sederajat</option>
               <option value="6">6. Tamat SLTP/Sederajat</option>
               <option value="7">7. Masih SLTA/Sederajat</option>
-              <option value="8" selected>8. Tamat SLTA/Sederajat</option>
+              <option value="8">8. Tamat SLTA/Sederajat</option>
               <option value="9">9. Masih PT/Akademi</option>
               <option value="10">10. Tamat PT/Akademi</option>
             </select>
           </div>
         </div>
 
-        <!-- BARIS 6: (14) KEPESERTAAN JKN & (15) KESULITAN FUNGSIONAL -->
+        <!-- (14) KEPESERTAAN JKN & (15) KESULITAN FUNGSIONAL -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Kepesertaan JKN *</label>
-            <select name="kepesertaan_jkn" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
-              <option value="1" selected>PBI</option>
+            <label class="block text-slate-700 font-medium mb-1">Kepesertaan JKN (14) *</label>
+            <select name="kepesertaan_jkn" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH JKN --</option>
+              <option value="1">PBI</option>
               <option value="2">Bukan PBI</option>
               <option value="3">Swasta</option>
               <option value="4">Tidak Memiliki</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Kesulitan Fungsional</label>
-            <select name="gangguan_fungsional" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
-              <option value="5" selected>5. Tidak</option>
+            <label class="block text-slate-700 font-medium mb-1">Kesulitan Fungsional (15) *</label>
+            <select name="gangguan_fungsional" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
+              <option value="" selected>-- PILIH --</option>
+              <option value="5">5. Tidak</option>
               <option value="1">1. Fisik</option>
               <option value="2">2. Sensorik</option>
               <option value="3">3. Mental</option>
@@ -4973,31 +4982,33 @@
           </div>
         </div>
 
-        <!-- BARIS 7: (16) MENGURUS DIRI SENDIRI & (17) BEKERJA DI LUAR NEGERI -->
+        <!-- (16) MENGURUS DIRI SENDIRI & (17) BEKERJA DI LUAR NEGERI -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri</label>
-            <select name="kemampuan_mengurus_diri" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
-              <option value="4" selected>4. Tidak Mengalami Kesulitan</option>
+            <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri (16) *</label>
+            <select name="kemampuan_mengurus_diri" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
+              <option value="" selected>-- PILIH --</option>
+              <option value="4">4. Tidak Mengalami Kesulitan</option>
               <option value="1">1. Tidak Dapat Mengurus</option>
               <option value="2">2. Banyak Kesulitan</option>
               <option value="3">3. Sedikit Kesulitan</option>
             </select>
           </div>
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Bekerja di Luar Negeri *</label>
-            <select name="bekerja_luar_negeri" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+            <label class="block text-slate-700 font-medium mb-1">Bekerja di Luar Negeri (17) *</label>
+            <select name="bekerja_luar_negeri" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
+              <option value="" selected>-- PILIH --</option>
               <option value="1">1. Pernah</option>
               <option value="2">2. Sedang</option>
               <option value="3">3. Akan (dlm 3 thn)</option>
-              <option value="4" selected>4. Tidak</option>
+              <option value="4">4. Tidak</option>
             </select>
           </div>
         </div>
 
-        <!-- BARIS 8: (18) MUTASI ANGGOTA (PENUH) -->
+        <!-- (18) MUTASI ANGGOTA -->
         <div>
-          <label class="block text-slate-700 font-medium mb-1">Mutasi Anggota</label>
+          <label class="block text-slate-700 font-medium mb-1">Mutasi Anggota (18)</label>
           <select name="mutasi_anggota" class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
             <option value="0" selected>0. Tidak Ada Mutasi / Tetap</option>
             <option value="1">1. Anggota pindah keluar</option>
@@ -5006,21 +5017,6 @@
             <option value="4">4. Anggota baru pindah datang</option>
           </select>
         </div>
-
-        <!-- Usia Display (Hidden helper) -->
-        <input type="hidden" name="display_usia" />
-
-        <!-- Navigasi Bawah -->
-        <div class="flex justify-between items-center gap-3 pt-6 border-t">
-          <button type="button" onclick="mundurDariAnggota(${no})"
-                  class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
-            <span>← Sebelumnya</span>
-          </button>
-          <button type="button" onclick="majuDariAnggota(${no})"
-                  class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
-            <span>Selanjutnya →</span>
-          </button>
-        </div>
       `;
 
       container.appendChild(hal);
@@ -5028,10 +5024,8 @@
 
       const selectPerkawinan = hal.querySelector('[name="status_perkawinan"]');
       evaluasiUsiaKawin(selectPerkawinan, no);
-
       perbaruiSemuaOpsiIbuKandung();
 
-      // Sinkronkan penguncian anggota ke-2 jika anggota ke-1 sudah terisi
       if (no === 2) {
         sinkronisasiPasanganKK(1);
       }
@@ -5076,7 +5070,7 @@
     }
 
     function sinkronisasiPasanganKK(noUrut) {
-      if (noUrut !== 1) return; // Hanya dipicu oleh Anggota ke-1 (Kepala Keluarga)
+      if (noUrut !== 1) return;
 
       const hal1 = document.getElementById('hal_anggota_1');
       const hal2 = document.getElementById('hal_anggota_2');
@@ -5089,42 +5083,48 @@
       const selKawin2 = hal2.querySelector('[name="status_perkawinan"]');
       const selHub2 = hal2.querySelector('[name="hubungan_dengan_kk"]');
 
-      // KONDISI: No Anggota 1 Laki-laki (1) dan Kawin Tercatat (2) / Kawin Tidak Tercatat (3)
+      // Kondisi: Anggota 1 adalah Laki-laki (1) DAN Kawin Tercatat (2) / Tidak Tercatat (3)
       if (jkKK === "1" && (kawinKK === "2" || kawinKK === "3")) {
-        // 1. Kunci Jenis Kelamin Anggota ke-2 ke Perempuan
+        // Kunci Anggota 2 ke Perempuan, Kawin (mengikuti KK), dan Istri
         if (selJk2) {
           selJk2.value = "2";
           selJk2.disabled = true;
           selJk2.classList.add('bg-slate-100', 'cursor-not-allowed');
+          selJk2.classList.remove('bg-white');
         }
-
-        // 2. Kunci Status Hubungan Anggota ke-2 ke Istri
         if (selHub2) {
           selHub2.value = "2";
           selHub2.disabled = true;
           selHub2.classList.add('bg-slate-100', 'cursor-not-allowed');
+          selHub2.classList.remove('bg-white');
         }
-
-        // 3. Kunci Status Perkawinan Anggota ke-2 mengikuti Anggota ke-1 (Kawin Tercatat/Tidak Tercatat)
         if (selKawin2) {
           selKawin2.value = kawinKK;
           selKawin2.disabled = true;
           selKawin2.classList.add('bg-slate-100', 'cursor-not-allowed');
+          selKawin2.classList.remove('bg-white');
           evaluasiUsiaKawin(selKawin2, 2);
         }
       } else {
-        // Buka kembali kunci jika Anggota ke-1 belum kawin, cerai, atau wanita
-        if (selJk2) {
+        // Jika syarat belum terpenuhi (atau KK belum dipilih), buka kunci dan kembalikan ke default kosong jika sebelumnya terkunci
+        if (selJk2 && selJk2.disabled) {
           selJk2.disabled = false;
           selJk2.classList.remove('bg-slate-100', 'cursor-not-allowed');
+          selJk2.classList.add('bg-white');
+          selJk2.value = "";
         }
-        if (selHub2) {
+        if (selHub2 && selHub2.disabled) {
           selHub2.disabled = false;
           selHub2.classList.remove('bg-slate-100', 'cursor-not-allowed');
+          selHub2.classList.add('bg-white');
+          selHub2.value = "";
         }
-        if (selKawin2) {
+        if (selKawin2 && selKawin2.disabled) {
           selKawin2.disabled = false;
           selKawin2.classList.remove('bg-slate-100', 'cursor-not-allowed');
+          selKawin2.classList.add('bg-white');
+          selKawin2.value = "";
+          evaluasiUsiaKawin(selKawin2, 2);
         }
       }
     }
@@ -5216,22 +5216,28 @@
       const pageEl = document.getElementById(`hal_anggota_${noUrut}`);
       const nama = pageEl.querySelector('[name="nama_lengkap"]').value.trim();
       const nik = pageEl.querySelector('[name="nik"]').value.trim();
+      const jk = pageEl.querySelector('[name="jenis_kelamin"]').value;
       const tgl = pageEl.querySelector('[name="tanggal_lahir"]').value;
       const statusKawin = pageEl.querySelector('[name="status_perkawinan"]').value;
       const usiaKawin = pageEl.querySelector('[name="usia_kawin_pertama"]')?.value;
+      const hub = pageEl.querySelector('[name="hubungan_dengan_kk"]').value;
+      const akta = pageEl.querySelector('[name="memiliki_akta_lahir"]').value;
+      const agama = pageEl.querySelector('[name="agama"]').value;
+      const kerja = pageEl.querySelector('[name="jenis_pekerjaan"]').value;
+      const didik = pageEl.querySelector('[name="pendidikan"]').value;
+      const jkn = pageEl.querySelector('[name="kepesertaan_jkn"]').value;
 
-      // Validasi Isian Wajib
-      if (!nama || !nik || !tgl) {
+      if (!nama || !nik || !tgl || !jk || !statusKawin || !hub) {
         Swal.fire({
           icon: 'warning',
-          title: 'Isian Wajib',
-          text: 'Lengkapi Nama, NIK, dan Tanggal Lahir pada anggota ini terlebih dahulu!',
+          title: 'Isian Wajib Belum Lengkap',
+          text: 'Nama, NIK, Jenis Kelamin, Tanggal Lahir, Status Perkawinan, dan Hubungan dengan KK wajib diisi!',
           confirmButtonColor: '#059669'
         });
         return;
       }
 
-      if (statusKawin !== '1' && !usiaKawin) {
+      if (['2', '3', '4', '5', '6'].includes(statusKawin) && !usiaKawin) {
         Swal.fire({
           icon: 'warning',
           title: 'Usia Kawin Pertama',
@@ -5241,7 +5247,17 @@
         return;
       }
 
-      // Jika ini anggota terakhir, tampilkan popup modal persis seperti aplikasi KRS
+      if (!akta || !agama || !kerja || !didik || !jkn) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Isian Belum Lengkap',
+          text: 'Silakan pilih Akta Lahir, Agama, Jenis Pekerjaan, Pendidikan, dan Kepesertaan JKN terlebih dahulu!',
+          confirmButtonColor: '#059669'
+        });
+        return;
+      }
+
+      // Dialog konfirmasi tambah individu / lanjut ke KB
       if (noUrut === totalHalamanAnggota) {
         Swal.fire({
           title: `
@@ -5256,14 +5272,12 @@
               </p>
               
               <div class="flex flex-col gap-2.5 pt-2">
-                <!-- Tombol Hijau: Ya, Tambah Individu -->
                 <button type="button" id="btnYaTambahIndividu"
                         class="w-full py-3 bg-[#48bb78] hover:bg-[#38a169] active:scale-95 text-white font-bold rounded-2xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
                   <span>👤+</span>
                   <span>Ya, Tambah Individu</span>
                 </button>
                 
-                <!-- Tombol Putih: Tidak -->
                 <button type="button" id="btnTidakLanjutKB"
                         class="w-full py-3 bg-slate-50 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold border border-slate-200 rounded-2xl shadow-sm transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
                   <span>Tidak</span>
@@ -5284,14 +5298,12 @@
             closeButton: 'text-slate-400 hover:text-slate-700 focus:outline-none'
           },
           didOpen: () => {
-            // Action saat tombol 'Ya, Tambah Individu' ditekan
             document.getElementById('btnYaTambahIndividu').addEventListener('click', () => {
               Swal.close();
               tambahHalamanAnggotaBaru();
               bukaHalamanAnggota(totalHalamanAnggota);
             });
 
-            // Action saat tombol 'Tidak ->' ditekan
             document.getElementById('btnTidakLanjutKB').addEventListener('click', () => {
               Swal.close();
               pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
@@ -5301,7 +5313,6 @@
           }
         });
       } else {
-        // Jika masih ada anggota berikutnya, lanjut ke lembar berikutnya
         bukaHalamanAnggota(noUrut + 1);
       }
     }
