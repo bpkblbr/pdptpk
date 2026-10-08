@@ -4323,9 +4323,16 @@
       const elProv = document.getElementById('provinsi');
       if (!elProv) return;
       elProv.innerHTML = '<option value="">-- PILIH PROVINSI --</option>';
-      for (let kd in dataProvinsi) {
-        elProv.add(new Option(dataProvinsi[kd].toUpperCase(), kd));
-      }
+
+      // Urutkan kode provinsi secara numerik (misal: 51, 52, ...)
+      const listKodeProv = Object.keys(dataProvinsi).sort((a, b) => 
+        a.localeCompare(b, undefined, { numeric: true })
+      );
+
+      listKodeProv.forEach(kd => {
+        elProv.add(new Option(`${kd} - ${dataProvinsi[kd].toUpperCase()}`, kd));
+      });
+
       inisialisasiWilayahSesuaiRole();
     }
     
@@ -4441,16 +4448,20 @@
         return;
       }
 
-      for (let kd in dataKabupaten[kdProv]) {
-        elKab.add(new Option(dataKabupaten[kdProv][kd].toUpperCase(), kd));
-      }
+      // Urutkan kode kabupaten secara numerik (01, 02, ...)
+      const listKodeKab = Object.keys(dataKabupaten[kdProv]).sort((a, b) => 
+        a.localeCompare(b, undefined, { numeric: true })
+      );
+
+      listKodeKab.forEach(kd => {
+        elKab.add(new Option(`${kd} - ${dataKabupaten[kdProv][kd].toUpperCase()}`, kd));
+      });
       
-      elKab.disabled = false; // Buka kunci kabupaten
+      elKab.disabled = false;
 
       // Auto pilih jika hanya ada 1 kabupaten
-      const listKab = Object.keys(dataKabupaten[kdProv]);
-      if (listKab.length === 1 && userAktif.role === 'SUPER_ADMIN') {
-        elKab.value = listKab[0];
+      if (listKodeKab.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKab.value = listKodeKab[0];
         updateFormKecamatan();
       }
     }
@@ -4470,16 +4481,20 @@
         return;
       }
 
-      for (let kd in dataKecamatan[kdKab]) {
-        elKec.add(new Option(dataKecamatan[kdKab][kd].toUpperCase(), kd));
-      }
+      // Urutkan kode kecamatan secara numerik (01, 02, ..., 08, 13, ...)
+      const listKodeKec = Object.keys(dataKecamatan[kdKab]).sort((a, b) => 
+        a.localeCompare(b, undefined, { numeric: true })
+      );
 
-      elKec.disabled = false; // Pastikan kecamatan selalu aktif bisa dipilih
+      listKodeKec.forEach(kd => {
+        elKec.add(new Option(`${kd} - ${dataKecamatan[kdKab][kd].toUpperCase()}`, kd));
+      });
+
+      elKec.disabled = false;
 
       // Auto pilih jika hanya ada 1 kecamatan
-      const listKec = Object.keys(dataKecamatan[kdKab]);
-      if (listKec.length === 1 && userAktif.role === 'SUPER_ADMIN') {
-        elKec.value = listKec[0];
+      if (listKodeKec.length === 1 && userAktif.role === 'SUPER_ADMIN') {
+        elKec.value = listKodeKec[0];
         updateFormDesa();
       }
     }
