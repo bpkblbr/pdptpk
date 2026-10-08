@@ -275,7 +275,7 @@
         <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
       </div>
 
-      <div onclick="Swal.fire('Informasi', 'Modul Data BNBA sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="bukaHalamanBNBA()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -295,6 +295,215 @@
         <p class="text-xs text-slate-500 leading-relaxed">Cari data anggota keluarga dan PUS berdasarkan NIK atau No. KK.</p>
       </div>
     </div>
+  </div>
+
+  <!-- ========================================================
+       5. HALAMAN DATA BNBA (MASTER-DETAIL GAYA REKAP)
+       ======================================================== -->
+  <div id="tampilan_bnba" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Header Halaman BNBA -->
+    <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div>
+        <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
+          &larr; KEMBALI KE DASHBOARD
+        </button>
+        <h1 class="text-lg font-black text-slate-800 uppercase">Rekapitulasi Data Keluarga (BNBA)</h1>
+      </div>
+      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnba">Otoritas Wilayah</span>
+    </div>
+
+    <!-- PANEL PENCARIAN & FILTER WILAYAH (REKAP 1) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
+      <div class="bg-[#2b4c80] text-white px-4 py-2.5 font-bold flex justify-between items-center cursor-pointer">
+        <span>Pencarian</span>
+        <span>▲</span>
+      </div>
+
+      <div class="p-4 space-y-3">
+        <!-- Baris Periode -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Periode</label>
+            <div class="grid grid-cols-2 gap-2">
+              <select id="bnba_filter_bulan" class="p-2 border rounded-lg bg-white outline-none">
+                <option value="10" selected>Oktober</option>
+              </select>
+              <select id="bnba_filter_tahun" class="p-2 border rounded-lg bg-white outline-none">
+                <option value="2026" selected>2026</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Nama Kepala Keluarga</label>
+            <input type="text" id="bnba_cari_nama" placeholder="Cari Nama KK..." class="w-full p-2 border rounded-lg uppercase outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">NIK</label>
+          <input type="text" id="bnba_cari_nik" placeholder="Cari 16 Digit NIK..." class="w-full p-2 border rounded-lg font-mono outline-none" />
+        </div>
+
+        <!-- Filter Wilayah Berjenjang & Terkunci Otomatis -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Provinsi</label>
+            <select id="bnba_prov" disabled class="w-full p-2 border rounded-lg bg-slate-100 font-bold text-slate-700 outline-none">
+              <option value="52">52 - NUSA TENGGARA BARAT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Kab/Kota</label>
+            <select id="bnba_kab" onchange="saatBnbaKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
+              <option value="">-- SEMUA KABUPATEN --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Kecamatan</label>
+            <select id="bnba_kec" onchange="saatBnbaKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+              <option value="">-- SEMUA KECAMATAN --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Desa/Kel</label>
+            <select id="bnba_desa" onchange="saatBnbaDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+              <option value="">-- SEMUA DESA --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Dusun/RW</label>
+            <select id="bnba_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
+              <option value="">-- SEMUA DUSUN --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">RT</label>
+            <input type="text" id="bnba_rt" placeholder="Contoh: 001" class="w-full p-2 border rounded-lg outline-none font-mono" />
+          </div>
+        </div>
+
+        <!-- Tombol Filter -->
+        <div class="flex flex-wrap gap-2 pt-2 border-t">
+          <button type="button" onclick="muatDataBnbaKeluarga()" 
+                  class="px-6 py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
+            🔍 Cari
+          </button>
+          <button type="button" onclick="downloadExcelKeluargaTerisi()" 
+                  class="px-5 py-2 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
+            📄 Cetak PDF
+          </button>
+          <button type="button" onclick="downloadExcelKeluargaTerisi()" 
+                  class="px-5 py-2 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
+            📊 Cetak Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABEL MASTER: REKAP 1 (DAFTAR KEPALA KELUARGA) -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
+      <div class="p-3 border-b bg-slate-50 font-bold text-slate-700 uppercase flex justify-between items-center">
+        <span>📋 Data Keluarga & Individu</span>
+        <span id="labelTotalBnba" class="text-slate-500 font-semibold">Total: 0 Keluarga</span>
+      </div>
+
+      <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+        <table class="w-full text-left border-collapse text-[11px]">
+          <thead class="bg-slate-100 text-slate-600 uppercase font-bold sticky top-0 border-b">
+            <tr>
+              <th class="p-2.5 text-center w-12">No</th>
+              <th class="p-2.5 text-center w-16">Aksi</th>
+              <th class="p-2.5">Nama KK</th>
+              <th class="p-2.5 font-mono">NIK</th>
+              <th class="p-2.5 font-mono">Kode Keluarga</th>
+              <th class="p-2.5 text-center">Tanggal Lahir</th>
+              <th class="p-2.5 text-center">Usia</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyBnbaKeluarga" class="divide-y divide-slate-100">
+            <tr><td colspan="7" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MODAL POPUP DETAIL: REKAP 2 (ANGGOTA KELUARGA & STATUS POKTAN) -->
+    <div id="modalDetailBnba" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+      <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto text-xs">
+        
+        <div class="flex justify-between items-center border-b pb-3">
+          <div>
+            <h3 class="text-sm sm:text-base font-black text-slate-800 uppercase flex items-center gap-2">
+              <span>👨‍👩‍👧‍👦 Detail Anggota Keluarga & Potensi</span>
+            </h3>
+            <p id="subDetailKeluarga" class="text-[11px] text-slate-500 font-semibold"></p>
+          </div>
+          <button type="button" onclick="tutupModalDetailBnba()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl px-2">&times;</button>
+        </div>
+
+        <!-- Tabel Anggota Keluarga (Bisa Edit & Hapus Masing-Masing Anggota) -->
+        <div class="overflow-x-auto border rounded-xl">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-slate-100 text-slate-600 uppercase font-bold border-b">
+              <tr>
+                <th class="p-2.5 text-center w-20">Aksi</th>
+                <th class="p-2.5">Nama</th>
+                <th class="p-2.5 font-mono">NIK</th>
+                <th class="p-2.5 text-center">Hub. Dgn KK</th>
+                <th class="p-2.5 text-center">Tanggal Lahir</th>
+                <th class="p-2.5 text-center">Usia</th>
+                <th class="p-2.5 text-center">Mutasi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDetailAnggota" class="divide-y divide-slate-100">
+              <!-- Render otomatis baris anggota -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Informasi Detail Keluarga & Penapisan POKTAN Sesuai Rekap 2.png -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div><span class="text-slate-500 font-semibold">Jumlah Anggota:</span> <b id="det_jml_anak">-</b></div>
+            <div><span class="text-slate-500 font-semibold">Kode Keluarga:</span> <b id="det_kode_keluarga" class="font-mono text-emerald-700">-</b></div>
+            <div><span class="text-slate-500 font-semibold">Status PUS:</span> <span id="det_status_pus" class="font-bold">-</span></div>
+            <div><span class="text-slate-500 font-semibold">Status Hamil:</span> <span id="det_status_hamil" class="font-bold">-</span></div>
+          </div>
+
+          <div class="border-t pt-3 space-y-2">
+            <h4 class="font-black text-slate-700 text-center uppercase tracking-wide text-xs">Sasaran Dan Kesertaan Dalam POKTAN</h4>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-[11px]">
+              <div class="bg-white p-2.5 rounded-xl border">
+                <p class="font-bold text-slate-800">BKB (Bina Keluarga Balita)</p>
+                <p>Kel. Sasaran: <b id="det_bkb_sasaran">Tidak</b> | Kesertaan: <b id="det_bkb_ikut">Tidak</b></p>
+              </div>
+              <div class="bg-white p-2.5 rounded-xl border">
+                <p class="font-bold text-slate-800">BKR (Bina Keluarga Remaja)</p>
+                <p>Kel. Sasaran: <b id="det_bkr_sasaran">Tidak</b> | Kesertaan: <b id="det_bkr_ikut">Tidak</b></p>
+              </div>
+              <div class="bg-white p-2.5 rounded-xl border">
+                <p class="font-bold text-slate-800">BKL (Bina Keluarga Lansia)</p>
+                <p>Kel. Sasaran: <b id="det_bkl_sasaran">Tidak</b> | Kesertaan: <b id="det_bkl_ikut">Tidak</b></p>
+              </div>
+              <div class="bg-white p-2.5 rounded-xl border">
+                <p class="font-bold text-slate-800">UPPKA</p>
+                <p>Kesertaan: <b id="det_uppka_ikut">Tidak</b></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <!-- ========================================================
@@ -1136,8 +1345,8 @@
       window.scrollTo(0, 0);
     }
 
-    function tampilkanLayar(layarId) {
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah'];
+    function tampilkanLayar(layarId) {      
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_bnba'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('aktif');
@@ -1625,6 +1834,395 @@
         populateDropdownFilterWilayah();
         tampilkanTabelMasterWilayah();
       }
+    }
+
+    // ========================================================
+    // MODUL DATA BNBA DENGAN LOCK WILAYAH SESUAI ROLE LOGIN
+    // ========================================================
+    let dataBnbaCache = [];
+
+    function bukaHalamanBNBA() {
+      tampilkanLayar('tampilan_bnba');
+      initFilterWilayahBnba();
+      muatDataBnbaKeluarga();
+    }
+
+    function initFilterWilayahBnba() {
+      const selKab = document.getElementById('bnba_kab');
+      const selKec = document.getElementById('bnba_kec');
+      const selDesa = document.getElementById('bnba_desa');
+      const selDusun = document.getElementById('bnba_dusun');
+
+      selKab.innerHTML = '<option value="">-- SEMUA KABUPATEN --</option>';
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+      selDusun.innerHTML = '<option value="">-- SEMUA DUSUN --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
+      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      // PENGUNCIAN OTOMATIS SESUAI ROLE
+      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+        selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
+        selKab.disabled = true;
+        saatBnbaKabBerubah();
+      } else {
+        selKab.disabled = false;
+      }
+    }
+
+    function saatBnbaKabBerubah() {
+      const kdKab = document.getElementById('bnba_kab').value;
+      const selKec = document.getElementById('bnba_kec');
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+
+      if (!kdKab) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKec = dataAkses.filter(w => String(w.kode_kab).padStart(2, '0') === kdKab);
+      const listKecUnik = [...new Map(listKec.map(w => [w.kode_kec, w.kecamatan])).entries()];
+
+      listKecUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKec.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+        saatBnbaKecBerubah();
+      } else {
+        selKec.disabled = false;
+      }
+    }
+
+    function saatBnbaKecBerubah() {
+      const kdKab = document.getElementById('bnba_kab').value;
+      const kdKec = document.getElementById('bnba_kec').value;
+      const selDesa = document.getElementById('bnba_desa');
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      if (!kdKec) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec
+      );
+      const listDesaUnik = [...new Map(listDesa.map(w => [w.kode_desa, w.desa])).entries()];
+
+      listDesaUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selDesa.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'USER_DESA') {
+        selDesa.value = String(userAktif.kode_desa || '').padStart(4, '0');
+        selDesa.disabled = true;
+        saatBnbaDesaBerubah();
+      } else {
+        selDesa.disabled = false;
+      }
+    }
+
+    function saatBnbaDesaBerubah() {
+      const kdKab = document.getElementById('bnba_kab').value;
+      const kdKec = document.getElementById('bnba_kec').value;
+      const kdDesa = document.getElementById('bnba_desa').value;
+      const selDusun = document.getElementById('bnba_dusun');
+      selDusun.innerHTML = '<option value="">-- SEMUA DUSUN --</option>';
+
+      if (!kdDesa) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDsn = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec && 
+        String(w.kode_desa).padStart(4, '0') === kdDesa
+      );
+
+      listDsn.forEach(d => {
+        selDusun.add(new Option(`${d.kode_dusun} - ${d.dusun.toUpperCase()}`, d.kode_dusun));
+      });
+    }
+
+    // Ambil Data KK dari Supabase
+    async function muatDataBnbaKeluarga() {
+      const tbody = document.getElementById('tbodyBnbaKeluarga');
+      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-semibold">Mengambil data keluarga...</td></tr>`;
+
+      try {
+        let query = supabaseClient.from('keluarga').select(`
+          nomor_kk,
+          nama_kk,
+          nik_kk,
+          kode_prov,
+          kode_kab,
+          kode_kec,
+          kode_desa,
+          kode_dusun,
+          rt,
+          kode_rumah,
+          no_urut_keluarga,
+          status_keluarga,
+          kb_04_sedang_kb,
+          kb_03_sedang_hamil,
+          anggota_keluarga (*)
+        `).order('nomor_kk', { ascending: true });
+
+        // Terapkan batas wilayah akun
+        const kdKab = document.getElementById('bnba_kab').value;
+        const kdKec = document.getElementById('bnba_kec').value;
+        const kdDesa = document.getElementById('bnba_desa').value;
+        const kdDusun = document.getElementById('bnba_dusun').value;
+        const noRt = document.getElementById('bnba_rt').value.trim();
+
+        if (kdKab) query = query.eq('kode_kab', kdKab);
+        if (kdKec) query = query.eq('kode_kec', kdKec);
+        if (kdDesa) query = query.eq('kode_desa', kdDesa);
+        if (kdDusun) query = query.eq('kode_dusun', kdDusun);
+        if (noRt) query = query.eq('rt', noRt);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        dataBnbaCache = data || [];
+        renderTabelBnbaKeluarga();
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-500 font-bold">Gagal memuat: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderTabelBnbaKeluarga() {
+      const tbody = document.getElementById('tbodyBnbaKeluarga');
+      const keywordNama = (document.getElementById('bnba_cari_nama').value || '').toLowerCase().trim();
+      const keywordNik = (document.getElementById('bnba_cari_nik').value || '').trim();
+
+      let data = dataBnbaCache;
+      if (keywordNama) data = data.filter(k => (k.nama_kk || '').toLowerCase().includes(keywordNama));
+      if (keywordNik) data = data.filter(k => (k.nik_kk || '').includes(keywordNik));
+
+      document.getElementById('labelTotalBnba').innerText = `Total: ${data.length} Keluarga`;
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-semibold uppercase">Tidak ada data keluarga yang sesuai.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      data.forEach((k, idx) => {
+        // Ambil data KK dari relasi anggota_keluarga
+        const listAng = k.anggota_keluarga || [];
+        const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
+
+        const tglLahir = kepala.tanggal_lahir ? formatTglIndo(kepala.tanggal_lahir) : '-';
+        const usia = kepala.tanggal_lahir ? hitungUsiaTahun(kepala.tanggal_lahir) : '-';
+        const kodeKeluarga = `${k.kode_prov || '52'}${k.kode_kab || '01'}${k.kode_kec || '08'}${k.kode_desa || '2001'}${k.kode_dusun || '0100'} ${k.rt || '001'}${k.kode_rumah || '001'}${k.no_urut_keluarga || '001'}`;
+
+        html += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 text-center">
+              <!-- IKON PENGGANTI KACA PEMBESAR: IKON BUKA DETAIL KELUARGA -->
+              <button type="button" onclick="bukaDetailKeluargaBnba('${k.nomor_kk}')" 
+                      title="Buka Rincian Anggota Keluarga"
+                      class="px-2.5 py-1.5 bg-[#205493] hover:bg-[#163f73] active:scale-95 text-white rounded-lg font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm transition">
+                <span>👨‍👩‍👧‍👦</span>
+                <span>Rincian</span>
+              </button>
+            </td>
+            <td class="p-2.5 font-bold text-slate-800 uppercase">${k.nama_kk || '-'}</td>
+            <td class="p-2.5 font-mono text-slate-600 font-semibold">${k.nik_kk || '-'}</td>
+            <td class="p-2.5 font-mono font-bold text-slate-700">${kodeKeluarga}</td>
+            <td class="p-2.5 text-center text-slate-600">${tglLahir}</td>
+            <td class="p-2.5 text-center font-bold text-slate-700">${usia}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // Buka Modal Rekap 2: Detail Anggota & Penapisan POKTAN
+    function bukaDetailKeluargaBnba(nomorKK) {
+      const kel = dataBnbaCache.find(k => k.nomor_kk === nomorKK);
+      if (!kel) return;
+
+      document.getElementById('modalDetailBnba').classList.remove('hidden');
+      document.getElementById('subDetailKeluarga').innerText = `KK: ${kel.nomor_kk} | Nama KK: ${kel.nama_kk}`;
+
+      const listAng = kel.anggota_keluarga || [];
+      const kodeKeluarga = `${kel.kode_prov || '52'}${kel.kode_kab || '01'}${kel.kode_kec || '08'}${kel.kode_desa || '2001'}${kel.kode_dusun || '0100'} ${kel.rt || '001'}${kel.kode_rumah || '001'}${kel.no_urut_keluarga || '001'}`;
+
+      document.getElementById('det_jml_anak').innerText = `${listAng.length} Jiwa`;
+      document.getElementById('det_kode_keluarga').innerText = kodeKeluarga;
+      document.getElementById('det_status_pus').innerText = kel.kb_04_sedang_kb ? 'Ya (Aktif KB)' : 'Bukan / Tidak KB';
+      document.getElementById('det_status_hamil').innerText = kel.kb_03_sedang_hamil ? 'Ya' : 'Tidak';
+
+      // Evaluasi Sasaran Poktan otomatis
+      const punyaBalita = listAng.some(a => a.tanggal_lahir && hitungUsiaTahun(a.tanggal_lahir) <= 5);
+      const punyaRemaja = listAng.some(a => a.tanggal_lahir && hitungUsiaTahun(a.tanggal_lahir) >= 10 && hitungUsiaTahun(a.tanggal_lahir) <= 24);
+      const punyaLansia = listAng.some(a => a.tanggal_lahir && hitungUsiaTahun(a.tanggal_lahir) >= 60);
+
+      document.getElementById('det_bkb_sasaran').innerText = punyaBalita ? 'Ya' : 'Tidak';
+      document.getElementById('det_bkr_sasaran').innerText = punyaRemaja ? 'Ya' : 'Tidak';
+      document.getElementById('det_bkl_sasaran').innerText = punyaLansia ? 'Ya' : 'Tidak';
+
+      // Render Tabel Anggota
+      const tbody = document.getElementById('tbodyDetailAnggota');
+      let htmlAng = '';
+
+      listAng.sort((a,b) => (a.nomor_anggota_keluarga || 0) - (b.nomor_anggota_keluarga || 0)).forEach(a => {
+        let labelHub = 'Lainnya';
+        if (String(a.hubungan_dengan_kk) === '1') labelHub = 'KK';
+        else if (String(a.hubungan_dengan_kk) === '2') labelHub = 'Istri';
+        else if (String(a.hubungan_dengan_kk) === '3') labelHub = 'Anak';
+
+        const usia = a.tanggal_lahir ? hitungUsiaTahun(a.tanggal_lahir) : '-';
+        const tgl = a.tanggal_lahir ? formatTglIndo(a.tanggal_lahir) : '-';
+
+        htmlAng += `
+          <tr class="hover:bg-slate-50 border-b">
+            <td class="p-2 text-center">
+              <div class="flex items-center justify-center gap-1">
+                <button type="button" onclick="editIndividuAnggota('${a.id}')" 
+                        class="p-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-[10px] font-bold shadow-sm" title="Edit Anggota">
+                  ✏️
+                </button>
+                <button type="button" onclick="hapusIndividuAnggota('${a.id}', '${a.nama_lengkap}', '${kel.nomor_kk}')" 
+                        class="p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-md text-[10px] font-bold shadow-sm" title="Hapus Anggota">
+                  🗑️
+                </button>
+              </div>
+            </td>
+            <td class="p-2 font-bold text-slate-800">${a.nama_lengkap}</td>
+            <td class="p-2 font-mono text-slate-600 font-semibold">${a.nik}</td>
+            <td class="p-2 text-center font-bold text-slate-700">${labelHub}</td>
+            <td class="p-2 text-center text-slate-600">${tgl}</td>
+            <td class="p-2 text-center font-bold text-slate-800">${usia}</td>
+            <td class="p-2 text-center text-slate-500">${a.mutasi_anggota && a.mutasi_anggota !== '0' ? 'Ada' : '-'}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = htmlAng;
+    }
+
+    function tutupModalDetailBnba() {
+      document.getElementById('modalDetailBnba').classList.add('hidden');
+    }
+
+    // Fitur Edit Individu Anggota Keluarga
+    async function editIndividuAnggota(idAnggota) {
+      // Cari record anggota
+      let targetAnggota = null;
+      let targetKK = null;
+      for (let k of dataBnbaCache) {
+        const found = (k.anggota_keluarga || []).find(a => String(a.id) === String(idAnggota));
+        if (found) {
+          targetAnggota = found;
+          targetKK = k;
+          break;
+        }
+      }
+
+      if (!targetAnggota) return;
+
+      Swal.fire({
+        title: 'Edit Anggota Keluarga',
+        html: `
+          <div class="text-left space-y-3 pt-2 text-xs">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Nama Lengkap</label>
+              <input type="text" id="swal_edit_nama" value="${targetAnggota.nama_lengkap || ''}" class="w-full p-2 border rounded-lg uppercase" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">NIK</label>
+              <input type="text" id="swal_edit_nik" maxlength="16" value="${targetAnggota.nik || ''}" class="w-full p-2 border rounded-lg font-mono" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Tanggal Lahir</label>
+              <input type="date" id="swal_edit_tgl" value="${targetAnggota.tanggal_lahir || ''}" class="w-full p-2 border rounded-lg" />
+            </div>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '💾 Simpan Perubahan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#059669',
+        preConfirm: () => {
+          const nama = document.getElementById('swal_edit_nama').value.trim().toUpperCase();
+          const nik = document.getElementById('swal_edit_nik').value.trim();
+          const tgl = document.getElementById('swal_edit_tgl').value;
+          if (!nama || !nik || !tgl) {
+            Swal.showValidationMessage('Nama, NIK, dan Tanggal Lahir wajib diisi!');
+            return false;
+          }
+          return { nama_lengkap: nama, nik, tanggal_lahir: tgl };
+        }
+      }).then(async (result) => {
+        if (result.isConfirmed && result.value) {
+          Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          try {
+            const { error } = await supabaseClient
+              .from('anggota_keluarga')
+              .update(result.value)
+              .eq('id', idAnggota);
+
+            if (error) throw error;
+
+            Swal.fire('Berhasil', 'Data anggota keluarga berhasil diperbarui!', 'success');
+            await muatDataBnbaKeluarga();
+            bukaDetailKeluargaBnba(targetKK.nomor_kk);
+          } catch (err) {
+            Swal.fire('Gagal', err.message, 'error');
+          }
+        }
+      });
+    }
+
+    // Fitur Hapus Individu Anggota Keluarga
+    async function hapusIndividuAnggota(idAnggota, nama, nomorKK) {
+      Swal.fire({
+        title: 'Hapus Anggota?',
+        text: `Apakah Anda yakin ingin menghapus [${nama}] dari kartu keluarga?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus'
+      }).then(async (res) => {
+        if (res.isConfirmed) {
+          try {
+            const { error } = await supabaseClient.from('anggota_keluarga').delete().eq('id', idAnggota);
+            if (error) throw error;
+
+            Swal.fire('Terhapus', `Anggota ${nama} berhasil dihapus.`, 'success');
+            await muatDataBnbaKeluarga();
+            bukaDetailKeluargaBnba(nomorKK);
+          } catch (err) {
+            Swal.fire('Gagal', err.message, 'error');
+          }
+        }
+      });
+    }
+
+    // Helper Tanggal & Usia
+    function formatTglIndo(tglStr) {
+      if (!tglStr) return '-';
+      const p = tglStr.split('-');
+      return `${p[2]}-${p[1]}-${p[0]}`;
+    }
+
+    function hitungUsiaTahun(tglStr) {
+      if (!tglStr) return 0;
+      const tglLahir = new Date(tglStr);
+      const hariIni = new Date();
+      let usia = hariIni.getFullYear() - tglLahir.getFullYear();
+      const m = hariIni.getMonth() - tglLahir.getMonth();
+      if (m < 0 || (m === 0 && hariIni.getDate() < tglLahir.getDate())) usia--;
+      return usia >= 0 ? usia : 0;
     }
 
     function resetMwForm() {
