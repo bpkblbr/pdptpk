@@ -265,14 +265,14 @@
         </div>
       </div>
 
-      <div onclick="Swal.fire('Informasi', 'Modul Rekapitulasi sedang dalam tahap persiapan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+      <div onclick="bukaHalamanRekapitulasi()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
         <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB dan status risiko keluarga berjenjang.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB, demografi sasaran, dan potensi keluarga berjenjang.</p>
       </div>
 
       <div onclick="bukaHalamanBNBA()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
@@ -627,6 +627,207 @@
         </div>     
 
       </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
+       HALAMAN REKAPITULASI BERJENJANG (DEMOGRAFI, KB & KRS)
+       ======================================================== -->
+  <div id="tampilan_rekapitulasi" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Header Rekapitulasi -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200">
+      <div>
+        <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
+          &larr; KEMBALI KE DASHBOARD
+        </button>
+        <h1 class="text-lg sm:text-xl font-black text-slate-800 uppercase">Rekapitulasi Agregat Pendataan Keluarga</h1>
+        <p class="text-xs text-slate-500 font-medium">Laporan capaian kepesertaan KB, profil demografi sasaran, dan indikator keluarga berjenjang.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="downloadExcelRekapitulasi()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition uppercase flex items-center gap-1.5">
+          📥 Unduh Excel Rekap
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Filter Wilayah & Periode -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kabupaten / Kota</label>
+          <select id="rekap_kab" onchange="saatRekapKabBerubah()" class="w-full p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA KABUPATEN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kecamatan</label>
+          <select id="rekap_kec" onchange="saatRekapKecBerubah()" class="w-full p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA KECAMATAN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kelurahan / Desa</label>
+          <select id="rekap_desa" class="w-full p-2 border rounded-lg bg-white outline-none font-semibold">
+            <option value="">-- SEMUA DESA --</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button type="button" onclick="muatDataRekapitulasi()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-lg shadow transition uppercase flex items-center justify-center gap-1.5">
+            🔍 Tampilkan Rekap
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KARTU INDIKATOR KPI UTAMA (Ringkasan Cepat) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Total Keluarga</p>
+        <p id="kpi_total_kk" class="text-lg font-black text-slate-800">0</p>
+        <span class="text-[10px] text-slate-400">KK Terdata</span>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Total Jiwa</p>
+        <p id="kpi_total_jiwa" class="text-lg font-black text-indigo-700">0</p>
+        <span class="text-[10px] text-slate-400">Individu</span>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Pasangan Usia Subur</p>
+        <p id="kpi_total_pus" class="text-lg font-black text-emerald-700">0</p>
+        <span class="text-[10px] text-slate-400">PUS</span>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Peserta KB Aktif</p>
+        <p id="kpi_total_pa" class="text-lg font-black text-teal-700">0</p>
+        <span id="kpi_persen_pa" class="text-[10px] font-bold text-teal-600">0% dari PUS</span>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Unmet Need</p>
+        <p id="kpi_total_unmet" class="text-lg font-black text-rose-600">0</p>
+        <span id="kpi_persen_unmet" class="text-[10px] font-bold text-rose-500">0% dari PUS</span>
+      </div>
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-0.5">
+        <p class="text-[10px] font-bold text-slate-500 uppercase">Baduta / Balita</p>
+        <p class="text-lg font-black text-amber-600"><span id="kpi_baduta">0</span> / <span id="kpi_balita">0</span></p>
+        <span class="text-[10px] text-slate-400">Sasaran Anak</span>
+      </div>
+    </div>
+
+    <!-- TAB PANEL REKAPITULASI -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden text-xs">
+      
+      <!-- Tab Header Buttons -->
+      <div class="flex border-b bg-slate-50 font-bold overflow-x-auto">
+        <button type="button" id="tabBtnRekapDemo" onclick="gantiTabRekap('demo')" 
+                class="px-5 py-3 border-b-2 border-indigo-600 text-indigo-700 bg-white uppercase transition whitespace-nowrap">
+          👨‍👩‍👧‍👦 1. Demografi & Sasaran
+        </button>
+        <button type="button" id="tabBtnRekapKB" onclick="gantiTabRekap('kb')" 
+                class="px-5 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase transition whitespace-nowrap">
+          💊 2. Pelayanan KB & Unmet Need
+        </button>
+        <button type="button" id="tabBtnRekapLingkungan" onclick="gantiTabRekap('lingkungan')" 
+                class="px-5 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase transition whitespace-nowrap">
+          🏡 3. Sanitasi & Lingkungan
+        </button>
+      </div>
+
+      <!-- KONTEN TAB 1: DEMOGRAFI & SASARAN PRIORITAS -->
+      <div id="kontenTabDemo" class="p-4 space-y-3">
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto border rounded-xl">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b text-center">
+              <tr>
+                <th class="p-2.5 w-12" rowspan="2">No</th>
+                <th class="p-2.5 text-left" rowspan="2">Wilayah</th>
+                <th class="p-2.5" rowspan="2">Total KK</th>
+                <th class="p-2.5 border-l" colspan="3">Jumlah Jiwa</th>
+                <th class="p-2.5 border-l" colspan="3">Sasaran Prioritas</th>
+                <th class="p-2.5 border-l" colspan="2">Kesertaan JKN</th>
+              </tr>
+              <tr class="bg-slate-50 text-[10px]">
+                <th class="p-2 border-l">Laki</th>
+                <th class="p-2">Perempuan</th>
+                <th class="p-2">Total</th>
+                <th class="p-2 border-l text-amber-800">Baduta (&lt;2Th)</th>
+                <th class="p-2 text-amber-800">Balita (&lt;5Th)</th>
+                <th class="p-2 text-pink-700">WUS (15-49)</th>
+                <th class="p-2 border-l text-emerald-800">Ada JKN</th>
+                <th class="p-2 text-rose-700">Tdk Ada</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRekapDemo" class="divide-y divide-slate-100">
+              <tr><td colspan="11" class="p-6 text-center text-slate-400">Klik <b>Tampilkan Rekap</b> untuk memuat data agregat.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KONTEN TAB 2: PELAYANAN KB & ALKON -->
+      <div id="kontenTabKB" class="hidden p-4 space-y-3">
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto border rounded-xl">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b text-center">
+              <tr>
+                <th class="p-2.5 w-12" rowspan="2">No</th>
+                <th class="p-2.5 text-left" rowspan="2">Wilayah</th>
+                <th class="p-2.5" rowspan="2">Total PUS</th>
+                <th class="p-2.5" rowspan="2">Hamil</th>
+                <th class="p-2.5 border-l" colspan="3">Peserta KB Aktif (PA)</th>
+                <th class="p-2.5 border-l" colspan="3">Bukan Peserta KB</th>
+                <th class="p-2.5 border-l text-rose-700" rowspan="2">Unmet Need (%)</th>
+              </tr>
+              <tr class="bg-slate-50 text-[10px]">
+                <th class="p-2 border-l text-emerald-800">MKJP</th>
+                <th class="p-2 text-emerald-800">Non-MKJP</th>
+                <th class="p-2 text-emerald-900 font-bold">Total PA</th>
+                <th class="p-2 border-l text-blue-700">Ingin Segera</th>
+                <th class="p-2 text-amber-700">Ingin Nanti</th>
+                <th class="p-2 text-rose-700">Tdk Ingin</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRekapKB" class="divide-y divide-slate-100">
+              <tr><td colspan="11" class="p-6 text-center text-slate-400">Klik <b>Tampilkan Rekap</b> untuk memuat data agregat.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- KONTEN TAB 3: SANITASI & POTENSI LINGKUNGAN -->
+      <div id="kontenTabLingkungan" class="hidden p-4 space-y-3">
+        <div class="overflow-x-auto max-h-[500px] overflow-y-auto border rounded-xl">
+          <table class="w-full text-left border-collapse text-[11px]">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b text-center">
+              <tr>
+                <th class="p-2.5 w-12" rowspan="2">No</th>
+                <th class="p-2.5 text-left" rowspan="2">Wilayah</th>
+                <th class="p-2.5" rowspan="2">Total KK</th>
+                <th class="p-2.5 border-l" colspan="2">Sumber Air Minum</th>
+                <th class="p-2.5 border-l" colspan="2">Jamban Keluarga</th>
+                <th class="p-2.5 border-l" colspan="2">Penerangan Listrik</th>
+                <th class="p-2.5 border-l" colspan="2">Status Rumah</th>
+              </tr>
+              <tr class="bg-slate-50 text-[10px]">
+                <th class="p-2 border-l text-emerald-700">Layak / PAM / Bor</th>
+                <th class="p-2 text-rose-700">Tdk Terlindung</th>
+                <th class="p-2 border-l text-emerald-700">Sendiri / Septik</th>
+                <th class="p-2 text-rose-700">Menumpang / Tdk Ada</th>
+                <th class="p-2 border-l text-emerald-700">Listrik PLN</th>
+                <th class="p-2 text-rose-700">Bukan Listrik</th>
+                <th class="p-2 border-l text-emerald-700">Milik Sendiri</th>
+                <th class="p-2 text-slate-600">Sewa / Lainnya</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRekapLingkungan" class="divide-y divide-slate-100">
+              <tr><td colspan="11" class="p-6 text-center text-slate-400">Klik <b>Tampilkan Rekap</b> untuk memuat data agregat.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -1473,7 +1674,7 @@
     }
 
     function tampilkanLayar(layarId) {      
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_bnba'];
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_bnba', 'tampilan_rekapitulasi'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('aktif');
@@ -1917,6 +2118,466 @@
           }
         }
       });
+    }
+
+    // ========================================================
+    // MODUL REKAPITULASI DATA KELUARGA BERJENJANG
+    // ========================================================
+    let dataRekapAgregat = [];
+    let tabRekapAktif = 'demo';
+
+    function bukaHalamanRekapitulasi() {
+      tampilkanLayar('tampilan_rekapitulasi');
+      initFilterWilayahRekap();
+    }
+
+    function gantiTabRekap(tab) {
+      tabRekapAktif = tab;
+
+      const tabs = ['demo', 'kb', 'lingkungan'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtnRekap${t === 'demo' ? 'Demo' : (t === 'kb' ? 'KB' : 'Lingkungan')}`);
+        const konten = document.getElementById(`kontenTab${t === 'demo' ? 'Demo' : (t === 'kb' ? 'KB' : 'Lingkungan')}`);
+
+        if (t === tab) {
+          btn.className = "px-5 py-3 border-b-2 border-indigo-600 text-indigo-700 bg-white uppercase transition whitespace-nowrap font-bold";
+          konten.classList.remove('hidden');
+        } else {
+          btn.className = "px-5 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 uppercase transition whitespace-nowrap font-bold";
+          konten.classList.add('hidden');
+        }
+      });
+    }
+
+    function initFilterWilayahRekap() {
+      const selKab = document.getElementById('rekap_kab');
+      const selKec = document.getElementById('rekap_kec');
+      const selDesa = document.getElementById('rekap_desa');
+
+      selKab.innerHTML = '<option value="">-- SEMUA KABUPATEN --</option>';
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
+      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+        selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
+        selKab.disabled = true;
+        saatRekapKabBerubah();
+      } else {
+        selKab.disabled = false;
+      }
+    }
+
+    function saatRekapKabBerubah() {
+      const kdKab = document.getElementById('rekap_kab').value;
+      const selKec = document.getElementById('rekap_kec');
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+
+      if (!kdKab) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKec = dataAkses.filter(w => String(w.kode_kab).padStart(2, '0') === kdKab);
+      const listKecUnik = [...new Map(listKec.map(w => [w.kode_kec, w.kecamatan])).entries()];
+
+      listKecUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKec.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+        saatRekapKecBerubah();
+      } else {
+        selKec.disabled = false;
+      }
+    }
+
+    function saatRekapKecBerubah() {
+      const kdKab = document.getElementById('rekap_kab').value;
+      const kdKec = document.getElementById('rekap_kec').value;
+      const selDesa = document.getElementById('rekap_desa');
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+
+      if (!kdKec) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec
+      );
+      const listDesaUnik = [...new Map(listDesa.map(w => [String(w.kode_desa).padStart(4, '0'), w.desa])).entries()];
+      
+      listDesaUnik.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true })).forEach(([kd, nm]) => {
+        selDesa.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'USER_DESA') {
+        selDesa.value = String(userAktif.kode_desa || '').padStart(4, '0');
+        selDesa.disabled = true;
+      } else {
+        selDesa.disabled = false;
+      }
+    }
+
+    // Ambil Data Keluarga & Agregasikan Berdasarkan Wilayah
+    async function muatDataRekapitulasi() {
+      Swal.fire({
+        title: 'Menyusun Rekapitulasi...',
+        html: '<div class="text-xs text-slate-500">Mengkalkulasi agregat demografi & capaian KB...</div>',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        const kdKab = document.getElementById('rekap_kab').value;
+        const kdKec = document.getElementById('rekap_kec').value;
+        const kdDesa = document.getElementById('rekap_desa').value;
+
+        let query = supabaseClient.from('keluarga').select(`
+          nomor_kk,
+          kode_kab,
+          kode_kec,
+          kode_desa,
+          kode_dusun,
+          kb_03_sedang_hamil,
+          kb_03_keinginan_anak_lagi,
+          kb_04_sedang_kb,
+          kb_07_jenis_kb,
+          pk_17_1_penerangan,
+          pk_18_air_minum,
+          pk_19_jamban,
+          pk_23_kepemilikan_rumah,
+          anggota_keluarga (*)
+        `);
+
+        if (kdKab) query = query.eq('kode_kab', kdKab);
+        if (kdKec) query = query.eq('kode_kec', kdKec);
+        if (kdDesa) query = query.eq('kode_desa', kdDesa);
+
+        const { data: dataKeluarga, error } = await query;
+        if (error) throw error;
+
+        // Tentukan level agregasi wilayah (jika pilih Desa -> agregat Dusun, jika pilih Kec -> agregat Desa, dsb)
+        prosesAgregasiRekap(dataKeluarga || [], kdKec, kdDesa);
+        Swal.close();
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Memuat Rekap', err.message || 'Terjadi kesalahan sistem.', 'error');
+      }
+    }
+
+    function prosesAgregasiRekap(listKeluarga, filterKec, filterDesa) {
+      // Kelompokkan wilayah
+      const agregatMap = new Map();
+
+      // Metrik Global (KPI Cards)
+      let totKK = 0, totJiwa = 0, totPUS = 0, totPA = 0, totUnmet = 0, totBaduta = 0, totBalita = 0;
+
+      listKeluarga.forEach(k => {
+        totKK++;
+
+        // Kunci level grup: jika desa dipilih -> grouping per dusun, jika belum -> grouping per desa
+        let groupKey = '';
+        let groupNama = '';
+
+        if (filterDesa) {
+          groupKey = `${k.kode_desa}_${k.kode_dusun || '0000'}`;
+          const wilObj = rawWilayahList.find(w => w.kode_desa === k.kode_desa && w.kode_dusun === k.kode_dusun);
+          groupNama = wilObj ? `Dusun ${wilObj.dusun.toUpperCase()} [${k.kode_dusun}]` : `Dusun ${k.kode_dusun || '-'}`;
+        } else {
+          groupKey = `${k.kode_kec}_${k.kode_desa}`;
+          const wilObj = rawWilayahList.find(w => w.kode_kec === k.kode_kec && w.kode_desa === k.kode_desa);
+          groupNama = wilObj ? `Desa ${wilObj.desa.toUpperCase()}` : `Desa ${k.kode_desa || '-'}`;
+        }
+
+        if (!agregatMap.has(groupKey)) {
+          agregatMap.set(groupKey, {
+            wilayah: groupNama,
+            total_kk: 0,
+            jiwa_l: 0,
+            jiwa_p: 0,
+            jiwa_total: 0,
+            baduta: 0,
+            balita: 0,
+            wus: 0,
+            jkn_ada: 0,
+            jkn_tidak: 0,
+            pus: 0,
+            hamil: 0,
+            mkjp: 0,
+            non_mkjp: 0,
+            total_pa: 0,
+            ias: 0,
+            iat: 0,
+            tial: 0,
+            unmet: 0,
+            air_layak: 0,
+            air_tdk_layak: 0,
+            jamban_layak: 0,
+            jamban_tdk_layak: 0,
+            listrik_pln: 0,
+            listrik_non_pln: 0,
+            rumah_sendiri: 0,
+            rumah_bukan_sendiri: 0
+          });
+        }
+
+        const grup = agregatMap.get(groupKey);
+        grup.total_kk++;
+
+        // Identifikasi Anggota Keluarga
+        const listAng = k.anggota_keluarga || [];
+        const istri = listAng.find(a => String(a.hubungan_dengan_kk) === '2');
+        let usiaIstri = 0;
+        let isPUS = false;
+
+        if (istri && istri.tanggal_lahir) {
+          usiaIstri = hitungUsiaTahun(istri.tanggal_lahir);
+          const isKawin = ['2', '3'].includes(String(istri.status_perkawinan || ''));
+          isPUS = isKawin && (usiaIstri >= 10 && usiaIstri <= 49);
+        } else if (k.kb_04_sedang_kb) {
+          isPUS = true;
+        }
+
+        if (isPUS) {
+          totPUS++;
+          grup.pus++;
+        }
+
+        // Hitung Indikator KB
+        const isHamil = (k.kb_03_sedang_hamil === true || String(k.kb_03_sedang_hamil) === '1');
+        const sedangKB = (k.kb_04_sedang_kb === true || String(k.kb_04_sedang_kb) === '1');
+        const alkon = String(k.kb_07_jenis_kb || '');
+        const isMKJP = ['1', '2', '3', '4'].includes(alkon); // MOW, MOP, IUD, Implant
+
+        if (isHamil) grup.hamil++;
+
+        if (sedangKB) {
+          totPA++;
+          grup.total_pa++;
+          if (isMKJP) grup.mkjp++;
+          else grup.non_mkjp++;
+        } else if (isPUS && !isHamil) {
+          // Bukan Peserta KB
+          const ingin = String(k.kb_03_keinginan_anak_lagi || '');
+          if (ingin === '1') grup.ias++;
+          else if (ingin === '2') {
+            grup.iat++;
+            grup.unmet++;
+            totUnmet++;
+          } else if (ingin === '3') {
+            grup.tial++;
+            grup.unmet++;
+            totUnmet++;
+          }
+        }
+
+        // Anggota Individu (Demografi)
+        listAng.forEach(a => {
+          totJiwa++;
+          grup.jiwa_total++;
+          const jk = String(a.jenis_kelamin || '1');
+          if (jk === '1') grup.jiwa_l++;
+          else grup.jiwa_p++;
+
+          const uTh = a.tanggal_lahir ? hitungUsiaTahun(a.tanggal_lahir) : 0;
+          if (uTh < 2) { grup.baduta++; totBaduta++; }
+          if (uTh < 5) { grup.balita++; totBalita++; }
+          if (jk === '2' && uTh >= 15 && uTh <= 49) grup.wus++;
+
+          const jkn = String(a.kesertaan_jkn || a.kepesertaan_jkn || '4');
+          if (['1', '2', '3'].includes(jkn)) grup.jkn_ada++;
+          else grup.jkn_tidak++;
+        });
+
+        // Potensi Lingkungan
+        const air = String(k.pk_18_air_minum || '');
+        if (['1', '2', '3', '4', '5', '7'].includes(air)) grup.air_layak++;
+        else grup.air_tdk_layak++;
+
+        const jamban = String(k.pk_19_jamban || '');
+        if (['1', '2'].includes(jamban)) grup.jamban_layak++;
+        else grup.jamban_tdk_layak++;
+
+        const listrik = String(k.pk_17_1_penerangan || '');
+        if (['1', '2'].includes(listrik)) grup.listrik_pln++;
+        else grup.listrik_non_pln++;
+
+        const rumah = String(k.pk_23_kepemilikan_rumah || '');
+        if (rumah === '1') grup.rumah_sendiri++;
+        else grup.rumah_bukan_sendiri++;
+      });
+
+      // Update KPI Cards di atas
+      document.getElementById('kpi_total_kk').innerText = totKK;
+      document.getElementById('kpi_total_jiwa').innerText = totJiwa;
+      document.getElementById('kpi_total_pus').innerText = totPUS;
+      document.getElementById('kpi_total_pa').innerText = totPA;
+      document.getElementById('kpi_persen_pa').innerText = totPUS > 0 ? `${((totPA / totPUS) * 100).toFixed(1)}% dari PUS` : '0%';
+      document.getElementById('kpi_total_unmet').innerText = totUnmet;
+      document.getElementById('kpi_persen_unmet').innerText = totPUS > 0 ? `${((totUnmet / totPUS) * 100).toFixed(1)}% dari PUS` : '0%';
+      document.getElementById('kpi_baduta').innerText = totBaduta;
+      document.getElementById('kpi_balita').innerText = totBalita;
+
+      dataRekapAgregat = Array.from(agregatMap.values());
+      renderSemuaTabelRekap();
+    }
+
+    function renderSemuaTabelRekap() {
+      renderTabelRekapDemo();
+      renderTabelRekapKB();
+      renderTabelRekapLingkungan();
+    }
+
+    // 1. Render Tabel Demografi
+    function renderTabelRekapDemo() {
+      const tbody = document.getElementById('tbodyRekapDemo');
+      if (dataRekapAgregat.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-4 text-center text-slate-400">Tidak ada data terdata.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      dataRekapAgregat.forEach((r, idx) => {
+        html += `
+          <tr class="hover:bg-slate-50 transition border-b text-center">
+            <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 text-left font-bold text-slate-800">${r.wilayah}</td>
+            <td class="p-2.5 font-black text-slate-700">${r.total_kk}</td>
+            <td class="p-2 border-l text-slate-600">${r.jiwa_l}</td>
+            <td class="p-2 text-slate-600">${r.jiwa_p}</td>
+            <td class="p-2 font-bold text-indigo-700">${r.jiwa_total}</td>
+            <td class="p-2 border-l font-bold text-amber-700">${r.baduta}</td>
+            <td class="p-2 font-bold text-amber-800">${r.balita}</td>
+            <td class="p-2 font-bold text-pink-700">${r.wus}</td>
+            <td class="p-2 border-l text-emerald-700 font-semibold">${r.jkn_ada}</td>
+            <td class="p-2 text-rose-600 font-semibold">${r.jkn_tidak}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // 2. Render Tabel Capaian KB
+    function renderTabelRekapKB() {
+      const tbody = document.getElementById('tbodyRekapKB');
+      if (dataRekapAgregat.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-4 text-center text-slate-400">Tidak ada data terdata.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      dataRekapAgregat.forEach((r, idx) => {
+        const persenUnmet = r.pus > 0 ? ((r.unmet / r.pus) * 100).toFixed(1) : 0;
+        html += `
+          <tr class="hover:bg-slate-50 transition border-b text-center">
+            <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 text-left font-bold text-slate-800">${r.wilayah}</td>
+            <td class="p-2.5 font-black text-slate-700">${r.pus}</td>
+            <td class="p-2.5 font-bold text-purple-700">${r.hamil}</td>
+            <td class="p-2 border-l font-bold text-emerald-700">${r.mkjp}</td>
+            <td class="p-2 font-bold text-teal-700">${r.non_mkjp}</td>
+            <td class="p-2 font-black text-emerald-800 bg-emerald-50/50">${r.total_pa}</td>
+            <td class="p-2 border-l text-blue-700">${r.ias}</td>
+            <td class="p-2 text-amber-700">${r.iat}</td>
+            <td class="p-2 text-rose-700">${r.tial}</td>
+            <td class="p-2 border-l font-black text-rose-700">${persenUnmet}%</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // 3. Render Tabel Potensi Sanitasi & Lingkungan
+    function renderTabelRekapLingkungan() {
+      const tbody = document.getElementById('tbodyRekapLingkungan');
+      if (dataRekapAgregat.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-4 text-center text-slate-400">Tidak ada data terdata.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      dataRekapAgregat.forEach((r, idx) => {
+        html += `
+          <tr class="hover:bg-slate-50 transition border-b text-center">
+            <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 text-left font-bold text-slate-800">${r.wilayah}</td>
+            <td class="p-2.5 font-black text-slate-700">${r.total_kk}</td>
+            <td class="p-2 border-l font-semibold text-emerald-700">${r.air_layak}</td>
+            <td class="p-2 font-semibold text-rose-600">${r.air_tdk_layak}</td>
+            <td class="p-2 border-l font-semibold text-emerald-700">${r.jamban_layak}</td>
+            <td class="p-2 font-semibold text-rose-600">${r.jamban_tdk_layak}</td>
+            <td class="p-2 border-l font-semibold text-emerald-700">${r.listrik_pln}</td>
+            <td class="p-2 font-semibold text-rose-600">${r.listrik_non_pln}</td>
+            <td class="p-2 border-l font-semibold text-emerald-700">${r.rumah_sendiri}</td>
+            <td class="p-2 font-semibold text-slate-600">${r.rumah_bukan_sendiri}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    // Ekspor Seluruh Lembar Rekap ke File Excel Multipage
+    function downloadExcelRekapitulasi() {
+      if (dataRekapAgregat.length === 0) {
+        Swal.fire('Data Kosong', 'Silakan klik Tampilkan Rekap terlebih dahulu!', 'warning');
+        return;
+      }
+
+      const rowsDemo = dataRekapAgregat.map((r, i) => ({
+        "NO": i + 1,
+        "WILAYAH": r.wilayah,
+        "TOTAL KK": r.total_kk,
+        "JIWA LAKI-LAKI": r.jiwa_l,
+        "JIWA PEREMPUAN": r.jiwa_p,
+        "TOTAL JIWA": r.jiwa_total,
+        "BADUTA (<2 TH)": r.baduta,
+        "BALITA (<5 TH)": r.balita,
+        "WUS (15-49 TH)": r.wus,
+        "MEMILIKI JKN": r.jkn_ada,
+        "TIDAK MEMILIKI JKN": r.jkn_tidak
+      }));
+
+      const rowsKB = dataRekapAgregat.map((r, i) => ({
+        "NO": i + 1,
+        "WILAYAH": r.wilayah,
+        "TOTAL PUS": r.pus,
+        "SEDANG HAMIL": r.hamil,
+        "PESERTA MKJP": r.mkjp,
+        "PESERTA NON-MKJP": r.non_mkjp,
+        "TOTAL PESERTA KB (PA)": r.total_pa,
+        "INGIN ANAK SEGERA (IAS)": r.ias,
+        "INGIN ANAK TUNDA (IAT)": r.iat,
+        "TIDAK INGIN ANAK (TIAL)": r.tial,
+        "UNMET NEED (%)": r.pus > 0 ? `${((r.unmet / r.pus) * 100).toFixed(1)}%` : '0%'
+      }));
+
+      const rowsLingkungan = dataRekapAgregat.map((r, i) => ({
+        "NO": i + 1,
+        "WILAYAH": r.wilayah,
+        "TOTAL KK": r.total_kk,
+        "AIR MINUM LAYAK": r.air_layak,
+        "AIR MINUM TIDAK LAYAK": r.air_tdk_layak,
+        "JAMBAN SEHAT / SEPTIK": r.jamban_layak,
+        "JAMBAN TIDAK SEHAT": r.jamban_tdk_layak,
+        "LISTRIK PLN": r.listrik_pln,
+        "BUKAN LISTRIK PLN": r.listrik_non_pln,
+        "RUMAH MILIK SENDIRI": r.rumah_sendiri,
+        "RUMAH BUKAN SENDIRI": r.rumah_bukan_sendiri
+      }));
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsDemo), "Rekap_Demografi");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsKB), "Rekap_KB");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rowsLingkungan), "Rekap_Sanitasi");
+
+      XLSX.writeFile(wb, `Laporan_Rekapitulasi_Agregat_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     // ========================================================
