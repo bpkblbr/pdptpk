@@ -2480,15 +2480,16 @@
             <!-- BARIS 2: (4) TANGGAL LAHIR & USIA (OTOMATIS & TERKUNCI) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label class="block font-bold text-slate-700 uppercase mb-1">Tanggal Lahir (4) *</label>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Tanggal Lahir *</label>
                 <input type="date" id="ed_tanggal_lahir" value="${targetAnggota.tanggal_lahir || ''}" 
                        onchange="saatEdTglLahirBerubah()"
                        class="w-full p-2.5 border rounded-xl font-semibold text-slate-800 outline-none focus:ring-1 focus:ring-emerald-500" />
               </div>
               <div>
-                <label class="block font-bold text-slate-700 uppercase mb-1">Usia (Tahun)</label>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Usia</label>
                 <input type="text" id="ed_display_usia" readonly 
-                       value="${targetAnggota.tanggal_lahir ? hitungUsiaTahun(targetAnggota.tanggal_lahir) + ' Tahun' : '-'}"
+                       value="${targetAnggota.tanggal_lahir ? hitungUsiaTahun(targetAnggota.tanggal_lahir) : ''}"
+                       placeholder="0"
                        class="w-full p-2.5 border rounded-xl bg-slate-100 font-bold text-slate-700 outline-none cursor-not-allowed text-center" />
               </div>
             </div>
@@ -2616,7 +2617,7 @@
             <!-- BARIS 7: (16) MENGURUS DIRI SENDIRI & (17) BEKERJA DI LUAR NEGERI -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
-                <label class="block font-bold text-slate-700 uppercase mb-1">Mengurus Diri Sendiri (16) *</label>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Mengurus Diri Sendiri *</label>
                 <select id="ed_kemampuan_mengurus_diri" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
                   <option value="" ${!targetAnggota.kemampuan_mengurus_diri ? 'selected' : ''}>-- PILIH --</option>
                   <option value="1" ${String(targetAnggota.kemampuan_mengurus_diri) === '1' ? 'selected' : ''}>1. Tidak Dapat Mengurus</option>
@@ -2663,9 +2664,9 @@
             const valTgl = document.getElementById('ed_tanggal_lahir').value;
             const inpUsia = document.getElementById('ed_display_usia');
             if (valTgl && inpUsia) {
-              inpUsia.value = `${hitungUsiaTahun(valTgl)} Tahun`;
+              inpUsia.value = hitungUsiaTahun(valTgl);
             } else if (inpUsia) {
-              inpUsia.value = '-';
+              inpUsia.value = '';
             }
           };
 
@@ -4855,7 +4856,7 @@
           </div>
           <div>
             <label class="block text-slate-700 font-medium mb-1">Usia (Tahun)</label>
-            <input type="text" name="display_usia" readonly placeholder="Otomatis"
+            <input type="text" name="display_usia" readonly placeholder=""
                    class="w-full px-2.5 py-2.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-700 text-xs sm:text-sm outline-none cursor-not-allowed text-center" />
           </div>
         </div>
@@ -4993,7 +4994,7 @@
         <!-- (16) MENGURUS DIRI SENDIRI & (17) BEKERJA DI LUAR NEGERI -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri (16) *</label>
+            <label class="block text-slate-700 font-medium mb-1">Mengurus Diri Sendiri *</label>
             <select name="kemampuan_mengurus_diri" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
               <option value="" selected>-- PILIH --</option>
               <option value="1">1. Tidak Dapat Mengurus</option>
@@ -5084,7 +5085,7 @@
       if (hal) {
         const inputUsia = hal.querySelector('[name="display_usia"]');
         if (inputUsia) {
-          inputUsia.value = usia >= 0 ? `${usia} Tahun` : '0 Tahun';
+          inputUsia.value = usia >= 0 ? usia : 0;
         }
       }
     }
