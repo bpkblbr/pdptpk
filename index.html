@@ -5888,9 +5888,12 @@
       // 1. Logika Gabungan: Melahirkan & Anak Hidup
       if (q.tipe === 'angka_kelahiran') {
         const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
+
         html = `
           <div class="judul-tanya-krs">${q.judul}</div>
-          <div class="space-y-3.5 pt-2">
+          <div class="space-y-4 pt-2 text-xs sm:text-sm">
+            
+            <!-- Berapa Kali Pernah Melahirkan -->
             <div>
               <label class="block text-slate-700 font-semibold mb-1">Berapa kali Ibu pernah melahirkan?</label>
               <div class="flex items-center gap-2">
@@ -5902,28 +5905,50 @@
               </div>
             </div>
 
+            <!-- JIKA JAWABAN MELAHIRKAN > 0, TAMPILKAN KEDUA PERTANYAAN INI SEKALIGUS -->
             ${jmlLahir > 0 ? `
+            <!-- Pertanyaan 1: Jumlah Anak Lahir Hidup -->
             <div class="pt-3 border-t border-slate-200 space-y-2">
-              <label class="block text-slate-700 font-semibold">Jumlah Anak Masih Hidup</label>
+              <label class="block text-slate-700 font-semibold">Jumlah Anak Lahir Hidup :</label>
               <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
-                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_laki}"
-                         oninput="dataNilaiKB.kb_01_masih_laki = parseInt(this.value, 10) || 0"
-                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
                   <span class="text-xs font-semibold text-slate-600">Laki-laki</span>
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_hidup_laki !== '' ? dataNilaiKB.kb_01_hidup_laki : ''}"
+                         oninput="dataNilaiKB.kb_01_hidup_laki = this.value === '' ? '' : parseInt(this.value, 10)"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
                 </div>
                 <div class="flex items-center gap-2">
-                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_perempuan}"
-                         oninput="dataNilaiKB.kb_01_masih_perempuan = parseInt(this.value, 10) || 0"
-                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
                   <span class="text-xs font-semibold text-slate-600">Perempuan</span>
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_hidup_perempuan !== '' ? dataNilaiKB.kb_01_hidup_perempuan : ''}"
+                         oninput="dataNilaiKB.kb_01_hidup_perempuan = this.value === '' ? '' : parseInt(this.value, 10)"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Pertanyaan 2: Jumlah Anak Masih Hidup -->
+            <div class="pt-3 border-t border-slate-200 space-y-2">
+              <label class="block text-slate-700 font-semibold">Jumlah Anak Masih Hidup :</label>
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-slate-600">Laki-laki</span>
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_laki !== '' ? dataNilaiKB.kb_01_masih_laki : ''}"
+                         oninput="dataNilaiKB.kb_01_masih_laki = this.value === '' ? '' : parseInt(this.value, 10)"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-slate-600">Perempuan</span>
+                  <input type="number" min="0" placeholder="0" value="${dataNilaiKB.kb_01_masih_perempuan !== '' ? dataNilaiKB.kb_01_masih_perempuan : ''}"
+                         oninput="dataNilaiKB.kb_01_masih_perempuan = this.value === '' ? '' : parseInt(this.value, 10)"
+                         class="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm text-center font-bold outline-none focus:border-blue-500" />
                 </div>
               </div>
             </div>
             ` : ''}
+
           </div>
         `;
-      } 
+      }
       // 2. Anak Ideal
       else if (q.tipe === 'angka') {
         html = `
@@ -6053,33 +6078,63 @@
       kontainer.innerHTML = html;
     }
 
-    function majuStepKB() {
-      // 1. Simpan index saat ini ke dalam riwayat sebelum berpindah
-      riwayatStepKB.push(indexStepKB);
+    function majuStepKB() {      
+      if (indexStepKB === 0) {
+        const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
+        if (jmlLahir > 0) {
+          if (
+            dataNilaiKB.kb_01_hidup_laki === '' || dataNilaiKB.kb_01_hidup_laki === null ||
+            dataNilaiKB.kb_01_hidup_perempuan === '' || dataNilaiKB.kb_01_hidup_perempuan === null ||
+            dataNilaiKB.kb_01_masih_laki === '' || dataNilaiKB.kb_01_masih_laki === null ||
+            dataNilaiKB.kb_01_masih_perempuan === '' || dataNilaiKB.kb_01_masih_perempuan === null
+          ) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Lengkapi Data Anak',
+              text: 'Silakan isi rincian Jumlah Anak Lahir Hidup dan Jumlah Anak Masih Hidup (isi 0 jika tidak ada)!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
 
-      // 2. Evaluasi lompatan logika
+          const lHidup = parseInt(dataNilaiKB.kb_01_hidup_laki, 10) || 0;
+          const pHidup = parseInt(dataNilaiKB.kb_01_hidup_perempuan, 10) || 0;
+          const lMasih = parseInt(dataNilaiKB.kb_01_masih_laki, 10) || 0;
+          const pMasih = parseInt(dataNilaiKB.kb_01_masih_perempuan, 10) || 0;
+
+          if (lMasih > lHidup || pMasih > pHidup) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Data Tidak Sesuai',
+              text: 'Jumlah anak masih hidup tidak boleh lebih banyak daripada jumlah anak lahir hidup!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+      
+      riwayatStepKB.push(indexStepKB);
+      
       if (indexStepKB === 2 && dataNilaiKB.kb_03_sedang_hamil === '1') {
         indexStepKB = 4; // Jika hamil, lompat langsung ke 05 (melewati 04)
       } else if (indexStepKB === 3 && dataNilaiKB.kb_04_sedang_kb === '1') {
         indexStepKB = 6; // Jika sedang KB, langsung ke 07 (melewati 05 & 06)
       } else if (indexStepKB === 4 && dataNilaiKB.kb_05_pernah_kb === '2' && dataNilaiKB.kb_04_sedang_kb === '2') {
         indexStepKB = 5; // Jawab alasan tidak KB (06)
-      } else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {
-        // Jika 04=Tidak dan 05=Tidak, selesai blok KB langsung ke Pembangunan Keluarga
+      } else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {        
         indexStepPK = 0;
         riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
-      } else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {
-        // Jika Tradisional (9), selesai lanjut ke Blok Pembangunan Keluarga
+      } else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {        
         indexStepPK = 0;
         riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
-      } else if (indexStepKB >= daftarPertanyaanKB.length - 1) {
-        // Selesai Blok KB
+      } else if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
         indexStepPK = 0;
         riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
@@ -6092,13 +6147,11 @@
       tampilkanStepKB();
     }
 
-    function mundurStepKB() {
-      // Jika masih ada riwayat langkah sebelumnya, ambil langkah terakhir
+    function mundurStepKB() {      
       if (riwayatStepKB.length > 0) {
         indexStepKB = riwayatStepKB.pop();
         tampilkanStepKB();
-      } else {
-        // Jika riwayat sudah kosong (berada di pertanyaan pertama), kembali ke data anggota terakhir
+      } else {        
         bukaHalamanAnggota(totalHalamanAnggota);
       }
     }
