@@ -2597,11 +2597,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Kepesertaan JKN *</label>
-                <select id="ed_kepesertaan_jkn" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
-                  <option value="1" ${String(targetAnggota.kepesertaan_jkn) === '1' ? 'selected' : ''}>PBI</option>
-                  <option value="2" ${String(targetAnggota.kepesertaan_jkn) === '2' ? 'selected' : ''}>Bukan PBI</option>
-                  <option value="3" ${String(targetAnggota.kepesertaan_jkn) === '3' ? 'selected' : ''}>Swasta</option>
-                  <option value="4" ${String(targetAnggota.kepesertaan_jkn) === '4' ? 'selected' : ''}>Tidak Memiliki</option>
+                <select id="ed_kepesertaan_jkn" ...>
+                  <option value="1" ${String(targetAnggota.kesertaan_jkn) === '1' ? 'selected' : ''}>PBI</option>
+                  <option value="2" ${String(targetAnggota.kesertaan_jkn) === '2' ? 'selected' : ''}>Bukan PBI</option>
+                  <option value="3" ${String(targetAnggota.kesertaan_jkn) === '3' ? 'selected' : ''}>Swasta</option>
+                  <option value="4" ${String(targetAnggota.kesertaan_jkn) === '4' ? 'selected' : ''}>Tidak Memiliki</option>
                 </select>
               </div>
               <div>
@@ -2732,6 +2732,7 @@
             usia_kawin_pertama: statusKawin !== '1' ? (parseInt(usiaKawin, 10) || null) : null,
             jenis_pekerjaan: document.getElementById('ed_jenis_pekerjaan').value,
             pendidikan: document.getElementById('ed_pendidikan').value,
+            kesertaan_jkn: document.getElementById('ed_kepesertaan_jkn')?.value || '1',
             bekerja_luar_negeri: document.getElementById('ed_bekerja_luar_negeri').value,
             mutasi_anggota: document.getElementById('ed_mutasi_anggota').value || '0',
             gangguan_fungsional: document.getElementById('ed_gangguan_fungsional').value || '5',
@@ -7497,7 +7498,7 @@
             agama: hal.querySelector('[name="agama"]')?.value || '1',
             jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
             pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '8',
-            kepesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
+            kesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
             bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
             mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0',
             gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
