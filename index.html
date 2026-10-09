@@ -5805,10 +5805,21 @@
     // Klik Pilihan Tunggal
     function pilihOpsiPil(namaKoleksi, keyField, nilai, tombolEl) {
       if (namaKoleksi === 'KB') {
+        // Reset sub-isian jika pilihan sedang_hamil berubah
+        if (keyField === 'kb_03_sedang_hamil' && dataNilaiKB.kb_03_sedang_hamil !== nilai) {
+          if (nilai === '1') {
+            dataNilaiKB.kb_03_keinginan_anak_lagi = '';
+          } else if (nilai === '2') {
+            dataNilaiKB.kb_03_usia_kehamilan = '';
+            dataNilaiKB.kb_03_status_ingin_hamil = '';
+          }
+        }
+
         dataNilaiKB[keyField] = nilai;
       } else {
         dataNilaiPK[keyField] = nilai;
       }
+
       const parent = tombolEl.parentElement;
       parent.querySelectorAll('.opsi-pil').forEach(btn => btn.classList.remove('aktif'));
       tombolEl.classList.add('aktif');
@@ -5976,16 +5987,18 @@
       // 3. Sedang Hamil
       else if (q.tipe === 'pil_hamil') {
         const opsiHamil = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          ${buatPilHTML('KB', 'kb_03_sedang_hamil', opsiHamil, dataNilaiKB.kb_03_sedang_hamil)}
-          ${dataNilaiKB.kb_03_sedang_hamil === '1' ? `
-            <div class="space-y-3 pt-3 border-t">
+        
+        let subPertanyaanHtml = '';
+
+        // JIKA DIKLIK "1. YA": Munculkan Usia Kehamilan & Status Ingin Hamil
+        if (dataNilaiKB.kb_03_sedang_hamil === '1') {
+          subPertanyaanHtml = `
+            <div class="space-y-3 pt-3 border-t mt-3">
               <div>
                 <label class="block text-slate-600 font-medium mb-1">Usia Kehamilan (Minggu)</label>
                 <input type="number" min="1" max="42" value="${dataNilaiKB.kb_03_usia_kehamilan}"
                        oninput="dataNilaiKB.kb_03_usia_kehamilan = this.value" placeholder="Contoh: 12"
-                       class="w-28 px-3 py-2 border rounded-lg text-sm font-bold" />
+                       class="w-28 px-3 py-2 border rounded-lg text-sm font-bold outline-none focus:border-blue-500" />
               </div>
               <div>
                 <label class="block text-slate-600 font-medium mb-1">Saat mulai hamil, apakah ingin hamil saat itu?</label>
@@ -5996,8 +6009,12 @@
                 ], dataNilaiKB.kb_03_status_ingin_hamil)}
               </div>
             </div>
-          ` : `
-            <div class="pt-3 border-t">
+          `;
+        } 
+        // JIKA DIKLIK "2. TIDAK": Baru munculkan "Apakah Ibu menginginkan anak lagi?"
+        else if (dataNilaiKB.kb_03_sedang_hamil === '2') {
+          subPertanyaanHtml = `
+            <div class="pt-3 border-t mt-3">
               <label class="block text-slate-600 font-medium mb-1">Apakah Ibu menginginkan anak lagi?</label>
               ${buatPilHTML('KB', 'kb_03_keinginan_anak_lagi', [
                 { val: '1', label: '1. Ya, Ingin Segera (<= 2 th)' },
@@ -6005,9 +6022,16 @@
                 { val: '3', label: '3. Tidak Ingin Anak Lagi' }
               ], dataNilaiKB.kb_03_keinginan_anak_lagi)}
             </div>
-          `}
+          `;
+        }
+        // JIKA BELUM DIKLIK (KOSONG): subPertanyaanHtml tetap kosong ('')
+
+        html = `
+          <div class="judul-tanya-krs">${q.judul}</div>
+          ${buatPilHTML('KB', 'kb_03_sedang_hamil', opsiHamil, dataNilaiKB.kb_03_sedang_hamil)}
+          ${subPertanyaanHtml}
         `;
-      } 
+      }
       // 4. Sedang KB
       else if (q.tipe === 'pil_sedang_kb') {
         const opsiKB = [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }];
