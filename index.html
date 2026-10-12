@@ -7386,7 +7386,6 @@
     }
 
     function majuStepKB() {      
-      // 1. Validasi Langkah 01 (Riwayat Anak Lahir & Masih Hidup)
       if (indexStepKB === 0) {
         const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
         if (jmlLahir > 0) {
@@ -7421,42 +7420,79 @@
           }
         }
       }
-      
+     
       riwayatStepKB.push(indexStepKB);
       
-      // 2. Alur Percabangan Pertanyaan KB
-      if (indexStepKB === 2 && dataNilaiKB.kb_03_sedang_hamil === '1') {
-        indexStepKB = 4; // Jika hamil, lompat langsung ke 05 (melewati 04)
-      } else if (indexStepKB === 3 && dataNilaiKB.kb_04_sedang_kb === '1') {
-        indexStepKB = 6; // Jika sedang KB, langsung ke 07 (melewati 05 & 06)
-      } else if (indexStepKB === 4 && dataNilaiKB.kb_05_pernah_kb === '2' && dataNilaiKB.kb_04_sedang_kb === '2') {
-        indexStepKB = 5; // Jawab alasan tidak KB (06)
-      } 
-      // KONDISI A: Tidak pernah KB dan tidak sedang KB -> Langsung masuk ke Blok PK
-      else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {        
-        pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-        renderBlokPK();
+      if (indexStepKB === 2) {
+        if (dataNilaiKB.kb_03_sedang_hamil === '1') {          
+          indexStepKB = 4;
+          tampilkanStepKB();
+          return;
+        } else {          
+          indexStepKB = 3;
+          tampilkanStepKB();
+          return;
+        }
+      }
+      
+      if (indexStepKB === 3) {
+        if (dataNilaiKB.kb_04_sedang_kb === '1') {          
+          indexStepKB = 6;
+          tampilkanStepKB();
+          return;
+        } else {          
+          indexStepKB = 4;
+          tampilkanStepKB();
+          return;
+        }
+      }
+      
+      if (indexStepKB === 4) {        
+        indexStepKB = 5;
+        tampilkanStepKB();
         return;
-      } 
-      // KONDISI B: KB Tradisional (kode 9) -> Langsung masuk ke Blok PK
-      else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {        
-        pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-        renderBlokPK();
-        return;
-      } 
-      // KONDISI C: Langkah KB selesai secara normal (pertanyaan 09 selesai) -> Masuk ke Blok PK
-      else if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
+      }
+      
+      if (indexStepKB === 5) {        
+        const tidakSedangKB = (dataNilaiKB.kb_04_sedang_kb === '2' || dataNilaiKB.kb_03_sedang_hamil === '1');
+        const tidakPernahKB12Bulan = (dataNilaiKB.kb_05_pernah_kb === '2');
+
+        if (tidakSedangKB && tidakPernahKB12Bulan) {          
+          indexStepPK = 0;
+          riwayatStepPK = [];
+          pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+          tampilkanStepPK();
+          return;
+        } else {          
+          indexStepKB = 6;
+          tampilkanStepKB();
+          return;
+        }
+      }
+      
+      if (indexStepKB === 6) {        
+        if (dataNilaiKB.kb_07_jenis_kb === '9') {
+          indexStepPK = 0;
+          riwayatStepPK = [];
+          pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
+          tampilkanStepPK();
+          return;
+        } else {          
+          indexStepKB++;
+          tampilkanStepKB();
+          return;
+        }
+      }
+      
+      if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
         indexStepPK = 0;
         riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
       }
-      // Langkah berikutnya di Blok KB
-      else {
-        indexStepKB++;
-      }
       
+      indexStepKB++;
       tampilkanStepKB();
     }
 
@@ -7468,15 +7504,13 @@
         bukaHalamanAnggota(totalHalamanAnggota);
       }
     }
-
-    // Objek penyimpan nilai formulir Blok PK
+    
     let nilaiJawabanPK = {};
 
     function renderBlokPK() {
       const kontainer = document.getElementById('wadahPertanyaanPK');
       if (!kontainer) return;
-
-      // Evaluasi data anggota keluarga dari formulir Blok II
+      
       const anggotaEls = document.querySelectorAll('.item-anggota-page');
       let adaSuamiIstri = false;
       let adaAnak0_17 = false;
@@ -7495,8 +7529,7 @@
 
       let html = '';
 
-      daftarPertanyaanPK.forEach(p => {
-        // Cek syarat kondisional dependensi
+      daftarPertanyaanPK.forEach(p => {        
         let tampil = true;
         if (p.induk) {
           const valInduk = nilaiJawabanPK[p.induk];
@@ -7521,8 +7554,7 @@
               </p>
             </div>
         `;
-
-        // Render Tipe Input: Angka (pk_23 & pk_24)
+        
         if (p.tipe === 'number') {
           const valNow = nilaiJawabanPK[p.id] || '';
           html += `
@@ -7532,27 +7564,23 @@
                      class="w-full sm:w-48 p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 focus:bg-white focus:border-indigo-600 outline-none text-xs" />
             </div>
           `;
-        } 
-        // Render Tipe Kartu Tombol (Single Select & Multi Toggle)
+        }        
         else if (p.opsi) {
           const isMulti = p.tipe === 'multi';
           const gridCols = p.opsi.length <= 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2';
 
           html += `<div class="grid ${gridCols} gap-2 pt-1">`;
 
-          p.opsi.forEach(op => {
-            // Evaluasi Disable Otomatis
+          p.opsi.forEach(op => {            
             let disableOpsi = false;
             if (op.autoDisable === 'non_pus' && !adaSuamiIstri) disableOpsi = true;
             if (op.autoDisable === 'no_anak_0_17' && !adaAnak0_17) disableOpsi = true;
             if (op.autoDisable === 'no_ayah_anak' && (!adaAyah || !adaAnak0_17)) disableOpsi = true;
-
-            // Jika status tidak berlaku otomatis terpenuhi, set nilainya jika belum ada
+            
             if (disableOpsi && !nilaiJawabanPK[p.id]) {
               nilaiJawabanPK[p.id] = op.val;
             }
-
-            // Tentukan status aktif tombol berdasarkan pilihan tersimpan
+            
             let isAktif = false;
             if (isMulti) {
               const arrMulti = nilaiJawabanPK[p.id] || [];
@@ -7560,8 +7588,7 @@
             } else {
               isAktif = String(nilaiJawabanPK[p.id]) === String(op.val);
             }
-
-            // Terapkan class warna aktif (indigo tegas) vs normal (slate abu-abu)
+            
             const styleKelas = isAktif
               ? 'bg-indigo-600 text-white border-indigo-600 shadow-md font-bold'
               : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-semibold';
@@ -7590,8 +7617,7 @@
 
       kontainer.innerHTML = html;
     }
-
-    // Handler Klik Kartu Pilihan Opsi
+    
     function klikTombolOpsiPK(idPertanyaan, nilaiOpsi, isMulti) {
       if (isMulti) {
         if (!Array.isArray(nilaiJawabanPK[idPertanyaan])) {
@@ -7606,12 +7632,10 @@
       } else {
         nilaiJawabanPK[idPertanyaan] = nilaiOpsi;
       }
-
-      // Re-render antarmuka untuk memperbarui warna tombol dan dependensi kemunculan
+      
       renderBlokPK();
     }
-
-    // Handler Input Angka
+    
     function ubahInputNumberPK(idPertanyaan, val) {
       nilaiJawabanPK[idPertanyaan] = val;
     }
