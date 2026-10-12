@@ -4504,15 +4504,11 @@
       };
       reader.readAsArrayBuffer(file);
     }
-
-    // ========================================================
-    // DOWNLOAD TEMPLATE EXCEL KELUARGA & ANGGOTA KELUARGA
-    // ========================================================
-    function downloadTemplateExcelKeluarga() {
-      // 1. DATA SHEET: KELUARGA (Seluruh kolom tabel keluarga)
+    
+    function downloadTemplateExcelKeluarga() {      
       const dataKeluarga = [
-        {
-          // Identitas Wilayah & KK
+        {          
+          "KODE_KELUARGA": "52010820010100 001001001",
           "NOMOR_KK": "5201082001010001",
           "NAMA_KK": "AHMAD SUAMI",
           "NIK_KK": "5201080101850001",
@@ -4524,104 +4520,116 @@
           "RT": "001",
           "KODE_RUMAH": "001",
           "NO_URUT_KELUARGA": "001",
-          "STATUS_KELUARGA": "1", // 1: Ada, 2: Pindah, 3: Meninggal, 4: Tdk Ditemukan, 5: Cerai, 6: Baru
+          "STATUS_KELUARGA": "1",
           "ALAMAT_DETAIL": "JL. RAYA LEMBAR NO. 12",
           "NO_HP": "081234567890",
+          "KESERTAAN_JKN": "1",
           "LATITUDE": -8.7034414,
           "LONGITUDE": 116.0927055,
-
-          // Blok IV: Pembangunan Keluarga (PK)
-          "PK_01_IBADAH": "1", // 1: Ya, 2: Tidak
-          "PK_02_AKTA_NIKAH": "1", // 1: Ya, 2: Tidak
-          "PK_03_A_TANPA_SAPA": "2", // 1: Ya, 2: Tidak
-          "PK_03_B_PISAH_RANJANG": "2", // 1: Ya, 2: Tidak, 3: Tidak Berlaku
-          "PK_03_C_MINGGAT": "2", // 1: Ya, 2: Tidak
-          "PK_03_D_KDRT": "2", // 1: Ya, 2: Tidak
-          "PK_04_PENGHASILAN": "1", // 1: Ya, 2: Tidak
-          "PK_05_MAKANAN_BERAGAM": "1", // 1: Ya, 2: Tidak
-          "PK_06_ASET": "1", // 1: Ya, 2: Tidak
-          "PK_06_ASET_JENIS": "1,3,6", // 1:Tabungan, 2:AC, 3:TV, 4:Kulkas, 5:Laptop, 6:Motor, dll (pisah koma)
-          "PK_07_PENYAKIT_KRONIS": "2", // 1: Ya, 2: Tidak
-          "PK_08_DISABILITAS": "2", // 1: Ya, 2: Tidak
-          "PK_09_INTERNET": "1", // 1: Ya, 2: Tidak
-          "PK_10_INTERAKSI": "1", // 1: Ya, 2: Tidak
-          "PK_11_PENGASUHAN_BERSAMA": "1", // 1: Ya, 2: Tidak, 3: Tidak Berlaku
-          "PK_12_REKREASI": "1", // 1: Ya, 2: Tidak
-          "PK_13_GOTONG_ROYONG": "1", // 1: Ya, 2: Tidak
-          "PK_14_1_ATAP": "2", // 1:Beton, 2:Genteng, 3:Seng, 4:Asbes, 5:Kayu, 6:Bambu, 7:Daun, 8:Lainnya
-          "PK_14_2_KONDISI_ATAP": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
-          "PK_15_1_DINDING": "1", // 1:Tembok, 2:Plesteran, 3:Kayu, 4:Anyaman, 5:Batang, 6:Bambu, 7:Lainnya
-          "PK_15_2_KONDISI_DINDING": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
-          "PK_16_1_LANTAI": "2", // 1:Granit, 2:Keramik, 3:Parket, 4:Ubin, 5:Kayu, 6:Semen, 7:Bambu, 8:Tanah, 9:Lainnya
-          "PK_16_2_KONDISI_LANTAI": "1", // 1:Baik, 2:Rusak Ringan, 3:Rusak Berat
-          "PK_17_1_PENERANGAN": "1", // 1:PLN Meteran, 2:PLN Non-Meteran, 3:Non-PLN, 4:Bukan Listrik
-          "PK_17_2_DAYA_PLN": "2", // 1:450W, 2:900W, 3:1300W, 4:>1300W
-          "PK_18_AIR_MINUM": "3", // 1:Kemasan, 2:Isi Ulang, 3:PAM, 4:Sumur Bor, 5:Sumur Terlindung, dst
-          "PK_19_JAMBAN": "1", // 1:Milik Sendiri dgn Septik tank disedot, 2:Sendiri Septik, 3:Komunal, 4:Lainnya, 5:Tidak Ada
-          "PK_20_LUAS_RUMAH": 45, // m2
-          "PK_21_JUMLAH_PENGHUNI": 4, // Jiwa
-          "PK_22_BAHAN_BAKAR": "4", // 1:Listrik, 2:Gas 12kg, 3:Gas 5.5kg, 4:Gas 3kg, 5:Minyak tanah, 6:Kayu, 7:Lainnya
-          "PK_23_KEPEMILIKAN_RUMAH": "1", // 1:Milik Sendiri, 2:Kontrak, 3:Bebas Sewa, 4:Dinas, 5:Lainnya
-          "PK_24_INFO_MEDIA": "1", // 1: Ya, 2: Tidak
-          "PK_25_MEDIA_SUMBER": "2,3", // 1:Koran, 2:TV/Radio, 3:Medsos, 4:Penyuluhan, 5:Spanduk, 6:Pentas
-          "PK_26_INFO_PETUGAS": "1", // 1: Ya, 2: Tidak
-          "PK_27_PETUGAS_SUMBER": "2,7,9", // 1:Pejabat, 2:PKB, 3:Guru, 4:Toga, 5:Toma, 6:Dokter, 7:Bidan, 8:Kades, 9:Kader, 10:TPK
-
-          // Blok III: Keluarga Berencana (KB)
-          "KB_01_MELAHIRKAN": 2, // Berapa kali melahirkan
-          "KB_01_MASIH_LAKI": 1, // Jumlah anak masih hidup (laki)
-          "KB_01_MASIH_PEREMPUAN": 1, // Jumlah anak masih hidup (perempuan)
-          "KB_02_ANAK_IDEAL": 2, // Anak ideal
-          "KB_03_SEDANG_HAMIL": "2", // 1: Ya, 2: Tidak
-          "KB_03_USIA_KEHAMILAN": "", // Minggu (jika hamil)
-          "KB_03_STATUS_INGIN_HAMIL": "", // 1: Ingin saat itu, 2: Ingin nanti, 3: Tidak ingin lagi
-          "KB_03_KEINGINAN_ANAK_LAGI": "3", // 1: Ingin segera (<=2 th), 2: Ingin nanti (>2 th), 3: Tidak ingin lagi
-          "KB_04_SEDANG_KB": "1", // 1: Ya, 2: Tidak
+          
+          "KB_01_MELAHIRKAN": 2,
+          "KB_01_HIDUP_LAKI": 1,
+          "KB_01_HIDUP_PEREMPUAN": 1,
+          "KB_01_MASIH_LAKI": 1,
+          "KB_01_MASIH_PEREMPUAN": 1,
+          "KB_02_ANAK_IDEAL": 2,
+          "KB_03_SEDANG_HAMIL": "2",
+          "KB_03_USIA_KEHAMILAN": "",
+          "KB_03_STATUS_INGIN_HAMIL": "",
+          "KB_03_KEINGINAN_ANAK_LAGI": "3",
+          "KB_04_SEDANG_KB": "1",
           "KB_04_MULAI_BULAN": "01",
           "KB_04_MULAI_TAHUN": 2024,
-          "KB_05_PERNAH_KB_12_BULAN": "", // 1: Ya, 2: Tidak (jika tidak sedang KB)
+          "KB_05_PERNAH_KB": "",
           "KB_05_MULAI_BULAN": "",
           "KB_05_MULAI_TAHUN": "",
           "KB_05_BERHENTI_BULAN": "",
           "KB_05_BERHENTI_TAHUN": "",
-          "KB_06_ALASAN_TIDAK_KB": "", // 1 s.d 16
-          "KB_07_JENIS_KB": "4", // 1:MOW, 2:MOP, 3:IUD, 4:Implant, 5:Suntik, 6:Pil, 7:Kondom, 8:MAL, 9:Tradisional
-          "KB_08_SUMBER_PELAYANAN": "6", // 1:RS Pem, 2:RS Swasta, 3:Puskesmas, 4:Klinik, 5:Dokter, 6:Bidan Desa, 7:PMB, dst
-          "KB_09_INFO_JENIS": "1", // 1: Ya, 2: Tidak
-          "KB_09_INFO_EFEK_SAMPING": "1", // 1: Ya, 2: Tidak
-          "KB_09_INFO_TINDAKAN": "1" // 1: Ya, 2: Tidak
+          "KB_06_ALASAN_TIDAK_KB": "",
+          "KB_07_JENIS_KB": "4",
+          "KB_08_SUMBER_PELAYANAN": "6",
+          "KB_09_INFO_JENIS": "1",
+          "KB_09_INFO_EFEK_SAMPING": "1",
+          "KB_09_INFO_TINDAKAN": "1",
+          
+          "PK_01_IBADAH": "1",
+          "PK_02_TOLERANSI_AGAMA": "1",
+          "PK_03_1_TANPA_SAPA": "2",
+          "PK_03_2_PISAH_RANJANG": "2",
+          "PK_03_3_PERGI_RUMAH": "2",
+          "PK_03_4_KDRT": "2",
+          "PK_03_5_KEKERASAN_ANAK": "2",
+          "PK_04_ANGGOTA_SAKIT": "2",
+          "PK_05_REKREASI": "1",
+          "PK_06_KEGIATAN_SOSIAL": "1",
+          "PK_07_BANTUAN_ORANG_LAIN": "1",
+          "PK_08_AKSES_SARANA_PUBLIK": "1",
+          "PK_09_AMAN_NYAMAN": "1",
+          "PK_10_MAKAN_DUA_KALI": "1",
+          "PK_10_1_JENIS_MAKANAN": "1,2,3,4",
+          "PK_11_AKSES_INTERNET": "1",
+          "PK_12_INTERNET_ANAK": "1",
+          "PK_13_SUMBER_PENGHASILAN": "1",
+          "PK_14_MEMILIKI_ASET": "1",
+          "PK_14_1_JENIS_ASET": "1,3,6",
+          "PK_15_INTERAKSI_HARIAN": "1",
+          "PK_15_1_JENIS_INTERAKSI": "1,2,3",
+          "PK_16_1_AYAH_MENEMANI_ANAK": "1",
+          "PK_16_2_AYAH_KOMUNIKASI": "1",
+          "PK_16_3_AYAH_HAK_DASAR": "1",
+          "PK_16_4_AYAH_PEKERJAAN_RUMAH": "1",
+          "PK_17_1_JENIS_ATAP": "2",
+          "PK_17_2_KONDISI_ATAP": "1",
+          "PK_18_1_JENIS_DINDING": "1",
+          "PK_18_2_KONDISI_DINDING": "1",
+          "PK_19_1_JENIS_LANTAI": "2",
+          "PK_19_2_KONDISI_LANTAI": "1",
+          "PK_20_1_SUMBER_PENERANGAN": "1",
+          "PK_20_2_DAYA_LISTRIK": "2",
+          "PK_21_1_SUMBER_AIR_MINUM": "3",
+          "PK_21_2_JARAK_TINJA": "2",
+          "PK_22_FASILITAS_JAMBAN": "1",
+          "PK_23_LUAS_RUMAH": 45,
+          "PK_24_JUMLAH_MENETAP": 4,
+          "PK_25_BAHAN_BAKAR_MASAK": "4",
+          "PK_26_KEPEMILIKAN_RUMAH": "1",
+          "PK_27_PESAN_INFORMASI": "1,2,3,4",
+          "PK_28_SUMBER_INFORMASI": "1,8,9",
+          "PK_29_PERSETUJUAN_KELUARGA": "1,2,6,7,8"
         }
       ];
-
-      // 2. DATA SHEET: ANGGOTA_KELUARGA (17 Variabel Lengkap)
+      
       const dataAnggota = [
         {
+          "KODE_KELUARGA": "52010820010100 001001001",
           "NOMOR_KK": "5201082001010001",
-          "NO_URUT": 1,
+          "NOMOR_ANGGOTA_KELUARGA": 1,
           "NAMA_LENGKAP": "AHMAD SUAMI",
           "NIK": "5201080101850001",
-          "HUBUNGAN_DENGAN_KK": "1", // 1: Kepala Keluarga, 2: Istri, 3: Anak, 4: Lainnya
-          "JENIS_KELAMIN": "1", // 1: Laki-laki, 2: Perempuan
+          "HUBUNGAN_DENGAN_KK": "1",
+          "JENIS_KELAMIN": "1",
           "TANGGAL_LAHIR": "1985-01-01",
-          "STATUS_PERKAWINAN": "2", // 1: Belum Kawin, 2: Kawin Tercatat, 3: Kawin Tdk Tercatat, 4: Cerai Hidup Tercatat, 5: Cerai Hidup Tdk Tercatat,6: Cerai Mati
+          "STATUS_PERKAWINAN": "2",
           "USIA_KAWIN_PERTAMA": 24,
-          "MEMILIKI_AKTA_LAHIR": "1", // 1: Ya, 2: Tidak
-          "KODE_IBU_KANDUNG": "00", // 00: Lainnya, atau 02 (Nomor urut ibu)
-          "AGAMA": "1", // 1: Islam, 2: Kristen, 3: Katolik, 4: Hindu, 5: Buddha, 6: Konghucu
-          "JENIS_PEKERJAAN": "8", // 1: Tdk Bekerja, 2: Petani, 3: Nelayan, 4: Pedagang, 5: Pejabat, 6: PNS/TNI/Polri, 7: Swasta, 8: Wiraswasta, dst
-          "PENDIDIKAN": "8", // 1: Tdk Sekolah, 2: Tdk Tamat SD, 3: SD, 4: Tamat SD, 5: SLTP, 6: Tamat SLTP, 7: SLTA, 8: Tamat SLTA, 9: PT, 10: Tamat PT
-          "BEKERJA_LUAR_NEGERI": "4", // 1: Pernah, 2: Sedang, 3: Akan, 4: Tidak
-          "MUTASI_ANGGOTA": "0", // 0: Tetap/Tidak Ada, 1: Pindah Keluar, 2: Meninggal, 3: Lahir Baru, 4: Pindah Datang
-          "GANGGUAN_FUNGSIONAL": "5", // 1: Fisik, 2: Sensorik, 3: Mental, 4: Intelektual, 5: Tidak
-          "MENGURUS_DIRI": "4" // 1: Tdk Dapat, 2: Banyak Kesulitan, 3: Sedikit Kesulitan, 4: Tdk Mengalami Kesulitan
+          "MEMILIKI_AKTA_LAHIR": "1",
+          "KODE_IBU_KANDUNG": "00",
+          "AGAMA": "1",
+          "JENIS_PEKERJAAN": "8",
+          "PENDIDIKAN": "8",
+          "KESERTAAN_JKN": "1",
+          "GANGGUAN_FUNGSIONAL": "5",
+          "KEMAMPUAN_MENGURUS_DIRI": "4",
+          "BEKERJA_LUAR_NEGERI": "4",
+          "MUTASI_ANGGOTA": "0"
         },
         {
+          "KODE_KELUARGA": "52010820010100 001001001",
           "NOMOR_KK": "5201082001010001",
-          "NO_URUT": 2,
+          "NOMOR_ANGGOTA_KELUARGA": 2,
           "NAMA_LENGKAP": "SITI ISTRI",
-          "NIK": "5201084101900002", // NIK ISTRI (Tidak boleh sama dengan istri lain, kecuali 9999999999999999)
-          "HUBUNGAN_DENGAN_KK": "2", // 2: Istri
-          "JENIS_KELAMIN": "2", // 2: Perempuan
+          "NIK": "5201084101900002",
+          "HUBUNGAN_DENGAN_KK": "2",
+          "JENIS_KELAMIN": "2",
           "TANGGAL_LAHIR": "1990-01-01",
           "STATUS_PERKAWINAN": "2",
           "USIA_KAWIN_PERTAMA": 19,
@@ -4630,59 +4638,52 @@
           "AGAMA": "1",
           "JENIS_PEKERJAAN": "1",
           "PENDIDIKAN": "8",
-          "BEKERJA_LUAR_NEGERI": "4",
-          "MUTASI_ANGGOTA": "0",
+          "KESERTAAN_JKN": "1",
           "GANGGUAN_FUNGSIONAL": "5",
-          "MENGURUS_DIRI": "4"
+          "KEMAMPUAN_MENGURUS_DIRI": "4",
+          "BEKERJA_LUAR_NEGERI": "4",
+          "MUTASI_ANGGOTA": "0"
         },
         {
+          "KODE_KELUARGA": "52010820010100 001001001",
           "NOMOR_KK": "5201082001010001",
-          "NO_URUT": 3,
+          "NOMOR_ANGGOTA_KELUARGA": 3,
           "NAMA_LENGKAP": "BUDI ANAK",
           "NIK": "5201081010150003",
-          "HUBUNGAN_DENGAN_KK": "3", // 3: Anak
+          "HUBUNGAN_DENGAN_KK": "3",
           "JENIS_KELAMIN": "1",
           "TANGGAL_LAHIR": "2015-10-10",
           "STATUS_PERKAWINAN": "1",
           "USIA_KAWIN_PERTAMA": "",
           "MEMILIKI_AKTA_LAHIR": "1",
-          "KODE_IBU_KANDUNG": "02", // Menginduk ke No. Urut 2 (Siti Istri)
+          "KODE_IBU_KANDUNG": "02",
           "AGAMA": "1",
           "JENIS_PEKERJAAN": "1",
           "PENDIDIKAN": "3",
-          "BEKERJA_LUAR_NEGERI": "4",
-          "MUTASI_ANGGOTA": "0",
+          "KESERTAAN_JKN": "1",
           "GANGGUAN_FUNGSIONAL": "5",
-          "MENGURUS_DIRI": "4"
+          "KEMAMPUAN_MENGURUS_DIRI": "4",
+          "BEKERJA_LUAR_NEGERI": "4",
+          "MUTASI_ANGGOTA": "0"
         }
       ];
-
-      // 3. SHEET PETUNJUK PENGISIAN KODE
+      
       const petunjuk = [
-        ["PANDUAN FORMAT KODE IMPORT DATA KRS"],
+        ["PANDUAN FORMAT KODE IMPORT DATA KRS / PENDATAAN KELUARGA"],
         [""],
         ["KOLOM", "PILIHAN KODE", "KETERANGAN"],
-        ["HUBUNGAN_DENGAN_KK", "1", "Kepala Keluarga"],
-        ["", "2", "Istri"],
-        ["", "3", "Anak"],
-        ["", "4", "Lainnya"],
-        ["JENIS_KELAMIN", "1", "Laki-laki"],
-        ["", "2", "Perempuan"],
-        ["STATUS_PERKAWINAN", "1", "Belum Kawin"],
-        ["", "2", "Kawin Tercatat"],
-        ["", "3", "Kawin Tidak Tercatat"],
-        ["", "4", "Cerai Hidup Tercatat"],
-        ["", "5", "Cerai Hidup Tidak Tercatat"],
-        ["", "6", "Cerai Mati"],
-        ["KB_07_JENIS_KB", "1: MOW | 2: MOP | 3: IUD | 4: Implant | 5: Suntik | 6: Pil | 7: Kondom | 8: MAL | 9: Tradisional", "Pilihan Alkon"],
-        ["NIK_ISTRI", "Harus 16 Digit Unik", "Tidak boleh ganda dengan istri keluarga lain, kecuali angka dummy: 9999999999999999"]
+        ["STATUS_PERKAWINAN", "1: Belum Kawin | 2: Kawin Tercatat | 3: Kawin Tdk Tercatat | 4: Cerai Hidup Tercatat | 5: Cerai Hidup Tdk Tercatat | 6: Cerai Mati", "6 Status Perkawinan"],
+        ["HUBUNGAN_DENGAN_KK", "1: Kepala Keluarga | 2: Istri | 3: Anak | 4: Lainnya", "Status Hubungan"],
+        ["JENIS_KELAMIN", "1: Laki-laki | 2: Perempuan", "Jenis Kelamin"],
+        ["KB_07_JENIS_KB", "1: MOW | 2: MOP | 3: IUD | 4: Implant | 5: Suntik | 6: Pil | 7: Kondom | 8: MAL | 9: Tradisional", "Alat Kontrasepsi"],
+        ["MULTI SELECT (PK_10_1, PK_14_1, PK_15_1, PK_27, PK_28, PK_29)", "Pisahkan dengan tanda koma (contoh: 1,2,4)", "Jawaban Boleh Lebih Dari Satu"]
       ];
 
       const wsKeluarga = XLSX.utils.json_to_sheet(dataKeluarga);
       const wsAnggota  = XLSX.utils.json_to_sheet(dataAnggota);
       const wsPetunjuk = XLSX.utils.aoa_to_sheet(petunjuk);
 
-      // Kunci format teks string pada kolom nomor identitas agar angka 0 di depan dan 16 digit tidak terpotong
+      // Kunci format kolom teks string agar angka 0 di depan dan 16 digit NIK/KK tidak terpotong
       const setColText = (ws, colList) => {
         if (!ws['!ref']) return;
         const range = XLSX.utils.decode_range(ws['!ref']);
@@ -4690,19 +4691,15 @@
           for (let C of colList) {
             const cell = XLSX.utils.encode_cell({ r: R, c: C });
             if (ws[cell]) {
-              ws[cell].t = 's'; // Tipe string
-              ws[cell].z = '@'; // Format cell text bawaan Excel
+              ws[cell].t = 's';
+              ws[cell].z = '@';
             }
           }
         }
       };
-      
-      setColText(wsKeluarga, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13]);
-      
-      setColText(wsAnggota, [0, 3, 10]);
 
-      setColText(wsKeluarga, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13]);
-      setColText(wsAnggota, [0, 3, 9]);
+      setColText(wsKeluarga, [0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14]);
+      setColText(wsAnggota, [0, 1, 4, 11]);
 
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, wsKeluarga, "KELUARGA");
@@ -7022,40 +7019,49 @@
 
     const dataNilaiPK = {
       pk_01_ibadah: '',
-      pk_02_akta_nikah: '',
-      pk_03_a_tanpa_sapa: '',
-      pk_03_b_pisah_ranjang: '',
-      pk_03_c_minggat: '',
-      pk_03_d_kdrt: '',
-      pk_04_penghasilan: '',
-      pk_05_makanan_beragam: '',
-      pk_06_aset: '',
-      pk_06_aset_jenis: [], // Ubah jadi []
-      pk_07_penyakit_kronis: '',
-      pk_08_disabilitas: '',
-      pk_09_internet: '',
-      pk_10_interaksi: '',
-      pk_11_pengasuhan_bersama: '',
-      pk_12_rekreasi: '',
-      pk_13_gotong_royong: '',
-      pk_14_1_atap: '',
-      pk_14_2_kondisi_atap: '',
-      pk_15_1_dinding: '',
-      pk_15_2_kondisi_dinding: '',
-      pk_16_1_lantai: '',
-      pk_16_2_kondisi_lantai: '',
-      pk_17_1_penerangan: '',
-      pk_17_2_daya_pln: '',
-      pk_18_air_minum: '',
-      pk_19_jamban: '',
-      pk_20_luas_rumah: '',
-      pk_21_jumlah_penghuni: '',
-      pk_22_bahan_bakar: '',
-      pk_23_kepemilikan_rumah: '',
-      pk_24_info_media: '',
-      pk_25_media_sumber: [], // Ubah jadi []
-      pk_26_info_petugas: '',
-      pk_27_petugas_sumber: [] // Ubah jadi []
+      pk_02_toleransi_agama: '',
+      pk_03_1_tanpa_sapa: '',
+      pk_03_2_pisah_ranjang: '',
+      pk_03_3_pergi_rumah: '',
+      pk_03_4_kdrt: '',
+      pk_03_5_kekerasan_anak: '',
+      pk_04_anggota_sakit: '',
+      pk_05_rekreasi: '',
+      pk_06_kegiatan_sosial: '',
+      pk_07_bantuan_orang_lain: '',
+      pk_08_akses_sarana_publik: '',
+      pk_09_aman_nyaman: '',
+      pk_10_makan_dua_kali: '',
+      pk_10_1_jenis_makanan: [],
+      pk_11_akses_internet: '',
+      pk_12_internet_anak: '',
+      pk_13_sumber_penghasilan: '',
+      pk_14_memiliki_aset: '',
+      pk_14_1_jenis_aset: [],
+      pk_15_interaksi_harian: '',
+      pk_15_1_jenis_interaksi: [],
+      pk_16_1_ayah_menemani_anak: '',
+      pk_16_2_ayah_komunikasi: '',
+      pk_16_3_ayah_hak_dasar: '',
+      pk_16_4_ayah_pekerjaan_rumah: '',
+      pk_17_1_jenis_atap: '',
+      pk_17_2_kondisi_atap: '',
+      pk_18_1_jenis_dinding: '',
+      pk_18_2_kondisi_dinding: '',
+      pk_19_1_jenis_lantai: '',
+      pk_19_2_kondisi_lantai: '',
+      pk_20_1_sumber_penerangan: '',
+      pk_20_2_daya_listrik: '',
+      pk_21_1_sumber_air_minum: '',
+      pk_21_2_jarak_tinja: '',
+      pk_22_fasilitas_jamban: '',
+      pk_23_luas_rumah: '',
+      pk_24_jumlah_menetap: '',
+      pk_25_bahan_bakar_masak: '',
+      pk_26_kepemilikan_rumah: '',
+      pk_27_pesan_informasi: [],
+      pk_28_sumber_informasi: [],
+      pk_29_persetujuan_keluarga: []
     };
 
     // Fungsi Render Pilihan Pil
