@@ -1357,34 +1357,31 @@
           </div>
         </div>
 
-        <!-- STEP 4: IV. BLOK PEMBANGUNAN KELUARGA (SATU PER SATU GAYA KRS) -->
+        <!-- STEP 4: IV. BLOK PEMBANGUNAN KELUARGA (01 s.d. 29) -->
         <div id="hal_pembangunan" class="halaman-form space-y-5">
           <div class="flex justify-between items-center border-b pb-2">
             <div>
               <h2 class="text-sm sm:text-base font-bold text-slate-800">IV. Pembangunan Keluarga</h2>
-              <p class="text-[11px] text-slate-500">Kondisi perumahan, sanitasi, sosial, dan ketahanan</p>
+              <p class="text-[11px] text-slate-500">Kondisi ketahanan keluarga, perumahan, sanitasi, dan lingkungan</p>
             </div>
-            <span id="label_langkah_pk" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              Langkah 1/23
+            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-200">
+              Blok III (PK 01 - 29)
             </span>
           </div>
 
-          <div class="kartu-krs min-h-[320px] flex flex-col justify-between">
-            <div id="kontainer_step_pk" class="space-y-4">
-              <!-- Pertanyaan PK akan dimuat di sini secara bergantian -->
-            </div>
+          <!-- Wadah Tempat Seluruh Kartu Pertanyaan PK Dirender -->
+          <div id="wadahPertanyaanPK" class="space-y-4"></div>
 
-            <!-- Tombol Navigasi Bawah -->
-            <div class="flex justify-between items-center pt-6 border-t mt-6">
-              <button type="button" onclick="mundurStepPK()"
-                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
-                <span>&larr; Sebelumnya</span>
-              </button>
-              <button type="button" onclick="majuStepPK()"
-                      class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
-                <span>Selanjutnya &rarr;</span>
-              </button>
-            </div>
+          <!-- Tombol Navigasi Bawah -->
+          <div class="flex justify-between items-center pt-6 border-t mt-6">
+            <button type="button" onclick="mundurDariPK()"
+                    class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+              <span>&larr; Sebelumnya (Blok KB)</span>
+            </button>
+            <button type="button" onclick="bukaHalamanReview()"
+                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
+              <span>Selanjutnya (Pratinjau) &rarr;</span>
+            </button>
           </div>
         </div>
 
@@ -6256,195 +6253,446 @@
     let riwayatStepPK = [];
     const daftarPertanyaanPK = [
       {
-        id: 'pk_01_ibadah',
-        judul: '01. Anggota keluarga (10 th+) menjalankan ibadah secara rutin?',
+        id: 'pk_01',
+        nomor: '01',
+        teks: 'Selama 1 bulan terakhir, setiap anggota keluarga berusia 10 tahun ke atas menjalankan kegiatan ibadah secara rutin',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_02',
+        nomor: '02',
+        teks: 'Selama 1 bulan terakhir, setiap anggota keluarga menerapkan toleransi beragama',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_03_1',
+        nomor: '03.1',
+        teks: 'Selama 3 bulan terakhir, terdapat konflik antar anggota keluarga: Tanpa tegur sapa (selama 3 hari berturut-turut)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_03_2',
+        nomor: '03.2',
+        teks: 'Selama 3 bulan terakhir, terdapat konflik: Pisah ranjang antara suami dan istri (selama 7 hari berturut-turut)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }, { val: '3', label: 'Tidak Berlaku', autoDisable: 'non_pus' }]
+      },
+      {
+        id: 'pk_03_3',
+        nomor: '03.3',
+        teks: 'Selama 3 bulan terakhir, terdapat konflik: Pergi dari rumah/minggat (selama 2 hari berturut-turut)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_03_4',
+        nomor: '03.4',
+        teks: 'Selama 3 bulan terakhir, terdapat kekerasan dalam rumah tangga (fisik, seksual, psikologis)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_03_5',
+        nomor: '03.5',
+        teks: 'Selama 3 bulan terakhir, terdapat kekerasan kepada anak berusia 0 - 17 tahun (fisik, seksual, psikologis)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }, { val: '3', label: 'Tidak Berlaku', autoDisable: 'no_anak_0_17' }]
+      },
+      {
+        id: 'pk_04',
+        nomor: '04',
+        teks: 'Selama 1 bulan terakhir, terdapat anggota keluarga yang sakit (4 hari berturut-turut) karena penyakit kronis/akut/kritis sehingga meninggalkan aktivitas',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_05',
+        nomor: '05',
+        teks: 'Selama 3 bulan terakhir, apakah keluarga pernah berekreasi bersama di luar rumah?',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_06',
+        nomor: '06',
+        teks: 'Selama 3 bulan terakhir, apakah keluarga pernah ikut serta dalam kegiatan sosial/gotong royong?',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_07',
+        nomor: '07',
+        teks: 'Selama 3 bulan terakhir, apakah keluarga pernah memberikan pertolongan/bantuan kepada orang lain?',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_08',
+        nomor: '08',
+        teks: 'Apakah keluarga dapat mengakses sarana prasarana publik yang ada di lingkungan tempat tinggal dengan mudah?',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_09',
+        nomor: '09',
+        teks: 'Apakah keluarga merasa aman dan nyaman tinggal di lingkungan tempat tinggal?',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_10',
+        nomor: '10',
+        teks: 'Selama 1 minggu terakhir, anggota keluarga makan paling sedikit dua kali sehari',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_10_1',
+        nomor: '10.1',
+        teks: 'Jika Ya, jenis makanan beragam yang dikonsumsi (boleh pilih lebih dari satu):',
+        induk: 'pk_10',
+        syaratNilai: ['1'],
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Makanan pokok/sumber karbohidrat' },
+          { val: '2', label: '2. Sumber protein hewani' },
+          { val: '3', label: '3. Sumber protein nabati' },
+          { val: '4', label: '4. Sayuran/buah-buahan' }
+        ]
+      },
+      {
+        id: 'pk_11',
+        nomor: '11',
+        teks: 'Selama 3 bulan terakhir, terdapat paling sedikit satu anggota keluarga yang mengakses informasi dari media online (internet)',
+        opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }]
+      },
+      {
+        id: 'pk_12',
+        nomor: '12',
+        teks: 'Selama 3 bulan terakhir, terdapat anak berusia 0 - 17 tahun yang mengakses informasi dari media online (internet) dan mendapatkan pendampingan orang tua',
+        opsi: [
+          { val: '1', label: '1. Ya, dan didampingi' },
+          { val: '2', label: '2. Ya, namun tidak didampingi' },
+          { val: '3', label: '3. Tidak mengakses' },
+          { val: '4', label: '4. Tidak berlaku', autoDisable: 'no_anak_0_17' }
+        ]
+      },
+      {
+        id: 'pk_13',
+        nomor: '13',
+        teks: 'Selama 3 bulan terakhir, terdapat paling sedikit satu anggota keluarga yang memiliki sumber penghasilan dan mampu memenuhi kebutuhan pokok per bulan',
+        opsi: [
+          { val: '1', label: '1. Ya, dan cukup memenuhi' },
+          { val: '2', label: '2. Ya, namun tidak cukup memenuhi' },
+          { val: '3', label: '3. Tidak memiliki' }
+        ]
+      },
+      {
+        id: 'pk_14',
+        nomor: '14',
+        teks: 'Keluarga memiliki aset',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_02_akta_nikah',
-        judul: '02. Keluarga memiliki buku/akta nikah sah?',
+        id: 'pk_14_1',
+        nomor: '14.1',
+        teks: 'Jika Ya, jenis aset yang dimiliki (boleh pilih lebih dari satu):',
+        induk: 'pk_14',
+        syaratNilai: ['1'],
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Tabungan (uang tunai / rekening aktif)' },
+          { val: '2', label: '2. AC' },
+          { val: '3', label: '3. Televisi layar datar' },
+          { val: '4', label: '4. Lemari es / kulkas' },
+          { val: '5', label: '5. Komputer / laptop' },
+          { val: '6', label: '6. Sepeda motor' },
+          { val: '7', label: '7. Mobil' },
+          { val: '8', label: '8. Kapal / perahu motor / perahu' },
+          { val: '9', label: '9. Emas / perhiasan (minimal 10 gram)' },
+          { val: '10', label: '10. Hewan ternak' },
+          { val: '11', label: '11. Lahan' },
+          { val: '12', label: '12. Rumah di tempat lain' }
+        ]
+      },
+      {
+        id: 'pk_15',
+        nomor: '15',
+        teks: 'Selama 3 bulan terakhir, apakah setiap anggota keluarga memiliki waktu untuk berinteraksi setiap hari?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_03_konflik',
-        tipe: 'konflik_keluarga',
-        judul: '03. Konflik dalam keluarga 6 bulan terakhir:'
+        id: 'pk_15_1',
+        nomor: '15.1',
+        teks: 'Jika Ya, jenis interaksi dilakukan (boleh pilih lebih dari satu):',
+        induk: 'pk_15',
+        syaratNilai: ['1'],
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Berkomunikasi' },
+          { val: '2', label: '2. Curhat / membagi perasaan satu sama lain' },
+          { val: '3', label: '3. Melakukan aktivitas bersama' }
+        ]
       },
       {
-        id: 'pk_04_penghasilan',
-        judul: '04. Terdapat anggota keluarga yang memiliki sumber penghasilan tetap per bulan?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_16_1',
+        nomor: '16.1',
+        teks: 'Selama 1 minggu terakhir, apakah ayah ikut melakukan pengasuhan: Menemani anak (bersepeda, berekreasi, menggambar, mengantar sekolah, bermain, belajar, bercerita, dan lain-lain)',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak berlaku', autoDisable: 'no_ayah_anak' }]
       },
       {
-        id: 'pk_05_makanan_beragam',
-        judul: '05. Makan makanan beragam (pokok, sayur/buah, lauk) minimal 2x sehari?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_16_2',
+        nomor: '16.2',
+        teks: 'Selama 1 minggu terakhir, apakah ayah ikut: Menyediakan waktu berkomunikasi dengan anak',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak berlaku', autoDisable: 'no_ayah_anak' }]
       },
       {
-        id: 'pk_06_aset',
-        tipe: 'aset_keluarga',
-        judul: '06. Kepemilikan aset oleh keluarga:'
+        id: 'pk_16_3',
+        nomor: '16.3',
+        teks: 'Selama 1 minggu terakhir, apakah ayah ikut: Memenuhi hak dasar anak (makanan, pakaian, tempat tinggal, kesehatan, pendidikan, hak legalitas, dll) dan terlibat dalam pengambilan keputusan',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak berlaku', autoDisable: 'no_ayah_anak' }]
       },
       {
-        id: 'pk_07_penyakit_kronis',
-        judul: '07. Terdapat anggota keluarga yang memiliki penyakit kronis?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_16_4',
+        nomor: '16.4',
+        teks: 'Selama 1 minggu terakhir, apakah ayah ikut: Terlibat dalam pekerjaan rumah (mencuci pakaian, menyapu lantai, memperbaiki rumah, belanja, dan lain-lain)',
+        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak berlaku', autoDisable: 'no_ayah_anak' }]
       },
       {
-        id: 'pk_08_disabilitas',
-        judul: '08. Terdapat anggota keluarga yang disabilitas?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_17_1',
+        nomor: '17.1',
+        teks: 'Jenis atap rumah terluas:',
+        opsi: [
+          { val: '1', label: '1. Beton' },
+          { val: '2', label: '2. Genteng' },
+          { val: '3', label: '3. Seng' },
+          { val: '4', label: '4. Asbes' },
+          { val: '5', label: '5. Kayu / sirap' },
+          { val: '6', label: '6. Bambu' },
+          { val: '7', label: '7. Jerami / ijuk / rumbia / daun-daunan' },
+          { val: '8', label: '8. Lainnya' }
+        ]
       },
       {
-        id: 'pk_09_internet',
-        judul: '09. Anggota keluarga mengakses informasi dari media internet?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_17_2',
+        nomor: '17.2',
+        teks: 'Kondisi atap:',
+        opsi: [
+          { val: '1', label: '1. Baik' },
+          { val: '2', label: '2. Rusak ringan' },
+          { val: '3', label: '3. Rusak berat' }
+        ]
       },
       {
-        id: 'pk_10_interaksi',
-        judul: '10. Memiliki waktu interaksi antar anggota keluarga setiap hari?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_18_1',
+        nomor: '18.1',
+        teks: 'Jenis dinding rumah terluas:',
+        opsi: [
+          { val: '1', label: '1. Tembok' },
+          { val: '2', label: '2. Plesteran anyaman bambu / kawat' },
+          { val: '3', label: '3. Kayu / papan / gipsum' },
+          { val: '4', label: '4. Anyaman bambu' },
+          { val: '5', label: '5. Batang kayu' },
+          { val: '6', label: '6. Bambu' },
+          { val: '7', label: '7. Lainnya' }
+        ]
       },
       {
-        id: 'pk_11_pengasuhan_bersama',
-        judul: '11. Pengasuhan anak dilakukan bersama antara suami dan istri?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }, { val: '3', label: '3. Tidak Berlaku' }]
+        id: 'pk_18_2',
+        nomor: '18.2',
+        teks: 'Kondisi dinding:',
+        opsi: [
+          { val: '1', label: '1. Baik' },
+          { val: '2', label: '2. Rusak ringan' },
+          { val: '3', label: '3. Rusak berat' }
+        ]
       },
       {
-        id: 'pk_12_rekreasi',
-        judul: '12. Rekreasi bersama di luar rumah dalam 6 bulan terakhir?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_19_1',
+        nomor: '19.1',
+        teks: 'Jenis lantai rumah terluas:',
+        opsi: [
+          { val: '1', label: '1. Marmer / granit' },
+          { val: '2', label: '2. Keramik' },
+          { val: '3', label: '3. Parket / vinil / karpet' },
+          { val: '4', label: '4. Ubin / tegel / teraso' },
+          { val: '5', label: '5. Kayu / papan' },
+          { val: '6', label: '6. Semen / bata merah' },
+          { val: '7', label: '7. Bambu' },
+          { val: '8', label: '8. Tanah' },
+          { val: '9', label: '9. Lainnya' }
+        ]
       },
       {
-        id: 'pk_13_gotong_royong',
-        judul: '13. Mengikuti kegiatan sosial / gotong royong di lingkungan RT?',
-        opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
+        id: 'pk_19_2',
+        nomor: '19.2',
+        teks: 'Kondisi lantai:',
+        opsi: [
+          { val: '1', label: '1. Baik' },
+          { val: '2', label: '2. Rusak ringan' },
+          { val: '3', label: '3. Rusak berat' }
+        ]
       },
       {
-        id: 'pk_14_atap',
-        tipe: 'dua_tingkat',
-        judulUtama: '14. Jenis atap rumah terluas?',
-        opsiUtama: [
-          { val: '1', label: '1. Beton' }, { val: '2', label: '2. Genteng' }, { val: '3', label: '3. Seng' },
-          { val: '4', label: '4. Asbes' }, { val: '5', label: '5. Kayu/sirap' }, { val: '6', label: '6. Bambu' },
-          { val: '7', label: '7. Jerami/ijuk/rumbia/daun-daunan' }, { val: '8', label: '8. Lainnya' }
-        ],
-        judulSub: '14.1. Kondisi atap?',
-        opsiSub: [
-          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
-        ],
-        fieldUtama: 'pk_14_1_atap',
-        fieldSub: 'pk_14_2_kondisi_atap'
+        id: 'pk_20_1',
+        nomor: '20.1',
+        teks: 'Sumber penerangan utama:',
+        opsi: [
+          { val: '1', label: '1. Listrik PLN meteran' },
+          { val: '2', label: '2. Listrik PLN non-meteran' },
+          { val: '3', label: '3. Listrik non-PLN (aki / genset / solar cell / tenaga surya mandiri)' },
+          { val: '4', label: '4. Bukan listrik' }
+        ]
       },
       {
-        id: 'pk_15_dinding',
-        tipe: 'dua_tingkat',
-        judulUtama: '15. Jenis dinding rumah terluas?',
-        opsiUtama: [
-          { val: '1', label: '1. Tembok' }, { val: '2', label: '2. Plesteran anyaman bambu/kawat' },
-          { val: '3', label: '3. Kayu/papan/gipsum' }, { val: '4', label: '4. Anyaman bambu' },
-          { val: '5', label: '5. Batang kayu' }, { val: '6', label: '6. Bambu' }, { val: '7', label: '7. Lainnya' }
-        ],
-        judulSub: '15.1. Kondisi dinding?',
-        opsiSub: [
-          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
-        ],
-        fieldUtama: 'pk_15_1_dinding',
-        fieldSub: 'pk_15_2_kondisi_dinding'
+        id: 'pk_20_2',
+        nomor: '20.2',
+        teks: 'Jika 20.1 dijawab kode 1, besar daya terpasang:',
+        induk: 'pk_20_1',
+        syaratNilai: ['1'],
+        opsi: [
+          { val: '1', label: '1. 450 watt' },
+          { val: '2', label: '2. 900 watt' },
+          { val: '3', label: '3. 1.300 watt' },
+          { val: '4', label: '4. > 1.300 watt' }
+        ]
       },
       {
-        id: 'pk_16_lantai',
-        tipe: 'dua_tingkat',
-        judulUtama: '16. Jenis lantai rumah terluas?',
-        opsiUtama: [
-          { val: '1', label: '1. Marmer/granit' }, { val: '2', label: '2. Keramik' }, { val: '3', label: '3. Parket/vinil/karpet' },
-          { val: '4', label: '4. Ubin/tegel/teraso' }, { val: '5', label: '5. Kayu/papan' }, { val: '6', label: '6. Semen/bata merah' },
-          { val: '7', label: '7. Bambu' }, { val: '8', label: '8. Tanah' }, { val: '9', label: '9. Lainnya' }
-        ],
-        judulSub: '16.1. Kondisi lantai?',
-        opsiSub: [
-          { val: '1', label: '1. Baik' }, { val: '2', label: '2. Rusak ringan' }, { val: '3', label: '3. Rusak berat' }
-        ],
-        fieldUtama: 'pk_16_1_lantai',
-        fieldSub: 'pk_16_2_kondisi_lantai'
-      },
-      {
-        id: 'pk_17_penerangan',
-        tipe: 'penerangan',
-        judul: '17. Sumber penerangan utama?'
-      },
-      {
-        id: 'pk_18_air_minum',
-        tipe: 'pilihan_banyak',
-        judul: '18. Sumber Air Minum Utama?',
+        id: 'pk_21_1',
+        nomor: '21.1',
+        teks: 'Sumber air minum utama:',
         opsi: [
           { val: '1', label: '1. Air kemasan bermerek' },
           { val: '2', label: '2. Air isi ulang' },
-          { val: '3', label: '3. Leding/PAM' },
-          { val: '4', label: '4. Sumur bor/pompa' },
+          { val: '3', label: '3. Leding / PAM' },
+          { val: '4', label: '4. Sumur bor / pompa' },
           { val: '5', label: '5. Sumur terlindung' },
-          { val: '6', label: '6. Sumur tak terlindungi' },
-          { val: '7', label: '7. Mata air terlindungi' },
-          { val: '8', label: '8. Mata air tak terlindungi' },
-          { val: '9', label: '9. Air permukaan (sungai/danau/waduk/kolam/irigasi)' },
-          { val: '10', label: '10. Kran umum/hidran umum/terminal air' },
+          { val: '6', label: '6. Sumur tak terlindung' },
+          { val: '7', label: '7. Mata air terlindung' },
+          { val: '8', label: '8. Mata air tak terlindung' },
+          { val: '9', label: '9. Air permukaan (sungai / danau / waduk / kolam / irigasi)' },
+          { val: '10', label: '10. Kran umum / hidran umum / terminal air' },
           { val: '11', label: '11. Penampungan Air Hujan (PAH)' },
           { val: '12', label: '12. Lainnya' }
         ]
       },
       {
-        id: 'pk_19_jamban',
-        tipe: 'pilihan_banyak',
-        judul: '19. Memiliki fasilitas tempat buang air besar?',
+        id: 'pk_21_2',
+        nomor: '21.2',
+        teks: 'Jika 21.1 dijawab kode 4, 5, 6, 7, atau 8, berapa jarak ke tempat penampungan kotoran/tinja terdekat?',
+        induk: 'pk_21_1',
+        syaratNilai: ['4', '5', '6', '7', '8'],
         opsi: [
-          { val: '1', label: '1. Jamban milik sendiri dengan leher angsa dan tangki septik/IPAL dan disedot berkala (1x dlm 3-5 thn)' },
-          { val: '2', label: '2. Jamban milik sendiri dengan leher angsa dan tangki septik/IPAL' },
-          { val: '3', label: '3. Jamban pada MCK komunal dengan leher angsa dan tangki septik/IPAL' },
-          { val: '4', label: '4. Lainnya' },
-          { val: '5', label: '5. Tidak Ada' }
+          { val: '1', label: '1. < 10 meter' },
+          { val: '2', label: '2. >= 10 meter' }
         ]
       },
       {
-        id: 'pk_20_luas_rumah',
-        tipe: 'angka',
-        judul: '20. Luas rumah/bangunan keseluruhan?',
-        satuan: 'm²',
-        default: ''
-      },
-      {
-        id: 'pk_21_jumlah_penghuni',
-        tipe: 'angka',
-        judul: '21. Jumlah orang yang tinggal dalam bangunan rumah?',
-        satuan: 'Orang',
-        default: ''
-      },
-      {
-        id: 'pk_22_bahan_bakar',
-        tipe: 'pilihan_banyak',
-        judul: '22. Bahan bakar utama untuk memasak?',
+        id: 'pk_22',
+        nomor: '22',
+        teks: 'Apakah memiliki fasilitas tempat buang air besar?',
         opsi: [
-          { val: '1', label: '1. Listrik' }, { val: '2', label: '2. Gas 12 kg' }, { val: '3', label: '3. Gas 5,5 kg / Blue Gaz' },
-          { val: '4', label: '4. Gas 3 kg' }, { val: '5', label: '5. Minyak tanah' }, { val: '6', label: '6. Briket/arang/kayu' }, { val: '7', label: '7. Lainnya' }
+          { val: '1', label: '1. Ya, milik sendiri leher angsa & tangki septik/IPAL (disedot berkala 3-5 th)' },
+          { val: '2', label: '2. Ya, milik sendiri leher angsa & tangki septik/IPAL' },
+          { val: '3', label: '3. Ya, MCK komunal leher angsa & tangki septik/IPAL' },
+          { val: '4', label: '4. Ya, lainnya' },
+          { val: '5', label: '5. Tidak ada' }
         ]
       },
       {
-        id: 'pk_23_kepemilikan_rumah',
-        tipe: 'pilihan_banyak',
-        judul: '23. Kepemilikan rumah/bangunan tempat tinggal?',
+        id: 'pk_23',
+        nomor: '23',
+        teks: 'Luas rumah / bangunan keseluruhan (m²):',
+        tipe: 'number',
+        placeholder: 'Contoh: 72'
+      },
+      {
+        id: 'pk_24',
+        nomor: '24',
+        teks: 'Orang yang tinggal dan menetap di rumah/bangunan ini (orang):',
+        tipe: 'number',
+        placeholder: 'Contoh: 4'
+      },
+      {
+        id: 'pk_25',
+        nomor: '25',
+        teks: 'Bahan bakar utama untuk memasak:',
         opsi: [
-          { val: '1', label: '1. Milik sendiri' }, { val: '2', label: '2. Kontrak/sewa' },
-          { val: '3', label: '3. Bebas sewa/menumpang' }, { val: '4', label: '4. Dinas' }, { val: '5', label: '5. Lainnya' }
+          { val: '1', label: '1. Listrik' },
+          { val: '2', label: '2. Gas 12 kg' },
+          { val: '3', label: '3. Gas 5,5 kg / blue gaz' },
+          { val: '4', label: '4. Gas 3 kg' },
+          { val: '5', label: '5. Minyak tanah' },
+          { val: '6', label: '6. Briket / arang / kayu' },
+          { val: '7', label: '7. Lainnya' }
         ]
       },
       {
-        id: 'pk_24_info_media',
-        tipe: 'media_informasi',
-        judul: '24. Informasi program Bangga Kencana dari media:'
+        id: 'pk_26',
+        nomor: '26',
+        teks: 'Kepemilikan rumah / bangunan tempat tinggal:',
+        opsi: [
+          { val: '1', label: '1. Milik sendiri, ada sertifikat / bukti sah' },
+          { val: '2', label: '2. Milik sendiri, tanpa sertifikat / bukti sah' },
+          { val: '3', label: '3. Kontrak / sewa' },
+          { val: '4', label: '4. Bebas sewa / menumpang' },
+          { val: '5', label: '5. Dinas' },
+          { val: '6', label: '6. Lainnya' }
+        ]
       },
       {
-        id: 'pk_26_info_petugas',
-        tipe: 'petugas_informasi',
-        judul: '25. Informasi program Bangga Kencana & Stunting dari petugas:'
+        id: 'pk_27',
+        nomor: '27',
+        teks: 'Keluarga pernah mendengar/melihat pesan atau informasi mengenai (boleh pilih lebih dari satu):',
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Kependudukan' },
+          { val: '2', label: '2. Pembangunan keluarga' },
+          { val: '3', label: '3. Stunting' },
+          { val: '4', label: '4. Kontrasepsi' },
+          { val: '5', label: '5. Organ reproduksi' },
+          { val: '6', label: '6. Pubertas' },
+          { val: '7', label: '7. Keguguran' },
+          { val: '8', label: '8. Masa subur dan kehamilan' },
+          { val: '9', label: '9. Kekerasan seksual' },
+          { val: '10', label: '10. Penyakit menular seksual' },
+          { val: '11', label: '11. Menopause' },
+          { val: '12', label: '12. Disfungsional reproduksi' },
+          { val: '13', label: '13. Hak-hak reproduksi' },
+          { val: '14', label: '14. Orientasi seksual' },
+          { val: '15', label: '15. Infertilitas' }
+        ]
+      },
+      {
+        id: 'pk_28',
+        nomor: '28',
+        teks: 'Jika 27 dijawab minimal satu informasi, dari mana informasi tersebut diperoleh? (boleh pilih lebih dari satu):',
+        induk: 'pk_27',
+        syaratMultiNotEmpty: true,
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Media sosial (FB/IG/X/TikTok/WA/YouTube/Blog/Web)' },
+          { val: '2', label: '2. Pertemuan poktan/konseling/pengajian/seminar/workshop' },
+          { val: '3', label: '3. Leaflet / lembar balik / poster' },
+          { val: '4', label: '4. Umbul-umbul / billboard / mural / souvenir' },
+          { val: '5', label: '5. Media tradisional (wayang/tarian/pentas budaya lokal)' },
+          { val: '6', label: '6. Koran / majalah / tabloid' },
+          { val: '7', label: '7. Televisi / radio / videotron' },
+          { val: '8', label: '8. Petugas KB (PKB / PLKB / petugas lapangan lainnya)' },
+          { val: '9', label: '9. Kader / IMP / Tim Pendamping Keluarga (TPK)' },
+          { val: '10', label: '10. Pejabat pemerintah / perangkat desa / RW / RT' },
+          { val: '11', label: '11. Guru / dosen' },
+          { val: '12', label: '12. Tokoh agama' },
+          { val: '13', label: '13. Tokoh masyarakat' },
+          { val: '14', label: '14. Dokter / bidan / perawat' },
+          { val: '15', label: '15. Lainnya' }
+        ]
+      },
+      {
+        id: 'pk_29',
+        nomor: '29',
+        teks: 'Apakah keluarga setuju dengan (boleh pilih lebih dari satu):',
+        tipe: 'multi',
+        opsi: [
+          { val: '1', label: '1. Penggunaan kontrasepsi' },
+          { val: '2', label: '2. Pemeriksaan selama kehamilan' },
+          { val: '3', label: '3. KB pascapersalinan' },
+          { val: '4', label: '4. KB pria' },
+          { val: '5', label: '5. Konsultasi fertilitas bagi pasangan yang belum memiliki anak' },
+          { val: '6', label: '6. Kepemilikan dokumen kependudukan (KK/KTP/Akta/Buku Nikah)' },
+          { val: '7', label: '7. Pengasuhan untuk mendukung pertumbuhan' },
+          { val: '8', label: '8. Interaksi antar anggota keluarga yang dilakukan setiap hari' }
+        ]
       }
     ];
 
@@ -6842,6 +7090,7 @@
     }
 
     function majuStepKB() {      
+      // 1. Validasi Langkah 01 (Riwayat Anak Lahir & Masih Hidup)
       if (indexStepKB === 0) {
         const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
         if (jmlLahir > 0) {
@@ -6879,31 +7128,34 @@
       
       riwayatStepKB.push(indexStepKB);
       
+      // 2. Alur Percabangan Pertanyaan KB
       if (indexStepKB === 2 && dataNilaiKB.kb_03_sedang_hamil === '1') {
         indexStepKB = 4; // Jika hamil, lompat langsung ke 05 (melewati 04)
       } else if (indexStepKB === 3 && dataNilaiKB.kb_04_sedang_kb === '1') {
         indexStepKB = 6; // Jika sedang KB, langsung ke 07 (melewati 05 & 06)
       } else if (indexStepKB === 4 && dataNilaiKB.kb_05_pernah_kb === '2' && dataNilaiKB.kb_04_sedang_kb === '2') {
         indexStepKB = 5; // Jawab alasan tidak KB (06)
-      } else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {        
-        indexStepPK = 0;
-        riwayatStepPK = [];
+      } 
+      // KONDISI A: Tidak pernah KB dan tidak sedang KB -> Langsung masuk ke Blok PK
+      else if (indexStepKB === 5 && dataNilaiKB.kb_04_sedang_kb === '2' && dataNilaiKB.kb_05_pernah_kb === '2') {        
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-        tampilkanStepPK();
+        renderBlokPK();
         return;
-      } else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {        
-        indexStepPK = 0;
-        riwayatStepPK = [];
+      } 
+      // KONDISI B: KB Tradisional (kode 9) -> Langsung masuk ke Blok PK
+      else if (indexStepKB === 6 && dataNilaiKB.kb_07_jenis_kb === '9') {        
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-        tampilkanStepPK();
+        renderBlokPK();
         return;
-      } else if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
-        indexStepPK = 0;
-        riwayatStepPK = [];
+      } 
+      // KONDISI C: Langkah KB selesai secara normal (pertanyaan 09 selesai) -> Masuk ke Blok PK
+      else if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-        tampilkanStepPK();
+        renderBlokPK();
         return;
-      } else {
+      } 
+      // Langkah berikutnya di Blok KB
+      else {
         indexStepKB++;
       }
       
@@ -6919,216 +7171,151 @@
       }
     }
 
-    // ========================================================
-    // LOGIKA RENDER STEP BLOK PEMBANGUNAN KELUARGA
-    // ========================================================
-    function tampilkanStepPK() {
-      const kontainer = document.getElementById('kontainer_step_pk');
-      const labelLangkah = document.getElementById('label_langkah_pk');
+    // Objek penyimpan nilai formulir Blok PK
+    let nilaiJawabanPK = {};
+
+    function renderBlokPK() {
+      const kontainer = document.getElementById('wadahPertanyaanPK');
       if (!kontainer) return;
 
-      labelLangkah.innerText = `Langkah ${indexStepPK + 1} / ${daftarPertanyaanPK.length}`;
-      const q = daftarPertanyaanPK[indexStepPK];
+      // Evaluasi data anggota keluarga dari formulir Blok II
+      const anggotaEls = document.querySelectorAll('.item-anggota-page');
+      let adaSuamiIstri = false;
+      let adaAnak0_17 = false;
+      let adaAyah = false;
+
+      anggotaEls.forEach(el => {
+        const hub = el.querySelector('[name="hubungan_dengan_kk"]')?.value;
+        const jk = el.querySelector('[name="jenis_kelamin"]')?.value;
+        const tgl = el.querySelector('[name="tanggal_lahir"]')?.value;
+        const usia = tgl ? hitungUsiaTahun(tgl) : 99;
+
+        if (hub === '1' && jk === '1') adaAyah = true;
+        if (hub === '2') adaSuamiIstri = true;
+        if (hub === '3' && usia >= 0 && usia <= 17) adaAnak0_17 = true;
+      });
+
       let html = '';
 
-      // 1. Tipe Bertingkat (Atap, Dinding, Lantai)
-      if (q.tipe === 'dua_tingkat') {
-        html = `
-          <div class="judul-tanya-krs">${q.judulUtama}</div>
-          ${buatPilHTML('PK', q.fieldUtama, q.opsiUtama, dataNilaiPK[q.fieldUtama])}
-          <div class="pt-4 border-t mt-4">
-            <div class="judul-tanya-krs">${q.judulSub}</div>
-            ${buatPilHTML('PK', q.fieldSub, q.opsiSub, dataNilaiPK[q.fieldSub])}
-          </div>
-        `;
-      } 
-      // 2. Tipe Input Angka (Luas Rumah, Jumlah Penghuni)
-      else if (q.tipe === 'angka') {
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          <div class="flex items-center gap-2 pt-2">
-            <input type="number" min="0" value="${dataNilaiPK[q.id] || q.default}" 
-                   oninput="dataNilaiPK['${q.id}'] = parseInt(this.value, 10) || 0"
-                   class="w-24 px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-bold text-center outline-none focus:border-blue-500" />
-            <span class="text-slate-600 font-medium">${q.satuan}</span>
-          </div>
-        `;
-      } 
-      // 3. Sumber Penerangan & Daya PLN
-      else if (q.tipe === 'penerangan') {
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          ${buatPilHTML('PK', 'pk_17_1_penerangan', [
-            { val: '1', label: '1. Listrik PLN meteran' },
-            { val: '2', label: '2. Listrik PLN non meteran' },
-            { val: '3', label: '3. Listrik non-PLN' },
-            { val: '4', label: '4. Bukan listrik' }
-          ], dataNilaiPK.pk_17_1_penerangan)}
-          ${dataNilaiPK.pk_17_1_penerangan === '1' ? `
-            <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">17.1. Daya terpasang?</div>
-              ${buatPilHTML('PK', 'pk_17_2_daya_pln', [
-                { val: '1', label: '1. 450 watt' }, { val: '2', label: '2. 900 watt' },
-                { val: '3', label: '3. 1.300 watt' }, { val: '4', label: '4. > 1.300 watt' }
-              ], dataNilaiPK.pk_17_2_daya_pln)}
-            </div>
-          ` : ''}
-        `;
-      } 
-      // 4. Konflik Dalam Keluarga (Terkunci jika KK Tidak Berpasangan)
-      else if (q.tipe === 'konflik_keluarga') {
-        const kkSendiri = isKepalaKeluargaTidakBerpasangan();
-        if (kkSendiri) {
-          dataNilaiPK.pk_03_b_pisah_ranjang = '3'; // Otomatis 3: Tidak Berlaku
+      daftarPertanyaanPK.forEach(p => {
+        // Cek syarat kondisional dependensi
+        let tampil = true;
+        if (p.induk) {
+          const valInduk = nilaiJawabanPK[p.induk];
+          if (p.syaratNilai && !p.syaratNilai.includes(valInduk)) {
+            tampil = false;
+          }
+          if (p.syaratMultiNotEmpty && (!Array.isArray(valInduk) || valInduk.length === 0)) {
+            tampil = false;
+          }
         }
 
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          <div class="space-y-3 pt-2">
-            <div>
-              <p class="text-xs text-slate-700 font-semibold mb-1">a. Tanpa tegur sapa (3 hari berturut)?</p>
-              ${buatPilHTML('PK', 'pk_03_a_tanpa_sapa', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_a_tanpa_sapa)}
-            </div>
+        const kelasTampil = tampil ? '' : 'hidden';
 
-            <div>
-              <p class="text-xs text-slate-700 font-semibold mb-1">b. Pisah ranjang suami-istri (7 hari berturut)?</p>
-              ${kkSendiri ? `
-                <div class="flex items-center gap-2 pt-1">
-                  <span class="px-3 py-1.5 bg-slate-100 border border-slate-300 text-slate-500 font-bold rounded-lg text-xs cursor-not-allowed">
-                    3. Tidak Berlaku (Terkunci: KK Tidak Berpasangan)
-                  </span>
-                </div>
-              ` : `
-                ${buatPilHTML('PK', 'pk_03_b_pisah_ranjang', [
-                  { val: '1', label: '1. Ya' },
-                  { val: '2', label: '2. Tidak' },
-                  { val: '3', label: '3. Tidak Berlaku' }
-                ], dataNilaiPK.pk_03_b_pisah_ranjang)}
-              `}
-            </div>
-
-            <div>
-              <p class="text-xs text-slate-700 font-semibold mb-1">c. Pergi dari rumah/minggat (2 hari berturut)?</p>
-              ${buatPilHTML('PK', 'pk_03_c_minggat', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_c_minggat)}
-            </div>
-
-            <div>
-              <p class="text-xs text-slate-700 font-semibold mb-1">d. Kekerasan dalam rumah tangga (KDRT)?</p>
-              ${buatPilHTML('PK', 'pk_03_d_kdrt', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_03_d_kdrt)}
-            </div>
-          </div>
-        `;
-      } 
-      // 5. Kepemilikan Aset Keluarga (Pilihan Jamak)
-      else if (q.tipe === 'aset_keluarga') {
-        html = `
-          <div class="judul-tanya-krs">06. Keluarga memiliki aset?</div>
-          ${buatPilHTML('PK', 'pk_06_aset', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_06_aset)}
-          ${dataNilaiPK.pk_06_aset === '1' ? `
-            <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">06.1. Aset yang dimiliki keluarga: <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
-              ${buatPilMultiHTML('PK', 'pk_06_aset_jenis', [
-                { val: '1', label: '1. Tabungan' }, { val: '2', label: '2. AC' }, { val: '3', label: '3. TV Layar Datar' },
-                { val: '4', label: '4. Kulkas' }, { val: '5', label: '5. Komputer/Laptop' }, { val: '6', label: '6. Sepeda Motor' },
-                { val: '7', label: '7. Mobil' }, { val: '8', label: '8. Perahu Motor' }, { val: '9', label: '9. Emas (min. 10 gr)' },
-                { val: '10', label: '10. Hewan Ternak' }, { val: '11', label: '11. Lahan' }, { val: '12', label: '12. Rumah Lain' }
-              ], dataNilaiPK.pk_06_aset_jenis)}
-            </div>
-          ` : ''}
-        `;
-      } 
-      // 6. Pengasuhan Anak Bersama (Terkunci jika tidak ada anak atau KK tidak berpasangan)
-      else if (q.id === 'pk_11_pengasuhan_bersama') {
-        const tidakAdaAnak = !apakahKeluargaPunyaAnak();
-        const kkSendiri = isKepalaKeluargaTidakBerpasangan();
-        const wajibKunci = tidakAdaAnak || kkSendiri;
-
-        if (wajibKunci) {
-          dataNilaiPK.pk_11_pengasuhan_bersama = '3'; // Otomatis 3: Tidak Berlaku
-        }
-
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          ${wajibKunci ? `
-            <div class="pt-2">
-              <span class="inline-block px-3.5 py-2 bg-slate-100 border border-slate-300 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed">
-                3. Tidak Berlaku (Terkunci: ${tidakAdaAnak ? 'Tidak Memiliki Anak' : 'KK Tidak Berpasangan'})
+        html += `
+          <div id="wrapper_${p.id}" class="pertanyaan-pk-item p-4 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-3 transition-all ${kelasTampil}">
+            <div class="flex items-start gap-2.5">
+              <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-indigo-50 text-indigo-700 font-black text-xs shrink-0">
+                ${p.nomor}
               </span>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug pt-0.5">
+                ${p.teks}
+              </p>
             </div>
-          ` : `
-            ${buatPilHTML('PK', 'pk_11_pengasuhan_bersama', q.opsi, dataNilaiPK.pk_11_pengasuhan_bersama)}
-          `}
         `;
-      } 
-      // 7. Pesan Media Bangga Kencana (Pilihan Jamak)
-      else if (q.tipe === 'media_informasi') {
-        html = `
-          <div class="judul-tanya-krs">24. Pernah mendengar/melihat pesan Bangga Kencana dari media?</div>
-          ${buatPilHTML('PK', 'pk_24_info_media', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_24_info_media)}
-          ${dataNilaiPK.pk_24_info_media === '1' ? `
-            <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">24.1. Dari media mana informasi diperoleh? <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
-              ${buatPilMultiHTML('PK', 'pk_25_media_sumber', [
-                { val: '1', label: '1. Koran/Majalah' }, { val: '2', label: '2. Televisi/Radio' },
-                { val: '3', label: '3. Media Sosial/Internet' }, { val: '4', label: '4. Pertemuan/Penyuluhan' },
-                { val: '5', label: '5. Spanduk/Baliho' }, { val: '6', label: '6. Pentas Seni' }
-              ], dataNilaiPK.pk_25_media_sumber)}
+
+        // Render Tipe Input: Angka (pk_23 & pk_24)
+        if (p.tipe === 'number') {
+          const valNow = nilaiJawabanPK[p.id] || '';
+          html += `
+            <div class="pt-1">
+              <input type="number" id="input_${p.id}" value="${valNow}" placeholder="${p.placeholder || '0'}"
+                     oninput="ubahInputNumberPK('${p.id}', this.value)"
+                     class="w-full sm:w-48 p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 focus:bg-white focus:border-indigo-600 outline-none text-xs" />
             </div>
-          ` : ''}
-        `;
-      } 
-      // 8. Petugas Informasi Stunting (Pilihan Jamak)
-      else if (q.tipe === 'petugas_informasi') {
-        html = `
-          <div class="judul-tanya-krs">25. Pernah memperoleh informasi program & Stunting dari petugas?</div>
-          ${buatPilHTML('PK', 'pk_26_info_petugas', [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }], dataNilaiPK.pk_26_info_petugas)}
-          ${dataNilaiPK.pk_26_info_petugas === '1' ? `
-            <div class="pt-4 border-t mt-4">
-              <div class="judul-tanya-krs">25.1. Petugas yang memberi informasi: <span class="text-xs font-normal text-slate-500">(Boleh pilih lebih dari 1)</span></div>
-              ${buatPilMultiHTML('PK', 'pk_27_petugas_sumber', [
-                { val: '1', label: '1. Pejabat Pemerintah' }, { val: '2', label: '2. PKB/PLKB' },
-                { val: '3', label: '3. Guru/Dosen' }, { val: '4', label: '4. Tokoh Agama' },
-                { val: '5', label: '5. Tokoh Masyarakat' }, { val: '6', label: '6. Dokter' },
-                { val: '7', label: '7. Bidan/Perawat' }, { val: '8', label: '8. Perangkat Desa' },
-                { val: '9', label: '9. Kader/IMP' }, { val: '10', label: '10. TPK' }, { val: '11', label: '11. Lainnya' }
-              ], dataNilaiPK.pk_27_petugas_sumber)}
-            </div>
-          ` : ''}
-        `;
-      } 
-      // 9. Pertanyaan Pilihan Tunggal Lainnya (Ibadah, Akta Nikah, Makanan, Air Minum, Jamban, dll.)
-      else if (q.opsi) {
-        html = `
-          <div class="judul-tanya-krs">${q.judul}</div>
-          ${buatPilHTML('PK', q.id, q.opsi, dataNilaiPK[q.id])}
-        `;
-      }
+          `;
+        } 
+        // Render Tipe Kartu Tombol (Single Select & Multi Toggle)
+        else if (p.opsi) {
+          const isMulti = p.tipe === 'multi';
+          const gridCols = p.opsi.length <= 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2';
+
+          html += `<div class="grid ${gridCols} gap-2 pt-1">`;
+
+          p.opsi.forEach(op => {
+            // Evaluasi Disable Otomatis
+            let disableOpsi = false;
+            if (op.autoDisable === 'non_pus' && !adaSuamiIstri) disableOpsi = true;
+            if (op.autoDisable === 'no_anak_0_17' && !adaAnak0_17) disableOpsi = true;
+            if (op.autoDisable === 'no_ayah_anak' && (!adaAyah || !adaAnak0_17)) disableOpsi = true;
+
+            // Jika status tidak berlaku otomatis terpenuhi, set nilainya jika belum ada
+            if (disableOpsi && !nilaiJawabanPK[p.id]) {
+              nilaiJawabanPK[p.id] = op.val;
+            }
+
+            // Tentukan status aktif tombol berdasarkan pilihan tersimpan
+            let isAktif = false;
+            if (isMulti) {
+              const arrMulti = nilaiJawabanPK[p.id] || [];
+              isAktif = arrMulti.includes(op.val);
+            } else {
+              isAktif = String(nilaiJawabanPK[p.id]) === String(op.val);
+            }
+
+            // Terapkan class warna aktif (indigo tegas) vs normal (slate abu-abu)
+            const styleKelas = isAktif
+              ? 'bg-indigo-600 text-white border-indigo-600 shadow-md font-bold'
+              : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200 font-semibold';
+
+            const disAttr = disableOpsi ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-95';
+
+            html += `
+              <button type="button" 
+                      id="btn_pk_${p.id}_${op.val}"
+                      onclick="klikTombolOpsiPK('${p.id}', '${op.val}', ${isMulti})"
+                      ${disableOpsi ? 'disabled' : ''}
+                      class="p-2.5 rounded-xl border text-left text-xs transition-all flex items-center justify-between ${styleKelas} ${disAttr}">
+                <span>${op.label}</span>
+                <span class="w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ml-1.5 ${isAktif ? 'bg-white text-indigo-600 border-white' : 'border-slate-300'}">
+                  ${isAktif ? '✓' : ''}
+                </span>
+              </button>
+            `;
+          });
+
+          html += `</div>`;
+        }
+
+        html += `</div>`;
+      });
 
       kontainer.innerHTML = html;
     }
 
-    function majuStepPK() {
-      if (indexStepPK >= daftarPertanyaanPK.length - 1) {
-        bukaHalamanReview();
+    // Handler Klik Kartu Pilihan Opsi
+    function klikTombolOpsiPK(idPertanyaan, nilaiOpsi, isMulti) {
+      if (isMulti) {
+        if (!Array.isArray(nilaiJawabanPK[idPertanyaan])) {
+          nilaiJawabanPK[idPertanyaan] = [];
+        }
+        const idx = nilaiJawabanPK[idPertanyaan].indexOf(nilaiOpsi);
+        if (idx > -1) {
+          nilaiJawabanPK[idPertanyaan].splice(idx, 1);
+        } else {
+          nilaiJawabanPK[idPertanyaan].push(nilaiOpsi);
+        }
       } else {
-        // Simpan index saat ini ke dalam riwayat
-        riwayatStepPK.push(indexStepPK);
-        indexStepPK++;
-        tampilkanStepPK();
+        nilaiJawabanPK[idPertanyaan] = nilaiOpsi;
       }
+
+      // Re-render antarmuka untuk memperbarui warna tombol dan dependensi kemunculan
+      renderBlokPK();
     }
 
-    function mundurStepPK() {
-      if (riwayatStepPK.length > 0) {
-        // Kembali ke pertanyaan asal sesuai riwayat
-        indexStepPK = riwayatStepPK.pop();
-        tampilkanStepPK();
-      } else {
-        // Jika di pertanyaan pertama PK, mundur ke pertanyaan KB terakhir yang dijawab
-        indexStepKB = daftarPertanyaanKB.length - 1;
-        pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
-        tampilkanStepKB();
-      }
+    // Handler Input Angka
+    function ubahInputNumberPK(idPertanyaan, val) {
+      nilaiJawabanPK[idPertanyaan] = val;
     }
 
     function hapusHalamanAnggota(noUrut) {
@@ -8194,10 +8381,17 @@
         const halKK = document.getElementById('hal_anggota_1');
         const namaKK = halKK ? halKK.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() : '';
         const nikKK = halKK ? halKK.querySelector('[name="nik"]')?.value.trim() : '';
+        const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
 
-        // ---------------------------------------------------------------------
-        // 1. SUSUN PAYLOAD ANGGOTA KELUARGA TERLEBIH DAHULU
-        // ---------------------------------------------------------------------
+        const payloadPK = {};
+        for (const [k, v] of Object.entries(nilaiJawabanPK)) {
+          if (Array.isArray(v)) {
+            payloadPK[k] = v.join(','); // Jawaban jamak (10.1, 14.1, 15.1, 27, 28, 29) digabung koma
+          } else {
+            payloadPK[k] = v;
+          }
+        }
+        
         const listHalAnggota = document.querySelectorAll('.item-anggota-page');
         const payloadAnggota = [];
 
