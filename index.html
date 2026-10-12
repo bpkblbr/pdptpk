@@ -1166,6 +1166,9 @@
           <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-emerald-900/60 hover:bg-emerald-900 px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 transition">
             &larr; KEMBALI KE DASHBOARD
           </button>
+          <button type="button" id="btnTesting" onclick="isiDataUjiCobaOtomatis()" class="hidden text-xs bg-amber-500 ...">
+            ⚡ ISI OTOMATIS (TESTING)
+          </button>
           <span id="badgeLangkah" class="bg-white/20 text-white text-xs px-3.5 py-1.5 rounded-full font-black uppercase tracking-wider">
             LANGKAH 1
           </span>
@@ -1660,6 +1663,229 @@
       tampilkanStepPK();
     }
 
+    function isiDataUjiCobaOtomatis() {
+      // 1. Generate Angka Unik agar No. KK & NIK tidak bentrok
+      const unik = Math.floor(1000 + Math.random() * 9000);
+      const noKKTest = `520108${Date.now().toString().slice(-6)}${unik.toString().slice(-4)}`;
+
+      // 2. Isi Otomatis Step 1: Identitas Wilayah
+      const elDusun = document.getElementById('dusun');
+      if (elDusun && elDusun.options.length > 1) {
+        elDusun.selectedIndex = 1;
+        updateFormRT();
+      }
+      const elRt = document.getElementById('rt');
+      if (elRt && elRt.options.length > 1) {
+        elRt.selectedIndex = 1;
+      }
+
+      document.getElementById('nomor_kk').value = noKKTest;
+      document.getElementById('status_keluarga').value = '1';
+      document.getElementById('kode_rumah').value = '001';
+      document.getElementById('no_urut_keluarga').value = '001';
+      document.getElementById('no_hp').value = '081234567890';
+      document.getElementById('jumlah_anggota_input').value = '3';
+      document.getElementById('alamat_detail').value = 'JL. UJI COBA SISTEM NO. ' + unik;
+
+      // 3. Buat 3 Anggota Keluarga (KK, Istri, Anak)
+      const containerAnggota = document.getElementById('area_anggota_keluarga');
+      containerAnggota.innerHTML = '';
+      totalHalamanAnggota = 0;
+
+      for (let i = 1; i <= 3; i++) {
+        tambahHalamanAnggotaBaru();
+      }
+
+      // Isi Data KK (Suami)
+      const hal1 = document.getElementById('hal_anggota_1');
+      hal1.querySelector('[name="nama_lengkap"]').value = 'AHMAD TESTING (KK)';
+      hal1.querySelector('[name="nik"]').value = `520108010185${unik}`;
+      hal1.querySelector('[name="jenis_kelamin"]').value = '1';
+      hal1.querySelector('[name="tanggal_lahir"]').value = '1985-01-01';
+      hal1.querySelector('[name="display_usia"]').value = '41';
+      hal1.querySelector('[name="status_perkawinan"]').value = '2';
+      hal1.querySelector('[name="usia_kawin_pertama"]').value = '24';
+      hal1.querySelector('[name="memiliki_akta_lahir"]').value = '1';
+      hal1.querySelector('[name="hubungan_dengan_kk"]').value = '1';
+      hal1.querySelector('[name="agama"]').value = '1';
+      hal1.querySelector('[name="jenis_pekerjaan"]').value = '8';
+      hal1.querySelector('[name="pendidikan"]').value = '8';
+      hal1.querySelector('[name="kepesertaan_jkn"]').value = '1';
+      hal1.querySelector('[name="gangguan_fungsional"]').value = '5';
+      hal1.querySelector('[name="kemampuan_mengurus_diri"]').value = '4';
+      hal1.querySelector('[name="bekerja_luar_negeri"]').value = '4';
+      hal1.querySelector('[name="mutasi_anggota"]').value = '0';
+
+      // Isi Data Istri
+      const hal2 = document.getElementById('hal_anggota_2');
+      hal2.querySelector('[name="nama_lengkap"]').value = 'SITI TESTING (ISTRI)';
+      hal2.querySelector('[name="nik"]').value = `520108410190${unik}`;
+      hal2.querySelector('[name="jenis_kelamin"]').value = '2';
+      hal2.querySelector('[name="tanggal_lahir"]').value = '1990-01-01';
+      hal2.querySelector('[name="display_usia"]').value = '36';
+      hal2.querySelector('[name="status_perkawinan"]').value = '2';
+      hal2.querySelector('[name="usia_kawin_pertama"]').value = '19';
+      hal2.querySelector('[name="memiliki_akta_lahir"]').value = '1';
+      hal2.querySelector('[name="hubungan_dengan_kk"]').value = '2';
+      hal2.querySelector('[name="agama"]').value = '1';
+      hal2.querySelector('[name="jenis_pekerjaan"]').value = '1';
+      hal2.querySelector('[name="pendidikan"]').value = '8';
+      hal2.querySelector('[name="kepesertaan_jkn"]').value = '1';
+      hal2.querySelector('[name="gangguan_fungsional"]').value = '5';
+      hal2.querySelector('[name="kemampuan_mengurus_diri"]').value = '4';
+      hal2.querySelector('[name="bekerja_luar_negeri"]').value = '4';
+      hal2.querySelector('[name="mutasi_anggota"]').value = '0';
+
+      // Isi Data Anak
+      const hal3 = document.getElementById('hal_anggota_3');
+      hal3.querySelector('[name="nama_lengkap"]').value = 'BUDI TESTING (ANAK)';
+      hal3.querySelector('[name="nik"]').value = `520108101015${unik}`;
+      hal3.querySelector('[name="jenis_kelamin"]').value = '1';
+      hal3.querySelector('[name="tanggal_lahir"]').value = '2015-10-10';
+      hal3.querySelector('[name="display_usia"]').value = '10';
+      hal3.querySelector('[name="status_perkawinan"]').value = '1';
+      hal3.querySelector('[name="memiliki_akta_lahir"]').value = '1';
+      hal3.querySelector('[name="hubungan_dengan_kk"]').value = '3';
+      hal3.querySelector('[name="kode_ibu_kandung"]').value = '02';
+      hal3.querySelector('[name="agama"]').value = '1';
+      hal3.querySelector('[name="jenis_pekerjaan"]').value = '1';
+      hal3.querySelector('[name="pendidikan"]').value = '3';
+      hal3.querySelector('[name="kepesertaan_jkn"]').value = '1';
+      hal3.querySelector('[name="gangguan_fungsional"]').value = '5';
+      hal3.querySelector('[name="kemampuan_mengurus_diri"]').value = '4';
+      hal3.querySelector('[name="bekerja_luar_negeri"]').value = '4';
+      hal3.querySelector('[name="mutasi_anggota"]').value = '0';
+
+      perbaruiSemuaOpsiIbuKandung();
+
+      // 4. Isi Lengkap Data Blok KB
+      dataNilaiKB.kb_01_melahirkan = 2;
+      dataNilaiKB.kb_01_hidup_laki = 1;
+      dataNilaiKB.kb_01_hidup_perempuan = 1;
+      dataNilaiKB.kb_01_masih_laki = 1;
+      dataNilaiKB.kb_01_masih_perempuan = 1;
+      dataNilaiKB.kb_02_anak_ideal = 2;
+      dataNilaiKB.kb_03_sedang_hamil = '2';
+      dataNilaiKB.kb_03_keinginan_anak_lagi = '3';
+      dataNilaiKB.kb_04_sedang_kb = '1';
+      dataNilaiKB.kb_04_mulai_bulan = '01';
+      dataNilaiKB.kb_04_mulai_tahun = 2024;
+      dataNilaiKB.kb_05_pernah_kb = '1';
+      dataNilaiKB.kb_05_mulai_bulan = '01';
+      dataNilaiKB.kb_05_mulai_tahun = 2022;
+      dataNilaiKB.kb_05_berhenti_bulan = '12';
+      dataNilaiKB.kb_05_berhenti_tahun = 2023;
+      dataNilaiKB.kb_06_alasan_tidak_kb = '1';
+      dataNilaiKB.kb_07_jenis_kb = '4'; // Implant
+      dataNilaiKB.kb_08_sumber_pelayanan = '6'; // Bidan Desa
+      dataNilaiKB.kb_09_info_jenis = '1';
+      dataNilaiKB.kb_09_info_efek_samping = '1';
+      dataNilaiKB.kb_09_info_tindakan = '1';
+
+      // 5. Isi Lengkap Data Blok PK (01 s.d 29)
+      nilaiJawabanPK = {
+        pk_01: '1',
+        pk_01_ibadah: '1',
+        pk_02: '1',
+        pk_02_toleransi_agama: '1',
+        pk_03_1: '2',
+        pk_03_1_tanpa_sapa: '2',
+        pk_03_2: '2',
+        pk_03_2_pisah_ranjang: '2',
+        pk_03_3: '2',
+        pk_03_3_pergi_rumah: '2',
+        pk_03_4: '2',
+        pk_03_4_kdrt: '2',
+        pk_03_5: '2',
+        pk_03_5_kekerasan_anak: '2',
+        pk_04: '2',
+        pk_04_anggota_sakit: '2',
+        pk_05: '1',
+        pk_05_rekreasi: '1',
+        pk_06: '1',
+        pk_06_kegiatan_sosial: '1',
+        pk_07: '1',
+        pk_07_bantuan_orang_lain: '1',
+        pk_08: '1',
+        pk_08_akses_sarana_publik: '1',
+        pk_09: '1',
+        pk_09_aman_nyaman: '1',
+        pk_10: '1',
+        pk_10_makan_dua_kali: '1',
+        pk_10_1: ['1', '2', '3', '4'],
+        pk_10_1_jenis_makanan: ['1', '2', '3', '4'],
+        pk_11: '1',
+        pk_11_akses_internet: '1',
+        pk_12: '1',
+        pk_12_internet_anak: '1',
+        pk_13: '1',
+        pk_13_sumber_penghasilan: '1',
+        pk_14: '1',
+        pk_14_memiliki_aset: '1',
+        pk_14_1: ['1', '3', '6'],
+        pk_14_1_jenis_aset: ['1', '3', '6'],
+        pk_15: '1',
+        pk_15_interaksi_harian: '1',
+        pk_15_1: ['1', '2', '3'],
+        pk_15_1_jenis_interaksi: ['1', '2', '3'],
+        pk_16_1: '1',
+        pk_16_1_ayah_menemani_anak: '1',
+        pk_16_2: '1',
+        pk_16_2_ayah_komunikasi: '1',
+        pk_16_3: '1',
+        pk_16_3_ayah_hak_dasar: '1',
+        pk_16_4: '1',
+        pk_16_4_ayah_pekerjaan_rumah: '1',
+        pk_17_1: '2',
+        pk_17_1_jenis_atap: '2',
+        pk_17_2: '1',
+        pk_17_2_kondisi_atap: '1',
+        pk_18_1: '1',
+        pk_18_1_jenis_dinding: '1',
+        pk_18_2: '1',
+        pk_18_2_kondisi_dinding: '1',
+        pk_19_1: '2',
+        pk_19_1_jenis_lantai: '2',
+        pk_19_2: '1',
+        pk_19_2_kondisi_lantai: '1',
+        pk_20_1: '1',
+        pk_20_1_sumber_penerangan: '1',
+        pk_20_2: '2',
+        pk_20_2_daya_listrik: '2',
+        pk_21_1: '3',
+        pk_21_1_sumber_air_minum: '3',
+        pk_21_2: '2',
+        pk_21_2_jarak_tinja: '2',
+        pk_22: '1',
+        pk_22_fasilitas_jamban: '1',
+        pk_23: '60',
+        pk_23_luas_rumah: '60',
+        pk_24: '3',
+        pk_24_jumlah_menetap: '3',
+        pk_25: '4',
+        pk_25_bahan_bakar_masak: '4',
+        pk_26: '1',
+        pk_26_kepemilikan_rumah: '1',
+        pk_27: ['1', '2', '3', '4'],
+        pk_27_pesan_informasi: ['1', '2', '3', '4'],
+        pk_28: ['1', '8', '9'],
+        pk_28_sumber_informasi: ['1', '8', '9'],
+        pk_29: ['1', '2', '6', '7', '8'],
+        pk_29_persetujuan_keluarga: ['1', '2', '6', '7', '8']
+      };
+
+      // 6. Tampilkan Notifikasi & Langsung Buka Halaman Review
+      Swal.fire({
+        icon: 'success',
+        title: 'Data Uji Coba Terisi!',
+        text: 'Seluruh form Wilayah, Anggota Keluarga, Blok KB, dan Blok PK telah terisi otomatis. Anda dialihkan ke halaman Review.',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        bukaHalamanReview();
+      });
+    }
+
     function sembunyikanSemuaHalamanForm() {
       document.querySelectorAll('.halaman-form').forEach(el => el.classList.remove('aktif'));
     }
@@ -1792,6 +2018,11 @@
       const btnPill = document.getElementById('btnPillKelolaWilayah');
       if (btnPill) {
         btnPill.style.display = (userAktif.role === 'USER_DESA') ? 'none' : 'flex';
+      }
+
+      const btnTest = document.getElementById('btnTesting');
+      if (btnTest) {
+        btnTest.style.display = (userAktif.role === 'SUPER_ADMIN') ? 'inline-flex' : 'none';
       }
     }
 
