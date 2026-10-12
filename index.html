@@ -9284,42 +9284,69 @@
 
     async function eksekusiSimpanFinal() {
       // 1. Cek Validasi Kelengkapan Isian
-      const pesanBelumLengkap = validasiKelengkapanSebelumSimpan();
-      if (pesanBelumLengkap) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Data Belum Lengkap',
-          html: `<div class="text-xs text-rose-600 font-semibold">${pesanBelumLengkap}</div><p class="text-xs text-slate-500 pt-1">Silakan lengkapi isian tersebut sebelum menyimpan.</p>`,
-          confirmButtonColor: '#0284c7'
-        });
-        return;
+      if (typeof validasiKelengkapanSebelumSimpan === 'function') {
+        const pesanBelumLengkap = validasiKelengkapanSebelumSimpan();
+        if (pesanBelumLengkap) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Data Belum Lengkap',
+            html: `<div class="text-xs text-rose-600 font-semibold">${pesanBelumLengkap}</div><p class="text-xs text-slate-500 pt-1">Silakan lengkapi isian tersebut sebelum menyimpan.</p>`,
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
       }
 
       const btnSimpan = document.getElementById('btnSimpan');
-      btnSimpan.disabled = true;
-      btnSimpan.innerText = "MENYIMPAN DATA...";
+      if (btnSimpan) {
+        btnSimpan.disabled = true;
+        btnSimpan.innerText = "MENYIMPAN DATA...";
+      }
+
+      Swal.fire({
+        title: 'Menyimpan Data...',
+        html: '<div class="text-xs text-slate-500">Mengirim data keluarga & anggota ke Supabase...</div>',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
 
       try {
-        const noKK = document.getElementById('nomor_kk').value.trim();
-        const kdProv = document.getElementById('kode_prov').value.trim() || '52';
-        const kdKab = document.getElementById('kode_kab').value.trim() || '01';
-        const kdKec = document.getElementById('kode_kec').value.trim() || '08';
-        const kdDesa = document.getElementById('kode_desa').value.trim() || '2001';
-        const kdDusun = document.getElementById('kode_dusun').value.trim() || '0100';
-        const rt = document.getElementById('rt').value.trim() || '001';
-        const kodeRumah = (document.getElementById('kode_rumah').value.trim() || '001').padStart(3, '0');
-        const noUrutKel = (document.getElementById('no_urut_keluarga').value.trim() || '001').padStart(3, '0');
-        const statusKeluarga = document.getElementById('status_keluarga').value || '1';
-        const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
-        const noHp = document.getElementById('no_hp').value.trim();
+        // Helper konversi tipe data angka (String kosong "" -> null agar PostgreSQL tidak error)
+        const keInteger = (val) => {
+          if (val === '' || val === null || val === undefined) return null;
+          const n = parseInt(val, 10);
+          return isNaN(n) ? null : n;
+        };
 
+        const keFloat = (val) => {
+          if (val === '' || val === null || val === undefined) return null;
+          const n = parseFloat(val);
+          return isNaN(n) ? null : n;
+        };
+
+        // Identitas Wilayah & Rumah
+        const noKK = (document.getElementById('nomor_kk')?.value || '').trim();
+        const kdProv = (document.getElementById('kode_prov')?.value || '52').trim();
+        const kdKab = (document.getElementById('kode_kab')?.value || '01').trim();
+        const kdKec = (document.getElementById('kode_kec')?.value || '08').trim();
+        const kdDesa = (document.getElementById('kode_desa')?.value || '2001').trim();
+        const kdDusun = (document.getElementById('kode_dusun')?.value || '0100').trim();
+        const rt = (document.getElementById('rt')?.value || '001').trim();
+        const kodeRumah = (document.getElementById('kode_rumah')?.value || '001').trim().padStart(3, '0');
+        const noUrutKel = (document.getElementById('no_urut_keluarga')?.value || '001').trim().padStart(3, '0');
+        const statusKeluarga = document.getElementById('status_keluarga')?.value || '1';
+        const alamat = (document.getElementById('alamat_detail')?.value || '').trim().toUpperCase();
+        const noHp = (document.getElementById('no_hp')?.value || '').trim();
+
+        // Identitas Kepala Keluarga (KK) dari Anggota #1
         const halKK = document.getElementById('hal_anggota_1');
-        const namaKK = halKK ? halKK.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() : '';
-        const nikKK = halKK ? halKK.querySelector('[name="nik"]')?.value.trim() : '';
+        const namaKK = halKK ? (halKK.querySelector('[name="nama_lengkap"]')?.value || '').trim().toUpperCase() : '';
+        const nikKK = halKK ? (halKK.querySelector('[name="nik"]')?.value || '').trim() : '';
 
-        // GENERATE KODE KELUARGA (Format: prov+kab+kec+desa+dusun + [SPASI] + rt+rumah+no_urut)
+        // GENERATE KODE KELUARGA (Format: ProvKabKecDesaDusun + [SPASI] + RtRumahNoUrut)
         const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
 
+        // PEMETAAN & PEMBERSIHAN KOLOM BLOK PK
         const daftarKolomPKSah = [
           'pk_01_ibadah', 'pk_02_toleransi_agama', 'pk_03_1_tanpa_sapa', 'pk_03_2_pisah_ranjang',
           'pk_03_3_pergi_rumah', 'pk_03_4_kdrt', 'pk_03_5_kekerasan_anak', 'pk_04_anggota_sakit',
@@ -9336,7 +9363,6 @@
           'pk_28_sumber_informasi', 'pk_29_persetujuan_keluarga'
         ];
 
-        // Pemetaan jika di memori masih ada sisa nama kunci lama
         const mapNamaLamaKeBaru = {
           'pk_01': 'pk_01_ibadah',
           'pk_02': 'pk_02_toleransi_agama',
@@ -9385,14 +9411,14 @@
         };
 
         const payloadPK = {};
-        for (const [k, v] of Object.entries(nilaiJawabanPK)) {
+        for (const [k, v] of Object.entries(nilaiJawabanPK || {})) {
           const keyBaru = mapNamaLamaKeBaru[k] || k;
           if (daftarKolomPKSah.includes(keyBaru)) {
-            payloadPK[keyBaru] = Array.isArray(v) ? v.join(',') : v;
+            payloadPK[keyBaru] = Array.isArray(v) ? v.join(',') : (v === '' ? null : v);
           }
         }
 
-        // Susun Payload Tabel Keluarga
+        // SUSUN PAYLOAD TABEL KELUARGA
         const payloadKeluarga = {
           kode_keluarga: kodeKeluarga,
           nomor_kk: noKK,
@@ -9409,30 +9435,64 @@
           status_keluarga: statusKeluarga,
           alamat_detail: alamat,
           no_hp: noHp,
-          latitude: parseFloat(document.getElementById('review_lat')?.innerText) || null,
-          longitude: parseFloat(document.getElementById('review_lng')?.innerText) || null,
-          ...dataNilaiKB,
+          latitude: keFloat(document.getElementById('review_lat')?.innerText),
+          longitude: keFloat(document.getElementById('review_lng')?.innerText),
+
+          // Data Blok KB (Disanitasi)
+          kb_01_melahirkan: keInteger(dataNilaiKB.kb_01_melahirkan) ?? 0,
+          kb_01_hidup_laki: keInteger(dataNilaiKB.kb_01_hidup_laki) ?? 0,
+          kb_01_hidup_perempuan: keInteger(dataNilaiKB.kb_01_hidup_perempuan) ?? 0,
+          kb_01_masih_laki: keInteger(dataNilaiKB.kb_01_masih_laki) ?? 0,
+          kb_01_masih_perempuan: keInteger(dataNilaiKB.kb_01_masih_perempuan) ?? 0,
+          kb_02_anak_ideal: keInteger(dataNilaiKB.kb_02_anak_ideal),
+          kb_03_sedang_hamil: dataNilaiKB.kb_03_sedang_hamil || null,
+          kb_03_usia_kehamilan: keInteger(dataNilaiKB.kb_03_usia_kehamilan),
+          kb_03_status_ingin_hamil: dataNilaiKB.kb_03_status_ingin_hamil || null,
+          kb_03_keinginan_anak_lagi: dataNilaiKB.kb_03_keinginan_anak_lagi || null,
+          kb_04_sedang_kb: dataNilaiKB.kb_04_sedang_kb || null,
+          kb_04_mulai_bulan: dataNilaiKB.kb_04_mulai_bulan || null,
+          kb_04_mulai_tahun: keInteger(dataNilaiKB.kb_04_mulai_tahun),
+          kb_05_pernah_kb: dataNilaiKB.kb_05_pernah_kb || null,
+          kb_05_mulai_bulan: dataNilaiKB.kb_05_mulai_bulan || null,
+          kb_05_mulai_tahun: keInteger(dataNilaiKB.kb_05_mulai_tahun),
+          kb_05_berhenti_bulan: dataNilaiKB.kb_05_berhenti_bulan || null,
+          kb_05_berhenti_tahun: keInteger(dataNilaiKB.kb_05_berhenti_tahun),
+          kb_06_alasan_tidak_kb: dataNilaiKB.kb_06_alasan_tidak_kb || null,
+          kb_07_jenis_kb: dataNilaiKB.kb_07_jenis_kb || null,
+          kb_08_sumber_pelayanan: dataNilaiKB.kb_08_sumber_pelayanan || null,
+          kb_09_info_jenis: dataNilaiKB.kb_09_info_jenis || null,
+          kb_09_info_efek_samping: dataNilaiKB.kb_09_info_efek_samping || null,
+          kb_09_info_tindakan: dataNilaiKB.kb_09_info_tindakan || null,
+
+          // Data Blok PK
           ...payloadPK,
+          pk_23_luas_rumah: keFloat(payloadPK.pk_23_luas_rumah),
+          pk_24_jumlah_menetap: keInteger(payloadPK.pk_24_jumlah_menetap),
+
           diperbarui_pada: new Date()
         };
 
-        // Susun Payload Anggota Keluarga
+        // SUSUN PAYLOAD TABEL ANGGOTA KELUARGA
         const listHalAnggota = document.querySelectorAll('.item-anggota-page');
         const payloadAnggota = [];
+
         listHalAnggota.forEach((hal, idx) => {
           const noUrut = idx + 1;
+          const statusKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
+          const usiaKawinVal = hal.querySelector('[name="usia_kawin_pertama"]')?.value;
+
           payloadAnggota.push({
             kode_keluarga: kodeKeluarga,
             nomor_kk: noKK,
             nomor_anggota_keluarga: noUrut,
-            nama_lengkap: hal.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() || '',
-            nik: hal.querySelector('[name="nik"]')?.value.trim() || '',
+            nama_lengkap: (hal.querySelector('[name="nama_lengkap"]')?.value || '').trim().toUpperCase(),
+            nik: (hal.querySelector('[name="nik"]')?.value || '').trim(),
             jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
             tanggal_lahir: hal.querySelector('[name="tanggal_lahir"]')?.value || null,
-            status_perkawinan: hal.querySelector('[name="status_perkawinan"]')?.value || '1',
-            usia_kawin_pertama: parseInt(hal.querySelector('[name="usia_kawin_pertama"]')?.value, 10) || null,
+            status_perkawinan: statusKawin,
+            usia_kawin_pertama: statusKawin === '1' ? null : keInteger(usiaKawinVal),
             memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]')?.value || '1',
-            hubungan_dengan_kk: (noUrut === 1) ? '1' : hal.querySelector('[name="hubungan_dengan_kk"]')?.value,
+            hubungan_dengan_kk: (noUrut === 1) ? '1' : (hal.querySelector('[name="hubungan_dengan_kk"]')?.value || '3'),
             kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
             agama: hal.querySelector('[name="agama"]')?.value || '1',
             jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
@@ -9445,32 +9505,45 @@
           });
         });
 
-        // Simpan ke Supabase
+        // 1. Eksekusi Upsert Tabel KELUARGA ke Supabase
         const { error: errKel } = await supabaseClient
           .from('keluarga')
           .upsert([payloadKeluarga], { onConflict: 'kode_keluarga' });
+        
         if (errKel) throw errKel;
 
-        await supabaseClient.from('anggota_keluarga').delete().eq('kode_keluarga', kodeKeluarga);
-        const { error: errAng } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggota);
-        if (errAng) throw errAng;
+        // 2. Eksekusi Tabel ANGGOTA_KELUARGA ke Supabase (Hapus dulu anggota lama lalu masukkan yang baru)
+        if (payloadAnggota.length > 0) {
+          await supabaseClient.from('anggota_keluarga').delete().eq('kode_keluarga', kodeKeluarga);
+          const { error: errAng } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggota);
+          if (errAng) throw errAng;
+        }
 
+        // Tampilkan Sukses
         Swal.fire({
           icon: 'success',
           title: 'Berhasil Disimpan!',
-          text: `Data keluarga ${namaKK} (${kodeKeluarga}) berhasil tersimpan ke database.`,
+          html: `Data keluarga <b>${namaKK}</b><br><span class="font-mono text-xs text-slate-500">Kode: ${kodeKeluarga}</span><br>berhasil tersimpan ke database.`,
           confirmButtonColor: '#059669'
         }).then(() => {
-          document.getElementById('pendataanForm').reset();
+          const form = document.getElementById('pendataanForm');
+          if (form) form.reset();
           kembaliKeDashboard();
         });
 
       } catch (err) {
-        console.error("Gagal simpan:", err);
-        Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.', 'error');
+        console.error("Gagal simpan final:", err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menyimpan',
+          text: err.message || 'Terjadi kesalahan sistem saat menyimpan data.',
+          confirmButtonColor: '#e11d48'
+        });
       } finally {
-        btnSimpan.disabled = false;
-        btnSimpan.innerHTML = '<span>Simpan</span><span>💾</span>';
+        if (btnSimpan) {
+          btnSimpan.disabled = false;
+          btnSimpan.innerHTML = '<span>Simpan</span> <span>💾</span>';
+        }
       }
     }
 
@@ -9567,8 +9640,21 @@
             return;
           }
         }
+
+        const keInteger = (val) => {
+          if (val === '' || val === null || val === undefined) return null;
+          const n = parseInt(val, 10);
+          return isNaN(n) ? null : n;
+        };
+
+        const keFloat = (val) => {
+          if (val === '' || val === null || val === undefined) return null;
+          const n = parseFloat(val);
+          return isNaN(n) ? null : n;
+        };
         
         const payloadKeluarga = {
+          kode_keluarga: kodeKeluarga,
           nomor_kk: noKK,
           nama_kk: namaKK,
           nik_kk: nikKK,
@@ -9583,8 +9669,8 @@
           status_keluarga: statusKeluarga,
           alamat_detail: alamat,
           no_hp: noHp,
-          latitude: parseFloat(document.getElementById('review_lat')?.innerText) || null,
-          longitude: parseFloat(document.getElementById('review_lng')?.innerText) || null,
+          latitude: keFloat(document.getElementById('review_lat')?.innerText),
+          longitude: keFloat(document.getElementById('review_lng')?.innerText),
 
           // Blok IV: Pembangunan Keluarga
           pk_01_ibadah: dataNilaiPK.pk_01_ibadah || null,
