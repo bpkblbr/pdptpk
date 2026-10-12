@@ -3250,15 +3250,26 @@
     }
 
     // Buka Modal Rekap 2: Detail Anggota & Penapisan POKTAN
-    function bukaDetailKeluargaBnba(nomorKK) {
+    async function bukaDetailKeluargaBnba(nomorKK) {
       const kel = dataBnbaCache.find(k => k.nomor_kk === nomorKK);
       if (!kel) return;
 
       document.getElementById('modalDetailBnba').classList.remove('hidden');
       document.getElementById('subDetailKeluarga').innerText = `KK: ${kel.nomor_kk} | Nama KK: ${kel.nama_kk}`;
 
-      const listAng = kel.anggota_keluarga || [];
       const kodeKeluarga = `${kel.kode_prov || '52'}${kel.kode_kab || '01'}${kel.kode_kec || '08'}${kel.kode_desa || '2001'}${kel.kode_dusun || '0100'} ${kel.rt || '001'}${kel.kode_rumah || '001'}${kel.no_urut_keluarga || '001'}`;
+
+      // Ambil data anggota langsung dari Supabase yang sudah terurut 1 s/d N
+      const { data: dataAnggotaTerurut, error } = await supabaseClient
+        .from('anggota_keluarga')
+        .select('*')
+        .eq('kode_keluarga', kodeKeluarga)
+        .order('nomor_anggota_keluarga', { ascending: true });
+
+      // Gunakan data hasil query Supabase jika berhasil, atau fallback ke cache jika offline
+      const listAng = (!error && dataAnggotaTerurut && dataAnggotaTerurut.length > 0)
+        ? dataAnggotaTerurut
+        : (kel.anggota_keluarga || []);
 
       // 1. Jumlah Anak (Prioritas dari Riwayat Blok KB jika ada, jika tidak ada hitung dari anggota dengan status anak '3')
       const anakKBMasihHidup = (parseInt(kel.kb_01_masih_laki, 10) || 0) + (parseInt(kel.kb_01_masih_perempuan, 10) || 0);
@@ -3277,7 +3288,6 @@
         
         const usiaTh = hitungUsiaTahun(a.tanggal_lahir);
         const jk = String(a.jenis_kelamin || '');
-        const hub = String(a.hubungan_dengan_kk || '');
         
         if (usiaTh < 2) {
           jmlBaduta++;
@@ -3326,7 +3336,8 @@
       const tbody = document.getElementById('tbodyDetailAnggota');
       let htmlAng = '';
 
-      listAng.sort((a,b) => (a.nomor_anggota_keluarga || 0) - (b.nomor_anggota_keluarga || 0)).forEach(a => {
+      // Tampilkan data anggota terurut (KK -> Istri -> Anak -> Lainnya)
+      listAng.forEach(a => {
         let labelHub = 'Lainnya';
         if (String(a.hubungan_dengan_kk) === '1') labelHub = 'KK';
         else if (String(a.hubungan_dengan_kk) === '2') labelHub = 'Istri';
@@ -9515,6 +9526,58 @@
           .upsert([payloadKeluarga], { onConflict: 'kode_keluarga' });
         
         if (errKel) throw errKel;
+
+        // Bobot urutan prioritas hubungan keluarga
+        const bobotHubungan = {
+          '1': 1, // Kepala Keluarga
+          '2': 2, // Istri / Suami
+          '3': 3  // Anak
+          // Selain ini otomatis dianggap 4 (Famili lain / lainnya)
+        };
+
+        const listHalAnggota = Array.from(document.querySelectorAll('.item-anggota-page'));
+
+        // 1. Urutkan elemen anggota berdasarkan hubungan
+        listHalAnggota.sort((a, b) => {
+          const hubA = a.querySelector('[name="hubungan_dengan_kk"]')?.value || '1';
+          const hubB = b.querySelector('[name="hubungan_dengan_kk"]')?.value || '1';
+          const skorA = bobotHubungan[hubA] || 4;
+          const skorB = bobotHubungan[hubB] || 4;
+          return skorA - skorB;
+        });
+
+        // 2. Susun payload dengan nomor urut yang sudah terurut 1 s/d N
+        const payloadAnggota = [];
+        listHalAnggota.forEach((hal, idx) => {
+          const noUrut = idx + 1; // Otomatis 1 untuk KK, 2 untuk Istri, 3 untuk Anak, dst.
+          const statusKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
+          const usiaKawinVal = hal.querySelector('[name="usia_kawin_pertama"]')?.value;
+          const rawNama = hal.querySelector('[name="nama_lengkap"]')?.value || '';
+          const hub = hal.querySelector('[name="hubungan_dengan_kk"]')?.value || (noUrut === 1 ? '1' : '3');
+
+          payloadAnggota.push({
+            kode_keluarga: kodeKeluarga,
+            nomor_kk: noKK,
+            nomor_anggota_keluarga: noUrut, // 1, 2, 3, 4...
+            nama_lengkap: bersihkanNama(rawNama),
+            nik: (hal.querySelector('[name="nik"]')?.value || '').trim(),
+            jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
+            tanggal_lahir: hal.querySelector('[name="tanggal_lahir"]')?.value || null,
+            status_perkawinan: statusKawin,
+            usia_kawin_pertama: statusKawin === '1' ? null : keInteger(usiaKawinVal),
+            memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]')?.value || '1',
+            hubungan_dengan_kk: hub,
+            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
+            agama: hal.querySelector('[name="agama"]')?.value || '1',
+            jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
+            pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '1',
+            kesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
+            gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
+            kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]')?.value || '4',
+            bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
+            mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0'
+          });
+        });
 
         // 2. Eksekusi Tabel ANGGOTA_KELUARGA ke Supabase (Hapus dulu anggota lama lalu masukkan yang baru)
         if (payloadAnggota.length > 0) {
