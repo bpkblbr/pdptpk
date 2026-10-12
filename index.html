@@ -1654,7 +1654,7 @@
       indexStepPK = 0;
       riwayatStepPK = [];
       tampilkanStepKB();
-      tampilkanStepPK();
+      renderBlokPK();
     }
 
     function sembunyikanSemuaHalamanForm() {
@@ -4600,7 +4600,7 @@
           "HUBUNGAN_DENGAN_KK": "1", // 1: Kepala Keluarga, 2: Istri, 3: Anak, 4: Lainnya
           "JENIS_KELAMIN": "1", // 1: Laki-laki, 2: Perempuan
           "TANGGAL_LAHIR": "1985-01-01",
-          "STATUS_PERKAWINAN": "2", // 1: Belum Kawin, 2: Kawin Tercatat, 3: Tdk Tercatat, 4: Cerai Hidup, 5: Cerai Mati
+          "STATUS_PERKAWINAN": "2", // 1: Belum Kawin, 2: Kawin Tercatat, 3: Kawin Tdk Tercatat, 4: Cerai Hidup Tercatat, 5: Cerai Hidup Tdk Tercatat,6: Cerai Mati
           "USIA_KAWIN_PERTAMA": 24,
           "MEMILIKI_AKTA_LAHIR": "1", // 1: Ya, 2: Tidak
           "KODE_IBU_KANDUNG": "00", // 00: Lainnya, atau 02 (Nomor urut ibu)
@@ -5609,8 +5609,8 @@
               <option value="2" ${defaultKawin === "2" ? 'selected' : ''}>2. Kawin Tercatat</option>
               <option value="3" ${defaultKawin === "3" ? 'selected' : ''}>3. Kawin Tidak Tercatat</option>
               <option value="4" ${defaultKawin === "4" ? 'selected' : ''}>4. Cerai Hidup Tercatat</option>
-              <option value="5" ${defaultKawin === "5" ? 'selected' : ''}>4. Cerai Hidup Tidak Tercatat</option>
-              <option value="6" ${defaultKawin === "6" ? 'selected' : ''}>5. Cerai Mati</option>
+              <option value="5" ${defaultKawin === "5" ? 'selected' : ''}>5. Cerai Hidup Tidak Tercatat</option>
+              <option value="6" ${defaultKawin === "6" ? 'selected' : ''}>6. Cerai Mati</option>
             </select>
           </div>
           <div id="wrapper_usia_kawin_${no}" class="${(!defaultKawin || defaultKawin === '1') ? 'opacity-40 pointer-events-none' : ''}">
@@ -6803,7 +6803,7 @@
       if (['kb_03_sedang_hamil', 'kb_04_sedang_kb', 'kb_05_pernah_kb'].includes(keyField)) {
         tampilkanStepKB();
       } else if (['pk_06_aset', 'pk_17_1_penerangan', 'pk_24_info_media', 'pk_26_info_petugas'].includes(keyField)) {
-        tampilkanStepPK();
+        renderBlokPK();
       }
     }
 
@@ -6851,9 +6851,9 @@
     function isKepalaKeluargaTidakBerpasangan() {
       const hal1 = document.getElementById('hal_anggota_1');
       if (!hal1) return false;
-      const statusKawinKK = hal1.querySelector('[name="status_perkawinan"]')?.value;
-      // 1: Belum Kawin, 4: Cerai Hidup, 5: Cerai Mati (bukan Kawin Tercatat '2' / Tidak Tercatat '3')
-      return (statusKawinKK === '1' || statusKawinKK === '4' || statusKawinKK === '5');
+      const statusKawinKK = String(hal1.querySelector('[name="status_perkawinan"]')?.value || '');      
+      
+      return (statusKawinKK === '1' || statusKawinKK === '4' || statusKawinKK === '5' || statusKawinKK === '6');
     }
 
     // Cek apakah keluarga memiliki anak (berdasarkan riwayat anak lahir hidup/masih hidup atau anggota berstatus anak)
@@ -7359,128 +7359,7 @@
           bukaHalamanAnggota(targetBuka);
         }
       });
-    }
-
-    function evaluasiAlurKB() {
-      const sedangHamil = document.getElementById('kb_03_sedang_hamil').value; // 1: Ya, 2: Tidak
-      
-      const rowUsiaHamil = document.getElementById('row_kb_usia_hamil');
-      const rowInginHamil = document.getElementById('row_kb_ingin_hamil');
-      const rowInginAnakLagi = document.getElementById('row_kb_ingin_anak_lagi');
-
-      const row04 = document.getElementById('row_kb_04');
-      const row04Waktu = document.getElementById('row_kb_04_waktu');
-      const row05 = document.getElementById('row_kb_05');
-      const row05Waktu = document.getElementById('row_kb_05_waktu');
-      const row06 = document.getElementById('row_kb_06');
-      const row07 = document.getElementById('row_kb_07');
-      const row08 = document.getElementById('row_kb_08');
-      const row09 = document.getElementById('row_kb_09');
-
-      // --- LOGIKA PERTANYAAN 03 (HAMIL) ---
-      if (sedangHamil === '1') {
-        // Jika YA: Tampilkan Usia Hamil & Keinginan Hamil, sembunyikan Ingin Anak Lagi
-        rowUsiaHamil.style.display = 'block';
-        rowInginHamil.style.display = 'block';
-        rowInginAnakLagi.style.display = 'none';
-
-        // Aturan Form: Jika Hamil (YA), LOMPAT LANGSUNG KE PERTANYAAN 05 (04 dilewati)
-        row04.style.display = 'none';
-        row04Waktu.style.display = 'none';
-        row05.style.display = 'block';
-
-      } else {
-        // Jika TIDAK: Sembunyikan Usia Hamil & Keinginan Hamil, tampilkan Ingin Anak Lagi
-        rowUsiaHamil.style.display = 'none';
-        rowInginHamil.style.display = 'none';
-        rowInginAnakLagi.style.display = 'block';
-
-        // Lanjut ke Pertanyaan 04
-        row04.style.display = 'block';
-      }
-
-      // --- LOGIKA PERTANYAAN 04 & 05 (PENGGUNAAN KB) ---
-      const sedangKB = document.getElementById('kb_04_sedang_kb').value; // 1: Ya, 2: Tidak
-      const pernahKB = document.getElementById('kb_05_pernah_kb').value; // 1: Ya, 2: Tidak
-
-      if (sedangHamil === '2' && sedangKB === '1') {
-        // Jika saat ini PAKAI KB (04 = Ya):
-        row04Waktu.style.display = 'block';
-
-        // Aturan Form: LOMPAT KE PERTANYAAN 07 (05 dan 06 dilewati)
-        row05.style.display = 'none';
-        row05Waktu.style.display = 'none';
-        row06.style.display = 'none';
-        row07.style.display = 'block';
-
-      } else {
-        // Jika TIDAK PAKAI KB (04 = Tidak) atau Sedang Hamil:
-        row04Waktu.style.display = 'none';
-        row05.style.display = 'block';
-
-        if (pernahKB === '1') {
-          // Jika PERNAH (05 = Ya): Isi waktu, lalu WAJIB jawab 06 dan 07
-          row05Waktu.style.display = 'grid';
-          row06.style.display = 'block';
-          row07.style.display = 'block';
-        } else {
-          // Jika TIDAK PERNAH (05 = Tidak):
-          row05Waktu.style.display = 'none';
-          row06.style.display = 'block'; // Jawab 06
-
-          // Aturan Form: Jika 04=TIDAK dan 05=TIDAK, STOP (Pertanyaan 07, 08, 09 dilewati)
-          row07.style.display = 'none';
-          row08.style.display = 'none';
-          row09.style.display = 'none';
-          return;
-        }
-      }
-
-      // --- LOGIKA PERTANYAAN 07 (JENIS KONTRASEPSI) ---
-      const jenisKB = document.getElementById('kb_07_jenis_kb').value;
-      if (row07.style.display !== 'none' && jenisKB === '9') {
-        // Aturan Form: Khusus Jawaban Tradisional (9), STOP, lanjut ke Blok III (08 & 09 dilewati)
-        row08.style.display = 'none';
-        row09.style.display = 'none';
-      } else if (row07.style.display !== 'none' && jenisKB && jenisKB !== '9') {
-        // Modern (1-8): Lanjut jawab 08 dan 09
-        row08.style.display = 'block';
-        row09.style.display = 'block';
-      } else {
-        row08.style.display = 'none';
-        row09.style.display = 'none';
-      }
-    }
-
-    function evaluasiAlurPK() {
-      // 1. Aturan Pertanyaan 06 (Aset Keluarga)
-      const memilikiAset = document.getElementById('pk_06_aset').value;
-      const rowAsetDetail = document.getElementById('row_pk_06_aset_detail');
-      if (rowAsetDetail) {
-        rowAsetDetail.style.display = (memilikiAset === '1') ? 'block' : 'none';
-      }
-
-      // 2. Aturan Pertanyaan 17 (Penerangan & Daya Listrik)
-      const penerangan = document.getElementById('pk_17_1_penerangan').value;
-      const rowDaya = document.getElementById('row_pk_17_2_daya');
-      if (rowDaya) {
-        rowDaya.style.display = (penerangan === '1') ? 'block' : 'none';
-      }
-
-      // 3. Aturan Pertanyaan 24 & 25 (Pesan Media)
-      const infoMedia = document.getElementById('pk_24_info_media').value;
-      const rowMediaDetail = document.getElementById('row_pk_25_media_detail');
-      if (rowMediaDetail) {
-        rowMediaDetail.style.display = (infoMedia === '1') ? 'block' : 'none';
-      }
-
-      // 4. Aturan Pertanyaan 26 & 27 (Informasi Petugas & Stunting)
-      const infoPetugas = document.getElementById('pk_26_info_petugas').value;
-      const rowPetugasDetail = document.getElementById('row_pk_27_petugas_detail');
-      if (rowPetugasDetail) {
-        rowPetugasDetail.style.display = (infoPetugas === '1') ? 'block' : 'none';
-      }
-    }
+    }    
 
     function bukaAccordionTunggal(kontenId, iconId) {
       const targetKonten = document.getElementById(kontenId);
@@ -8334,7 +8213,7 @@
     function mundurDariReview() {
       // Kembali ke halaman Blok Pembangunan Keluarga
       pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
-      tampilkanStepPK();
+      renderBlokPK();
     }
 
     function lihatDetailNikKembar(nik, encodedJson) {
