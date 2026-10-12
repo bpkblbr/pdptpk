@@ -6447,8 +6447,7 @@
         teks: 'Apakah keluarga setuju dengan (boleh pilih lebih dari satu):'
       }
     ];
-
-    // Helper Evaluasi Kondisi Anggota Keluarga untuk 'Tidak Berlaku'
+    
     function getStatusDemografiKeluarga() {
       const anggotaEls = document.querySelectorAll('.item-anggota-page');
       let adaSuamiIstri = false;
@@ -6468,10 +6467,7 @@
 
       return { adaSuamiIstri, adaAnak0_17, adaAyah };
     }
-
-    // ========================================================
-    // FUNGSI RENDER STEP BLOK PK (PERSIS GAYA BLOK KB)
-    // ========================================================
+    
     function tampilkanStepPK() {
       const kontainer = document.getElementById('kontainer_step_pk');
       const labelLangkah = document.getElementById('label_langkah_pk');
@@ -6481,8 +6477,7 @@
       const q = daftarPertanyaanPK[indexStepPK];
       const demo = getStatusDemografiKeluarga();
       let html = '';
-
-      // TIPE 1: PERTANYAAN TUNGGAL BIASA
+      
       if (q.opsi && !q.tipe) {
         html = `
           <div class="judul-tanya-krs">${q.nomor}. ${q.teks}</div>
@@ -6505,8 +6500,7 @@
           </div>
         `;
       }
-
-      // TIPE 2: 03. KONFLIK DALAM KELUARGA
+      
       else if (q.tipe === 'konflik_keluarga_baru') {
         const subItems = [
           { id: 'pk_03_1', teks: '1. Tanpa tegur sapa (selama 3 hari berturut-turut)', opsi: [{ val: '1', label: 'Ya' }, { val: '2', label: 'Tidak' }] },
@@ -6547,8 +6541,7 @@
           </div>
         `;
       }
-
-      // TIPE 3: 10. MAKANAN BERAGAM
+      
       else if (q.tipe === 'makanan_beragam') {
         const val10 = nilaiJawabanPK['pk_10'] || '';
         const list10_1 = Array.isArray(nilaiJawabanPK['pk_10_1']) ? nilaiJawabanPK['pk_10_1'] : [];
@@ -6583,8 +6576,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 4: 14. KEPEMILIKAN ASET
+      
       else if (q.tipe === 'aset_bercabang') {
         const val14 = nilaiJawabanPK['pk_14'] || '';
         const list14_1 = Array.isArray(nilaiJawabanPK['pk_14_1']) ? nilaiJawabanPK['pk_14_1'] : [];
@@ -6621,8 +6613,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 5: 15. INTERAKSI KELUARGA
+      
       else if (q.tipe === 'interaksi_bercabang') {
         const val15 = nilaiJawabanPK['pk_15'] || '';
         const list15_1 = Array.isArray(nilaiJawabanPK['pk_15_1']) ? nilaiJawabanPK['pk_15_1'] : [];
@@ -6656,8 +6647,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 6: 16. PENGASUHAN AYAH
+      
       else if (q.tipe === 'pengasuhan_ayah') {
         const subAyah = [
           { id: 'pk_16_1', teks: '1. Menemani anak (bersepeda, rekreasi, menggambar, mengantar sekolah, bermain, belajar, bercerita, dll)' },
@@ -6689,8 +6679,7 @@
           </div>
         `;
       }
-
-      // TIPE 7: 17. ATAP RUMAH
+      
       else if (q.tipe === 'atap_rumah') {
         const opsiAtap = [
           { val: '1', label: '1. Beton' }, { val: '2', label: '2. Genteng' }, { val: '3', label: '3. Seng' },
@@ -6716,8 +6705,7 @@
           </div>
         `;
       }
-
-      // TIPE 8: 18. DINDING RUMAH
+      
       else if (q.tipe === 'dinding_rumah') {
         const opsiDinding = [
           { val: '1', label: '1. Tembok' }, { val: '2', label: '2. Plesteran bambu / kawat' },
@@ -6743,8 +6731,7 @@
           </div>
         `;
       }
-
-      // TIPE 9: 19. LANTAI RUMAH
+      
       else if (q.tipe === 'lantai_rumah') {
         const opsiLantai = [
           { val: '1', label: '1. Marmer / granit' }, { val: '2', label: '2. Keramik' },
@@ -6771,8 +6758,7 @@
           </div>
         `;
       }
-
-      // TIPE 10: 20. PENERANGAN & DAYA PLN
+      
       else if (q.tipe === 'penerangan_bercabang') {
         const opsiListrik = [
           { val: '1', label: '1. Listrik PLN meteran' },
@@ -6806,8 +6792,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 11: 21. AIR MINUM & JARAK SEPTIK TANK
+      
       else if (q.tipe === 'air_minum_bercabang') {
         const opsiAir = [
           { val: '1', label: '1. Air kemasan bermerek' }, { val: '2', label: '2. Air isi ulang' },
@@ -6839,8 +6824,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 12: 23. LUAS RUMAH & 24. JUMLAH JIWA
+      
       else if (q.tipe === 'luas_dan_jiwa') {
         html = `
           <div class="space-y-4 pt-1">
@@ -6866,8 +6850,7 @@
           </div>
         `;
       }
-
-      // TIPE 13: 27. PESAN INFORMASI & 28. SUMBER INFORMASI
+      
       else if (q.tipe === 'informasi_dan_sumber') {
         const list27 = Array.isArray(nilaiJawabanPK['pk_27']) ? nilaiJawabanPK['pk_27'] : [];
         const list28 = Array.isArray(nilaiJawabanPK['pk_28']) ? nilaiJawabanPK['pk_28'] : [];
@@ -6916,8 +6899,7 @@
           ` : ''}
         `;
       }
-
-      // TIPE 14: 29. HAL YANG DISETUJUI KELUARGA
+      
       else if (q.tipe === 'multi_setuju') {
         const list29 = Array.isArray(nilaiJawabanPK['pk_29']) ? nilaiJawabanPK['pk_29'] : [];
         const opsi29 = [
@@ -6944,14 +6926,32 @@
 
       kontainer.innerHTML = html;
     }
+    
+    function setOpsiPK(keyField, nilai) {      
+      if (keyField === 'pk_10' && nilai === '2') {
+        nilaiJawabanPK['pk_10_1'] = [];
+      }
+      
+      if (keyField === 'pk_14' && nilai === '2') {
+        nilaiJawabanPK['pk_14_1'] = [];
+      }
+      
+      if (keyField === 'pk_15' && nilai === '2') {
+        nilaiJawabanPK['pk_15_1'] = [];
+      }
+      
+      if (keyField === 'pk_20_1' && nilai !== '1') {
+        nilaiJawabanPK['pk_20_2'] = '';
+      }
+      
+      if (keyField === 'pk_21_1' && !['4', '5', '6', '7', '8'].includes(nilai)) {
+        nilaiJawabanPK['pk_21_2'] = '';
+      }
 
-    // Handler Klik Pilihan Tunggal PK
-    function setOpsiPK(keyField, nilai) {
       nilaiJawabanPK[keyField] = nilai;
       tampilkanStepPK();
     }
-
-    // Handler Klik Pilihan Jamak / Multi PK
+    
     function toggleMultiPK(keyField, nilai) {
       if (!Array.isArray(nilaiJawabanPK[keyField])) {
         nilaiJawabanPK[keyField] = [];
@@ -6964,9 +6964,276 @@
       }
       tampilkanStepPK();
     }
-
-    // Navigasi Maju Step PK
+    
     function majuStepPK() {
+      const q = daftarPertanyaanPK[indexStepPK];
+
+      // 1. Validasi Pertanyaan Pilihan Tunggal Biasa
+      if (q.opsi && !q.tipe) {
+        if (!nilaiJawabanPK[q.id]) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Dijawab',
+            text: `Pertanyaan nomor ${q.nomor} belum dijawab!`,
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // 2. Pertanyaan 03: Konflik Keluarga (03.1 s.d 03.5)
+      else if (q.tipe === 'konflik_keluarga_baru') {
+        const subList = [
+          { k: 'pk_03_1_tanpa_sapa', lbl: '03.1 (Tanpa tegur sapa)' },
+          { k: 'pk_03_2_pisah_ranjang', lbl: '03.2 (Pisah ranjang)' },
+          { k: 'pk_03_3_pergi_rumah', lbl: '03.3 (Pergi dari rumah)' },
+          { k: 'pk_03_4_kdrt', lbl: '03.4 (KDRT)' },
+          { k: 'pk_03_5_kekerasan_anak', lbl: '03.5 (Kekerasan pada anak)' }
+        ];
+
+        for (let item of subList) {
+          if (!nilaiJawabanPK[item.k] && !nilaiJawabanPK[item.k.replace(/_([a-z0-9_]+)$/, '')]) {
+            // Cek kompatibilitas nama kunci baru/lama
+            const val = nilaiJawabanPK[item.k] || nilaiJawabanPK[item.k.substring(0, 7)];
+            if (!val) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Pertanyaan Belum Lengkap',
+                text: `Poin konflik nomor ${item.lbl} belum dijawab!`,
+                confirmButtonColor: '#0284c7'
+              });
+              return;
+            }
+          }
+        }
+      }
+
+      // 3. Pertanyaan 10: Makanan Pokok & 10.1 Jenis Makanan
+      else if (q.tipe === 'makanan_beragam') {
+        const val10 = nilaiJawabanPK['pk_10_makan_dua_kali'] || nilaiJawabanPK['pk_10'];
+        if (!val10) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 10 (makan paling sedikit dua kali sehari) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (val10 === '1') {
+          const arr10_1 = nilaiJawabanPK['pk_10_1_jenis_makanan'] || nilaiJawabanPK['pk_10_1'];
+          if (!Array.isArray(arr10_1) || arr10_1.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 10.1 (jenis makanan beragam yang dikonsumsi) wajib dipilih minimal satu jenis!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 4. Pertanyaan 14: Kepemilikan Aset & 14.1 Jenis Aset
+      else if (q.tipe === 'aset_bercabang') {
+        const val14 = nilaiJawabanPK['pk_14_memiliki_aset'] || nilaiJawabanPK['pk_14'];
+        if (!val14) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 14 (keluarga memiliki aset) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (val14 === '1') {
+          const arr14_1 = nilaiJawabanPK['pk_14_1_jenis_aset'] || nilaiJawabanPK['pk_14_1'];
+          if (!Array.isArray(arr14_1) || arr14_1.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 14.1 (jenis aset yang dimiliki) wajib dipilih minimal satu!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 5. Pertanyaan 15: Interaksi Keluarga & 15.1 Jenis Interaksi
+      else if (q.tipe === 'interaksi_bercabang') {
+        const val15 = nilaiJawabanPK['pk_15_interaksi_harian'] || nilaiJawabanPK['pk_15'];
+        if (!val15) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 15 (waktu berinteraksi setiap hari) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (val15 === '1') {
+          const arr15_1 = nilaiJawabanPK['pk_15_1_jenis_interaksi'] || nilaiJawabanPK['pk_15_1'];
+          if (!Array.isArray(arr15_1) || arr15_1.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 15.1 (jenis interaksi yang dilakukan) wajib dipilih minimal satu!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 6. Pertanyaan 16: Pengasuhan Ayah (16.1 s.d 16.4)
+      else if (q.tipe === 'pengasuhan_ayah') {
+        const subListAyah = [
+          { k: 'pk_16_1_ayah_menemani_anak', alt: 'pk_16_1', lbl: '16.1 (Menemani anak)' },
+          { k: 'pk_16_2_ayah_komunikasi', alt: 'pk_16_2', lbl: '16.2 (Berkomunikasi dengan anak)' },
+          { k: 'pk_16_3_ayah_hak_dasar', alt: 'pk_16_3', lbl: '16.3 (Memenuhi hak dasar anak)' },
+          { k: 'pk_16_4_ayah_pekerjaan_rumah', alt: 'pk_16_4', lbl: '16.4 (Terlibat pekerjaan rumah)' }
+        ];
+
+        for (let item of subListAyah) {
+          const val = nilaiJawabanPK[item.k] || nilaiJawabanPK[item.alt];
+          if (!val) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: `Poin pengasuhan ayah nomor ${item.lbl} belum dijawab!`,
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 7. Pertanyaan 17: Atap Rumah (17.1 & 17.2)
+      else if (q.tipe === 'atap_rumah') {
+        const val17_1 = nilaiJawabanPK['pk_17_1_jenis_atap'] || nilaiJawabanPK['pk_17_1'];
+        const val17_2 = nilaiJawabanPK['pk_17_2_kondisi_atap'] || nilaiJawabanPK['pk_17_2'];
+        if (!val17_1) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 17.1 (jenis atap rumah terluas) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!val17_2) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 17.2 (kondisi atap) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+      }
+
+      // 8. Pertanyaan 18: Dinding Rumah (18.1 & 18.2)
+      else if (q.tipe === 'dinding_rumah') {
+        const val18_1 = nilaiJawabanPK['pk_18_1_jenis_dinding'] || nilaiJawabanPK['pk_18_1'];
+        const val18_2 = nilaiJawabanPK['pk_18_2_kondisi_dinding'] || nilaiJawabanPK['pk_18_2'];
+        if (!val18_1) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 18.1 (jenis dinding rumah terluas) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!val18_2) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 18.2 (kondisi dinding) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+      }
+
+      // 9. Pertanyaan 19: Lantai Rumah (19.1 & 19.2)
+      else if (q.tipe === 'lantai_rumah') {
+        const val19_1 = nilaiJawabanPK['pk_19_1_jenis_lantai'] || nilaiJawabanPK['pk_19_1'];
+        const val19_2 = nilaiJawabanPK['pk_19_2_kondisi_lantai'] || nilaiJawabanPK['pk_19_2'];
+        if (!val19_1) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 19.1 (jenis lantai rumah terluas) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!val19_2) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 19.2 (kondisi lantai) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+      }
+
+      // 10. Pertanyaan 20: Sumber Penerangan & 20.2 Daya Listrik
+      else if (q.tipe === 'penerangan_bercabang') {
+        const val20_1 = nilaiJawabanPK['pk_20_1_sumber_penerangan'] || nilaiJawabanPK['pk_20_1'];
+        if (!val20_1) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 20.1 (sumber penerangan utama) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (val20_1 === '1') {
+          const val20_2 = nilaiJawabanPK['pk_20_2_daya_listrik'] || nilaiJawabanPK['pk_20_2'];
+          if (!val20_2) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 20.2 (besar daya listrik terpasang) belum dipilih!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 11. Pertanyaan 21: Sumber Air Minum & 21.2 Jarak Tinja
+      else if (q.tipe === 'air_minum_bercabang') {
+        const val21_1 = nilaiJawabanPK['pk_21_1_sumber_air_minum'] || nilaiJawabanPK['pk_21_1'];
+        if (!val21_1) {
+          Swal.fire({ icon: 'warning', title: 'Belum Dijawab', text: 'Pertanyaan nomor 21.1 (sumber air minum utama) belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (['4', '5', '6', '7', '8'].includes(val21_1)) {
+          const val21_2 = nilaiJawabanPK['pk_21_2_jarak_tinja'] || nilaiJawabanPK['pk_21_2'];
+          if (!val21_2) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 21.2 (jarak ke penampungan kotoran/tinja terdekat) belum dijawab!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 12. Pertanyaan 23 & 24: Luas Bangunan & Jumlah Penghuni
+      else if (q.tipe === 'luas_dan_jiwa') {
+        const luas = nilaiJawabanPK['pk_23_luas_rumah'] || nilaiJawabanPK['pk_23'];
+        const jiwa = nilaiJawabanPK['pk_24_jumlah_menetap'] || nilaiJawabanPK['pk_24'];
+
+        if (!luas || parseFloat(luas) <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pertanyaan nomor 23 (luas rumah/bangunan) wajib diisi angka lebih dari 0!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!jiwa || parseInt(jiwa, 10) <= 0) {
+          Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pertanyaan nomor 24 (jumlah orang menetap) wajib diisi angka lebih dari 0!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+      }
+
+      // 13. Pertanyaan 27 & 28: Pesan Informasi & Sumber Informasi
+      else if (q.tipe === 'informasi_dan_sumber') {
+        const list27 = nilaiJawabanPK['pk_27_pesan_informasi'] || nilaiJawabanPK['pk_27'];
+        if (!Array.isArray(list27) || list27.length === 0) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Dijawab',
+            text: 'Pertanyaan nomor 27: Pilih minimal satu informasi yang pernah didengar/dilihat keluarga!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        } else {
+          // Jika nomor 27 dipilih, pertanyaan nomor 28 wajib dipilih sumbernya
+          const list28 = nilaiJawabanPK['pk_28_sumber_informasi'] || nilaiJawabanPK['pk_28'];
+          if (!Array.isArray(list28) || list28.length === 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Pertanyaan Belum Lengkap',
+              text: 'Pertanyaan nomor 28: Dari mana informasi tersebut diperoleh wajib dipilih minimal satu sumber!',
+              confirmButtonColor: '#0284c7'
+            });
+            return;
+          }
+        }
+      }
+
+      // 14. Pertanyaan 29: Persetujuan Keluarga
+      else if (q.tipe === 'multi_setuju') {
+        const list29 = nilaiJawabanPK['pk_29_persetujuan_keluarga'] || nilaiJawabanPK['pk_29'];
+        if (!Array.isArray(list29) || list29.length === 0) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Dijawab',
+            text: 'Pertanyaan nomor 29: Hal yang disetujui keluarga wajib dipilih minimal satu!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // Jika lolos validasi, lanjut ke pertanyaan berikutnya atau buka halaman review jika sudah di akhir
       if (indexStepPK >= daftarPertanyaanPK.length - 1) {
         bukaHalamanReview();
       } else {
@@ -7392,21 +7659,34 @@
     }
 
     function majuStepKB() {      
+      // Langkah 1: Riwayat Melahirkan & Anak Hidup
       if (indexStepKB === 0) {
+        if (dataNilaiKB.kb_01_melahirkan === '' || dataNilaiKB.kb_01_melahirkan === null) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 01: Jumlah melahirkan belum diisi (isi 0 jika belum pernah melahirkan)!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+
         const jmlLahir = parseInt(dataNilaiKB.kb_01_melahirkan, 10) || 0;
         if (jmlLahir > 0) {
-          if (
-            dataNilaiKB.kb_01_hidup_laki === '' || dataNilaiKB.kb_01_hidup_laki === null ||
-            dataNilaiKB.kb_01_hidup_perempuan === '' || dataNilaiKB.kb_01_hidup_perempuan === null ||
-            dataNilaiKB.kb_01_masih_laki === '' || dataNilaiKB.kb_01_masih_laki === null ||
-            dataNilaiKB.kb_01_masih_perempuan === '' || dataNilaiKB.kb_01_masih_perempuan === null
-          ) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Lengkapi Data Anak',
-              text: 'Silakan isi rincian Jumlah Anak Lahir Hidup dan Jumlah Anak Masih Hidup (isi 0 jika tidak ada)!',
-              confirmButtonColor: '#0284c7'
-            });
+          if (dataNilaiKB.kb_01_hidup_laki === '' || dataNilaiKB.kb_01_hidup_laki === null) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Jumlah anak lahir hidup (laki-laki) belum diisi (isi 0 jika tidak ada)!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+          if (dataNilaiKB.kb_01_hidup_perempuan === '' || dataNilaiKB.kb_01_hidup_perempuan === null) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Jumlah anak lahir hidup (perempuan) belum diisi (isi 0 jika tidak ada)!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+          if (dataNilaiKB.kb_01_masih_laki === '' || dataNilaiKB.kb_01_masih_laki === null) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Jumlah anak masih hidup (laki-laki) belum diisi (isi 0 jika tidak ada)!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+          if (dataNilaiKB.kb_01_masih_perempuan === '' || dataNilaiKB.kb_01_masih_perempuan === null) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Jumlah anak masih hidup (perempuan) belum diisi (isi 0 jika tidak ada)!', confirmButtonColor: '#0284c7' });
             return;
           }
 
@@ -7426,78 +7706,222 @@
           }
         }
       }
-     
+
+      // Langkah 2: Jumlah Anak Ideal
+      else if (indexStepKB === 1) {
+        if (dataNilaiKB.kb_02_anak_ideal === '' || dataNilaiKB.kb_02_anak_ideal === null) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 02: Jumlah anak ideal yang diinginkan belum diisi!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // Langkah 3: Sedang Hamil
+      else if (indexStepKB === 2) {
+        if (!dataNilaiKB.kb_03_sedang_hamil) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 03: Status sedang hamil belum dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+
+        if (dataNilaiKB.kb_03_sedang_hamil === '1') {
+          if (!dataNilaiKB.kb_03_usia_kehamilan) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Usia kehamilan (minggu) wajib diisi!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+          if (!dataNilaiKB.kb_03_status_ingin_hamil) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pilihan saat mulai hamil (ingin saat itu / nanti / tidak ingin) wajib dipilih!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+        } else if (dataNilaiKB.kb_03_sedang_hamil === '2') {
+          if (!dataNilaiKB.kb_03_keinginan_anak_lagi) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pilihan keinginan punya anak lagi wajib dipilih!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+        }
+      }
+
+      // Langkah 4: Sedang Pakai KB
+      else if (indexStepKB === 3) {
+        if (!dataNilaiKB.kb_04_sedang_kb) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 04: Penggunaan alat/obat/cara KB saat ini belum dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+
+        if (dataNilaiKB.kb_04_sedang_kb === '1') {
+          if (!dataNilaiKB.kb_04_mulai_bulan || !dataNilaiKB.kb_04_mulai_tahun) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Bulan dan tahun mulai menggunakan KB saat ini wajib diisi!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+        }
+      }
+
+      // Langkah 5: Pernah Pakai KB 12 Bulan Terakhir
+      else if (indexStepKB === 4) {
+        if (!dataNilaiKB.kb_05_pernah_kb) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 05: Pernah menggunakan kontrasepsi dalam 12 bulan terakhir belum dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+
+        if (dataNilaiKB.kb_05_pernah_kb === '1') {
+          if (!dataNilaiKB.kb_05_mulai_bulan || !dataNilaiKB.kb_05_mulai_tahun) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Bulan dan tahun mulai menggunakan kontrasepsi terakhir wajib diisi!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+          if (!dataNilaiKB.kb_05_berhenti_bulan || !dataNilaiKB.kb_05_berhenti_tahun) {
+            Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Bulan dan tahun berhenti menggunakan kontrasepsi terakhir wajib diisi!', confirmButtonColor: '#0284c7' });
+            return;
+          }
+        }
+      }
+
+      // Langkah 6: Alasan Tidak/Putus KB
+      else if (indexStepKB === 5) {
+        if (!dataNilaiKB.kb_06_alasan_tidak_kb) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 06: Alasan utama tidak/putus pakai kontrasepsi wajib dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // Langkah 7: Jenis Alkon
+      else if (indexStepKB === 6) {
+        if (!dataNilaiKB.kb_07_jenis_kb) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 07: Jenis alat/obat/cara KB yang dipakai wajib dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // Langkah 8: Sumber Pelayanan KB
+      else if (indexStepKB === 7) {
+        if (!dataNilaiKB.kb_08_sumber_pelayanan) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Pertanyaan Belum Terjawab',
+            text: 'Pertanyaan 08: Sumber pelayanan KB terakhir wajib dipilih!',
+            confirmButtonColor: '#0284c7'
+          });
+          return;
+        }
+      }
+
+      // Langkah 9: Informasi Pelayanan KB (3 Poin)
+      else if (indexStepKB === 8) {
+        if (!dataNilaiKB.kb_09_info_jenis) {
+          Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pertanyaan 09.1: Penjelasan jenis-jenis alat KB belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!dataNilaiKB.kb_09_info_efek_samping) {
+          Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pertanyaan 09.2: Penjelasan efek samping belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+        if (!dataNilaiKB.kb_09_info_tindakan) {
+          Swal.fire({ icon: 'warning', title: 'Belum Lengkap', text: 'Pertanyaan 09.3: Penjelasan tindakan bila ada efek samping belum dijawab!', confirmButtonColor: '#0284c7' });
+          return;
+        }
+      }
+
+      // -------------------------------------------------------------
+      // LOGIKA PERCABANGAN DAN LOMPATAN
+      // -------------------------------------------------------------
       riwayatStepKB.push(indexStepKB);
-      
+
       if (indexStepKB === 2) {
-        if (dataNilaiKB.kb_03_sedang_hamil === '1') {          
-          indexStepKB = 4;
+        if (dataNilaiKB.kb_03_sedang_hamil === '1') {
+          indexStepKB = 4; // Lompat ke pertanyaan 12 bulan terakhir
           tampilkanStepKB();
           return;
-        } else {          
+        } else {
           indexStepKB = 3;
           tampilkanStepKB();
           return;
         }
       }
-      
+
       if (indexStepKB === 3) {
-        if (dataNilaiKB.kb_04_sedang_kb === '1') {          
-          indexStepKB = 6;
+        if (dataNilaiKB.kb_04_sedang_kb === '1') {
+          indexStepKB = 6; // Lompat ke jenis alkon
           tampilkanStepKB();
           return;
-        } else {          
+        } else {
           indexStepKB = 4;
           tampilkanStepKB();
           return;
         }
       }
-      
-      if (indexStepKB === 4) {        
+
+      if (indexStepKB === 4) {
         indexStepKB = 5;
         tampilkanStepKB();
         return;
       }
-      
-      if (indexStepKB === 5) {        
+
+      if (indexStepKB === 5) {
         const tidakSedangKB = (dataNilaiKB.kb_04_sedang_kb === '2' || dataNilaiKB.kb_03_sedang_hamil === '1');
         const tidakPernahKB12Bulan = (dataNilaiKB.kb_05_pernah_kb === '2');
 
-        if (tidakSedangKB && tidakPernahKB12Bulan) {          
+        if (tidakSedangKB && tidakPernahKB12Bulan) {
           indexStepPK = 0;
           riwayatStepPK = [];
           pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
           tampilkanStepPK();
           return;
-        } else {          
+        } else {
           indexStepKB = 6;
           tampilkanStepKB();
           return;
         }
       }
-      
-      if (indexStepKB === 6) {        
+
+      if (indexStepKB === 6) {
         if (dataNilaiKB.kb_07_jenis_kb === '9') {
           indexStepPK = 0;
           riwayatStepPK = [];
           pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
           tampilkanStepPK();
           return;
-        } else {          
+        } else {
           indexStepKB++;
           tampilkanStepKB();
           return;
         }
       }
-      
-      if (indexStepKB >= daftarPertanyaanKB.length - 1) {        
+
+      if (indexStepKB >= daftarPertanyaanKB.length - 1) {
         indexStepPK = 0;
         riwayatStepPK = [];
         pindahHalamanForm('hal_pembangunan', 'IV. BLOK PEMBANGUNAN KELUARGA');
         tampilkanStepPK();
         return;
       }
-      
+
       indexStepKB++;
       tampilkanStepKB();
     }
@@ -8562,9 +8986,82 @@
       });
     }
 
-    // --- SUBMIT PENUH KE DATABASE (TABEL KELUARGA & ANGGOTA KELUARGA) ---
+    function validasiKelengkapanSebelumSimpan() {
+      // 1. Cek Blok KB
+      if (dataNilaiKB.kb_01_melahirkan === '' || dataNilaiKB.kb_01_melahirkan === null) {
+        return 'Blok KB No. 01 (Riwayat melahirkan) belum diisi!';
+      }
+      if (dataNilaiKB.kb_02_anak_ideal === '' || dataNilaiKB.kb_02_anak_ideal === null) {
+        return 'Blok KB No. 02 (Jumlah anak ideal) belum diisi!';
+      }
+      if (!dataNilaiKB.kb_03_sedang_hamil) {
+        return 'Blok KB No. 03 (Status sedang hamil) belum dijawab!';
+      }
+      if (dataNilaiKB.kb_03_sedang_hamil === '1' && (!dataNilaiKB.kb_03_usia_kehamilan || !dataNilaiKB.kb_03_status_ingin_hamil)) {
+        return 'Blok KB No. 03 (Rincian usia/keinginan hamil) belum lengkap!';
+      }
+      if (dataNilaiKB.kb_03_sedang_hamil === '2' && !dataNilaiKB.kb_03_keinginan_anak_lagi) {
+        return 'Blok KB No. 03 (Keinginan memiliki anak lagi) belum dijawab!';
+      }
+
+      // 2. Cek Blok Pembangunan Keluarga (Sampel Kunci Utama)
+      const cekPK = [
+        { key: ['pk_01_ibadah', 'pk_01'], label: 'Blok PK No. 01 (Kegiatan ibadah rutin)' },
+        { key: ['pk_02_toleransi_agama', 'pk_02'], label: 'Blok PK No. 02 (Toleransi beragama)' },
+        { key: ['pk_04_anggota_sakit', 'pk_04'], label: 'Blok PK No. 04 (Anggota keluarga sakit)' },
+        { key: ['pk_08_akses_sarana_publik', 'pk_08'], label: 'Blok PK No. 08 (Akses sarana publik)' },
+        { key: ['pk_09_aman_nyaman', 'pk_09'], label: 'Blok PK No. 09 (Rasa aman & nyaman)' },
+        { key: ['pk_10_makan_dua_kali', 'pk_10'], label: 'Blok PK No. 10 (Makan dua kali sehari)' },
+        { key: ['pk_11_akses_internet', 'pk_11'], label: 'Blok PK No. 11 (Akses internet)' },
+        { key: ['pk_12_internet_anak', 'pk_12'], label: 'Blok PK No. 12 (Internet anak)' },
+        { key: ['pk_13_sumber_penghasilan', 'pk_13'], label: 'Blok PK No. 13 (Sumber penghasilan)' },
+        { key: ['pk_14_memiliki_aset', 'pk_14'], label: 'Blok PK No. 14 (Kepemilikan aset)' },
+        { key: ['pk_15_interaksi_harian', 'pk_15'], label: 'Blok PK No. 15 (Interaksi harian)' },
+        { key: ['pk_17_1_jenis_atap', 'pk_17_1'], label: 'Blok PK No. 17.1 (Jenis atap)' },
+        { key: ['pk_17_2_kondisi_atap', 'pk_17_2'], label: 'Blok PK No. 17.2 (Kondisi atap)' },
+        { key: ['pk_18_1_jenis_dinding', 'pk_18_1'], label: 'Blok PK No. 18.1 (Jenis dinding)' },
+        { key: ['pk_18_2_kondisi_dinding', 'pk_18_2'], label: 'Blok PK No. 18.2 (Kondisi dinding)' },
+        { key: ['pk_19_1_jenis_lantai', 'pk_19_1'], label: 'Blok PK No. 19.1 (Jenis lantai)' },
+        { key: ['pk_19_2_kondisi_lantai', 'pk_19_2'], label: 'Blok PK No. 19.2 (Kondisi lantai)' },
+        { key: ['pk_20_1_sumber_penerangan', 'pk_20_1'], label: 'Blok PK No. 20.1 (Penerangan)' },
+        { key: ['pk_21_1_sumber_air_minum', 'pk_21_1'], label: 'Blok PK No. 21.1 (Sumber air minum)' },
+        { key: ['pk_22_fasilitas_jamban', 'pk_22'], label: 'Blok PK No. 22 (Fasilitas jamban)' },
+        { key: ['pk_23_luas_rumah', 'pk_23'], label: 'Blok PK No. 23 (Luas bangunan rumah)' },
+        { key: ['pk_24_jumlah_menetap', 'pk_24'], label: 'Blok PK No. 24 (Jumlah orang menetap)' },
+        { key: ['pk_25_bahan_bakar_masak', 'pk_25'], label: 'Blok PK No. 25 (Bahan bakar memasak)' },
+        { key: ['pk_26_kepemilikan_rumah', 'pk_26'], label: 'Blok PK No. 26 (Kepemilikan rumah)' }
+      ];
+
+      for (let c of cekPK) {
+        const val = nilaiJawabanPK[c.key[0]] || nilaiJawabanPK[c.key[1]];
+        if (!val) {
+          return `${c.label} belum dijawab!`;
+        }
+      }
+
+      // Cek Persetujuan Keluarga 29
+      const list29 = nilaiJawabanPK['pk_29_persetujuan_keluarga'] || nilaiJawabanPK['pk_29'];
+      if (!Array.isArray(list29) || list29.length === 0) {
+        return 'Blok PK No. 29 (Hal yang disetujui keluarga) belum dipilih minimal satu!';
+      }
+
+      return null; // Semua terisi lengkap
+    }
+
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
+      
+      const pesanBelumLengkap = validasiKelengkapanSebelumSimpan();
+      if (pesanBelumLengkap) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Data Belum Lengkap',
+          html: `<div class="text-xs text-rose-600 font-semibold">${pesanBelumLengkap}</div><p class="text-xs text-slate-500 pt-1">Silakan lengkapi pertanyaan tersebut sebelum menyimpan pendataan.</p>`,
+          confirmButtonColor: '#0284c7'
+        });
+        return;
+      }
+
       const btnSimpan = document.getElementById('btnSimpan');
       btnSimpan.disabled = true;
       btnSimpan.innerText = "MENYIMPAN DATA...";
@@ -8629,10 +9126,7 @@
             kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]')?.value || '4'
           });
         });
-
-        // ---------------------------------------------------------------------
-        // 2. VALIDASI NIK ISTRI GANDA (HANYA DIEKSEKUSI JIKA JARINGAN ONLINE)
-        // ---------------------------------------------------------------------
+        
         if (navigator.onLine) {
           const cekNik = await validasiNikIstriSebelumSimpanManual(noKK, payloadAnggota);
           if (!cekNik.lolos) {
@@ -8647,10 +9141,7 @@
             return;
           }
         }
-
-        // ---------------------------------------------------------------------
-        // 3. SUSUN PAYLOAD KELUARGA (TABEL INDUK: WILAYAH, PK, DAN KB)
-        // ---------------------------------------------------------------------
+        
         const payloadKeluarga = {
           nomor_kk: noKK,
           nama_kk: namaKK,
