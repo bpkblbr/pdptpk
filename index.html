@@ -1184,7 +1184,7 @@
         </div>
       </header>
 
-      <form id="pendataanForm" class="p-4 sm:p-7 space-y-6">
+      <form id="pendataanForm" novalidate class="p-4 sm:p-7 space-y-6">
         
         <!-- STEP 1: I. IDENTITAS WILAYAH -->
         <div id="hal_wilayah" class="halaman-form aktif space-y-5">
@@ -1485,7 +1485,7 @@
                     class="px-5 py-2.5 bg-[#0284c7] hover:bg-[#0369a1] active:scale-95 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5">
               <span>← Sebelumnya</span>
             </button>
-            <button type="submit" id="btnSimpan"
+            <button type="button" onclick="eksekusiSimpanFinal()" id="btnSimpan"
                     class="px-6 py-2.5 bg-[#00897b] hover:bg-[#00796b] active:scale-95 text-white font-bold rounded-lg shadow-md transition text-xs sm:text-sm flex items-center gap-1.5">
               <span>Simpan</span>
               <span>💾</span>
@@ -1664,6 +1664,12 @@
     }
 
     function isiDataUjiCobaOtomatis() {
+      document.getElementById('kode_prov').value = document.getElementById('kode_prov').value || '52';
+      document.getElementById('kode_kab').value = document.getElementById('kode_kab').value || '01';
+      document.getElementById('kode_kec').value = document.getElementById('kode_kec').value || '08';
+      document.getElementById('kode_desa').value = document.getElementById('kode_desa').value || '2001';
+      document.getElementById('kode_dusun').value = document.getElementById('kode_dusun').value || '0100';
+
       // 1. Generate Angka Unik agar No. KK & NIK tidak bentrok
       const unik = Math.floor(1000 + Math.random() * 9000);
       const noKKTest = `520108${Date.now().toString().slice(-6)}${unik.toString().slice(-4)}`;
@@ -9286,6 +9292,136 @@
       }
 
       return null; // Semua terisi lengkap
+    }
+
+    async function eksekusiSimpanFinal() {
+      // 1. Cek Validasi Kelengkapan Isian
+      const pesanBelumLengkap = validasiKelengkapanSebelumSimpan();
+      if (pesanBelumLengkap) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Data Belum Lengkap',
+          html: `<div class="text-xs text-rose-600 font-semibold">${pesanBelumLengkap}</div><p class="text-xs text-slate-500 pt-1">Silakan lengkapi isian tersebut sebelum menyimpan.</p>`,
+          confirmButtonColor: '#0284c7'
+        });
+        return;
+      }
+
+      const btnSimpan = document.getElementById('btnSimpan');
+      btnSimpan.disabled = true;
+      btnSimpan.innerText = "MENYIMPAN DATA...";
+
+      try {
+        const noKK = document.getElementById('nomor_kk').value.trim();
+        const kdProv = document.getElementById('kode_prov').value.trim() || '52';
+        const kdKab = document.getElementById('kode_kab').value.trim() || '01';
+        const kdKec = document.getElementById('kode_kec').value.trim() || '08';
+        const kdDesa = document.getElementById('kode_desa').value.trim() || '2001';
+        const kdDusun = document.getElementById('kode_dusun').value.trim() || '0100';
+        const rt = document.getElementById('rt').value.trim() || '001';
+        const kodeRumah = (document.getElementById('kode_rumah').value.trim() || '001').padStart(3, '0');
+        const noUrutKel = (document.getElementById('no_urut_keluarga').value.trim() || '001').padStart(3, '0');
+        const statusKeluarga = document.getElementById('status_keluarga').value || '1';
+        const alamat = document.getElementById('alamat_detail').value.trim().toUpperCase();
+        const noHp = document.getElementById('no_hp').value.trim();
+
+        const halKK = document.getElementById('hal_anggota_1');
+        const namaKK = halKK ? halKK.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() : '';
+        const nikKK = halKK ? halKK.querySelector('[name="nik"]')?.value.trim() : '';
+
+        // GENERATE KODE KELUARGA (Format: prov+kab+kec+desa+dusun + [SPASI] + rt+rumah+no_urut)
+        const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
+
+        // SUSUN DATA JAWABAN BLOK PK (Array multi di-join koma)
+        const payloadPK = {};
+        for (const [k, v] of Object.entries(nilaiJawabanPK)) {
+          if (Array.isArray(v)) {
+            payloadPK[k] = v.join(',');
+          } else {
+            payloadPK[k] = v;
+          }
+        }
+
+        // Susun Payload Tabel Keluarga
+        const payloadKeluarga = {
+          kode_keluarga: kodeKeluarga,
+          nomor_kk: noKK,
+          nama_kk: namaKK,
+          nik_kk: nikKK,
+          kode_prov: kdProv,
+          kode_kab: kdKab,
+          kode_kec: kdKec,
+          kode_desa: kdDesa,
+          kode_dusun: kdDusun,
+          rt: rt,
+          kode_rumah: kodeRumah,
+          no_urut_keluarga: noUrutKel,
+          status_keluarga: statusKeluarga,
+          alamat_detail: alamat,
+          no_hp: noHp,
+          latitude: parseFloat(document.getElementById('review_lat')?.innerText) || null,
+          longitude: parseFloat(document.getElementById('review_lng')?.innerText) || null,
+          ...dataNilaiKB,
+          ...payloadPK,
+          diperbarui_pada: new Date()
+        };
+
+        // Susun Payload Anggota Keluarga
+        const listHalAnggota = document.querySelectorAll('.item-anggota-page');
+        const payloadAnggota = [];
+        listHalAnggota.forEach((hal, idx) => {
+          const noUrut = idx + 1;
+          payloadAnggota.push({
+            kode_keluarga: kodeKeluarga,
+            nomor_kk: noKK,
+            nomor_anggota_keluarga: noUrut,
+            nama_lengkap: hal.querySelector('[name="nama_lengkap"]')?.value.trim().toUpperCase() || '',
+            nik: hal.querySelector('[name="nik"]')?.value.trim() || '',
+            jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
+            tanggal_lahir: hal.querySelector('[name="tanggal_lahir"]')?.value || null,
+            status_perkawinan: hal.querySelector('[name="status_perkawinan"]')?.value || '1',
+            usia_kawin_pertama: parseInt(hal.querySelector('[name="usia_kawin_pertama"]')?.value, 10) || null,
+            memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]')?.value || '1',
+            hubungan_dengan_kk: (noUrut === 1) ? '1' : hal.querySelector('[name="hubungan_dengan_kk"]')?.value,
+            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
+            agama: hal.querySelector('[name="agama"]')?.value || '1',
+            jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
+            pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '1',
+            kesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
+            gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
+            kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]')?.value || '4',
+            bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
+            mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0'
+          });
+        });
+
+        // Simpan ke Supabase
+        const { error: errKel } = await supabaseClient
+          .from('keluarga')
+          .upsert([payloadKeluarga], { onConflict: 'kode_keluarga' });
+        if (errKel) throw errKel;
+
+        await supabaseClient.from('anggota_keluarga').delete().eq('kode_keluarga', kodeKeluarga);
+        const { error: errAng } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggota);
+        if (errAng) throw errAng;
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil Disimpan!',
+          text: `Data keluarga ${namaKK} (${kodeKeluarga}) berhasil tersimpan ke database.`,
+          confirmButtonColor: '#059669'
+        }).then(() => {
+          document.getElementById('pendataanForm').reset();
+          kembaliKeDashboard();
+        });
+
+      } catch (err) {
+        console.error("Gagal simpan:", err);
+        Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.', 'error');
+      } finally {
+        btnSimpan.disabled = false;
+        btnSimpan.innerHTML = '<span>Simpan</span><span>💾</span>';
+      }
     }
 
     document.getElementById('pendataanForm')?.addEventListener('submit', async (e) => {
