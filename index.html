@@ -1736,7 +1736,7 @@
 
       // Isi Data KK (Suami)
       const hal1 = document.getElementById('hal_anggota_1');
-      hal1.querySelector('[name="nama_lengkap"]').value = 'AHMAD TESTING (KK)';
+      hal1.querySelector('[name="nama_lengkap"]').value = 'AHMAD TESTING';
       hal1.querySelector('[name="nik"]').value = `520108010185${unik}`;
       hal1.querySelector('[name="jenis_kelamin"]').value = '1';
       hal1.querySelector('[name="tanggal_lahir"]').value = '1985-01-01';
@@ -1756,7 +1756,7 @@
 
       // Isi Data Istri
       const hal2 = document.getElementById('hal_anggota_2');
-      hal2.querySelector('[name="nama_lengkap"]').value = 'SITI TESTING (ISTRI)';
+      hal2.querySelector('[name="nama_lengkap"]').value = 'SITI TESTING';
       hal2.querySelector('[name="nik"]').value = `520108410190${unik}`;
       hal2.querySelector('[name="jenis_kelamin"]').value = '2';
       hal2.querySelector('[name="tanggal_lahir"]').value = '1990-01-01';
@@ -1776,7 +1776,7 @@
 
       // Isi Data Anak
       const hal3 = document.getElementById('hal_anggota_3');
-      hal3.querySelector('[name="nama_lengkap"]').value = 'BUDI TESTING (ANAK)';
+      hal3.querySelector('[name="nama_lengkap"]').value = 'BUDI TESTING';
       hal3.querySelector('[name="nik"]').value = `520108101015${unik}`;
       hal3.querySelector('[name="jenis_kelamin"]').value = '1';
       hal3.querySelector('[name="tanggal_lahir"]').value = '2015-10-10';
@@ -9337,13 +9337,17 @@
         const statusKeluarga = document.getElementById('status_keluarga')?.value || '1';
         const alamat = (document.getElementById('alamat_detail')?.value || '').trim().toUpperCase();
         const noHp = (document.getElementById('no_hp')?.value || '').trim();
+        
+        const bersihkanNama = (str) => {
+          if (!str) return '';
+          return str.replace(/\s*\([^)]*\)/g, '').trim().toUpperCase();
+        };
 
         // Identitas Kepala Keluarga (KK) dari Anggota #1
         const halKK = document.getElementById('hal_anggota_1');
-        const namaKK = halKK ? (halKK.querySelector('[name="nama_lengkap"]')?.value || '').trim().toUpperCase() : '';
-        const nikKK = halKK ? (halKK.querySelector('[name="nik"]')?.value || '').trim() : '';
-
-        // GENERATE KODE KELUARGA (Format: ProvKabKecDesaDusun + [SPASI] + RtRumahNoUrut)
+        const rawNamaKK = halKK ? halKK.querySelector('[name="nama_lengkap"]')?.value : '';
+        const namaKK = bersihkanNama(rawNamaKK); // <-- Hanya nama bersih
+        const nikKK = halKK ? (halKK.querySelector('[name="nik"]')?.value || '').trim() : '';        
         const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
 
         // PEMETAAN & PEMBERSIHAN KOLOM BLOK PK
@@ -9471,8 +9475,7 @@
 
           diperbarui_pada: new Date()
         };
-
-        // SUSUN PAYLOAD TABEL ANGGOTA KELUARGA
+        
         const listHalAnggota = document.querySelectorAll('.item-anggota-page');
         const payloadAnggota = [];
 
@@ -9480,12 +9483,13 @@
           const noUrut = idx + 1;
           const statusKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
           const usiaKawinVal = hal.querySelector('[name="usia_kawin_pertama"]')?.value;
+          const rawNama = hal.querySelector('[name="nama_lengkap"]')?.value || '';
 
           payloadAnggota.push({
             kode_keluarga: kodeKeluarga,
             nomor_kk: noKK,
             nomor_anggota_keluarga: noUrut,
-            nama_lengkap: (hal.querySelector('[name="nama_lengkap"]')?.value || '').trim().toUpperCase(),
+            nama_lengkap: bersihkanNama(rawNama),
             nik: (hal.querySelector('[name="nik"]')?.value || '').trim(),
             jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
             tanggal_lahir: hal.querySelector('[name="tanggal_lahir"]')?.value || null,
