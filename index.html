@@ -8824,8 +8824,17 @@
       document.getElementById('prev_wil_kec').innerText = getOptTeks('kecamatan').replace(/^\d+\.\s*/, '');
       document.getElementById('prev_wil_desa').innerText = getOptTeks('desa').replace(/^\d+\.\s*/, '');
       
-      const rawDusun = getOptTeks('dusun');
-      document.getElementById('prev_wil_rw').innerText = rawDusun.includes('-') ? rawDusun.split('-')[1].trim() : rawDusun;
+      const elDusun = document.getElementById('dusun');
+      const kodeDusun = document.getElementById('kode_dusun')?.value || '';
+      const textDusun = elDusun && elDusun.selectedIndex >= 0 ? elDusun.options[elDusun.selectedIndex].text : '';
+      
+      if (textDusun.includes('-')) {
+        document.getElementById('prev_wil_rw').innerText = textDusun.trim();
+      } else if (kodeDusun && textDusun) {
+        document.getElementById('prev_wil_rw').innerText = `${kodeDusun} - ${textDusun.trim()}`;
+      } else {
+        document.getElementById('prev_wil_rw').innerText = textDusun || '-';
+      }
       
       const rawRt = getOptTeks('rt');
       document.getElementById('prev_wil_rt').innerText = rawRt.includes('-') ? rawRt.split('-')[0].trim() : rawRt;
