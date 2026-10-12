@@ -1822,93 +1822,49 @@
 
       // 5. Isi Lengkap Data Blok PK (01 s.d 29)
       nilaiJawabanPK = {
-        pk_01: '1',
         pk_01_ibadah: '1',
-        pk_02: '1',
         pk_02_toleransi_agama: '1',
-        pk_03_1: '2',
         pk_03_1_tanpa_sapa: '2',
-        pk_03_2: '2',
         pk_03_2_pisah_ranjang: '2',
-        pk_03_3: '2',
         pk_03_3_pergi_rumah: '2',
-        pk_03_4: '2',
         pk_03_4_kdrt: '2',
-        pk_03_5: '2',
         pk_03_5_kekerasan_anak: '2',
-        pk_04: '2',
         pk_04_anggota_sakit: '2',
-        pk_05: '1',
         pk_05_rekreasi: '1',
-        pk_06: '1',
         pk_06_kegiatan_sosial: '1',
-        pk_07: '1',
         pk_07_bantuan_orang_lain: '1',
-        pk_08: '1',
         pk_08_akses_sarana_publik: '1',
-        pk_09: '1',
         pk_09_aman_nyaman: '1',
-        pk_10: '1',
         pk_10_makan_dua_kali: '1',
-        pk_10_1: ['1', '2', '3', '4'],
         pk_10_1_jenis_makanan: ['1', '2', '3', '4'],
-        pk_11: '1',
         pk_11_akses_internet: '1',
-        pk_12: '1',
         pk_12_internet_anak: '1',
-        pk_13: '1',
         pk_13_sumber_penghasilan: '1',
-        pk_14: '1',
         pk_14_memiliki_aset: '1',
-        pk_14_1: ['1', '3', '6'],
         pk_14_1_jenis_aset: ['1', '3', '6'],
-        pk_15: '1',
         pk_15_interaksi_harian: '1',
-        pk_15_1: ['1', '2', '3'],
         pk_15_1_jenis_interaksi: ['1', '2', '3'],
-        pk_16_1: '1',
         pk_16_1_ayah_menemani_anak: '1',
-        pk_16_2: '1',
         pk_16_2_ayah_komunikasi: '1',
-        pk_16_3: '1',
         pk_16_3_ayah_hak_dasar: '1',
-        pk_16_4: '1',
         pk_16_4_ayah_pekerjaan_rumah: '1',
-        pk_17_1: '2',
         pk_17_1_jenis_atap: '2',
-        pk_17_2: '1',
         pk_17_2_kondisi_atap: '1',
-        pk_18_1: '1',
         pk_18_1_jenis_dinding: '1',
-        pk_18_2: '1',
         pk_18_2_kondisi_dinding: '1',
-        pk_19_1: '2',
         pk_19_1_jenis_lantai: '2',
-        pk_19_2: '1',
         pk_19_2_kondisi_lantai: '1',
-        pk_20_1: '1',
         pk_20_1_sumber_penerangan: '1',
-        pk_20_2: '2',
         pk_20_2_daya_listrik: '2',
-        pk_21_1: '3',
         pk_21_1_sumber_air_minum: '3',
-        pk_21_2: '2',
         pk_21_2_jarak_tinja: '2',
-        pk_22: '1',
         pk_22_fasilitas_jamban: '1',
-        pk_23: '60',
         pk_23_luas_rumah: '60',
-        pk_24: '3',
         pk_24_jumlah_menetap: '3',
-        pk_25: '4',
         pk_25_bahan_bakar_masak: '4',
-        pk_26: '1',
         pk_26_kepemilikan_rumah: '1',
-        pk_27: ['1', '2', '3', '4'],
         pk_27_pesan_informasi: ['1', '2', '3', '4'],
-        pk_28: ['1', '8', '9'],
         pk_28_sumber_informasi: ['1', '8', '9'],
-        pk_29: ['1', '2', '6', '7', '8'],
         pk_29_persetujuan_keluarga: ['1', '2', '6', '7', '8']
       };
 
@@ -6524,13 +6480,13 @@
 
     const daftarPertanyaanPK = [
       {
-        id: 'pk_01',
+        id: 'pk_01_ibadah',
         nomor: '01',
         teks: 'Selama 1 bulan terakhir, setiap anggota keluarga berusia 10 tahun ke atas menjalankan kegiatan ibadah secara rutin',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_02',
+        id: 'pk_02_toleransi_agama',
         nomor: '02',
         teks: 'Selama 1 bulan terakhir, setiap anggota keluarga menerapkan toleransi beragama',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
@@ -6542,37 +6498,37 @@
         teks: 'Selama 3 bulan terakhir, terdapat konflik antar anggota keluarga berupa:'
       },
       {
-        id: 'pk_04',
+        id: 'pk_04_anggota_sakit',
         nomor: '04',
         teks: 'Selama 1 bulan terakhir, terdapat anggota keluarga yang sakit (4 hari berturut-turut) karena penyakit kronis/akut/kritis sehingga meninggalkan aktivitas',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_05',
+        id: 'pk_05_rekreasi',
         nomor: '05',
         teks: 'Selama 3 bulan terakhir, apakah keluarga pernah berekreasi bersama di luar rumah?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_06',
+        id: 'pk_06_kegiatan_sosial',
         nomor: '06',
         teks: 'Selama 3 bulan terakhir, apakah keluarga pernah ikut serta dalam kegiatan sosial/gotong royong?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_07',
+        id: 'pk_07_bantuan_orang_lain',
         nomor: '07',
         teks: 'Selama 3 bulan terakhir, apakah keluarga pernah memberikan pertolongan/bantuan kepada orang lain?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_08',
+        id: 'pk_08_akses_sarana_publik',
         nomor: '08',
         teks: 'Apakah keluarga dapat mengakses sarana prasarana publik yang ada di lingkungan tempat tinggal dengan mudah?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_09',
+        id: 'pk_09_aman_nyaman',
         nomor: '09',
         teks: 'Apakah keluarga merasa aman dan nyaman tinggal di lingkungan tempat tinggal?',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
@@ -6584,13 +6540,13 @@
         teks: 'Selama 1 minggu terakhir, anggota keluarga makan paling sedikit dua kali sehari'
       },
       {
-        id: 'pk_11',
+        id: 'pk_11_akses_internet',
         nomor: '11',
         teks: 'Selama 3 bulan terakhir, terdapat paling sedikit satu anggota keluarga yang mengakses informasi dari media online (internet)',
         opsi: [{ val: '1', label: '1. Ya' }, { val: '2', label: '2. Tidak' }]
       },
       {
-        id: 'pk_12',
+        id: 'pk_12_internet_anak',
         nomor: '12',
         teks: 'Selama 3 bulan terakhir, terdapat anak berusia 0 - 17 tahun yang mengakses informasi dari media online (internet) dan mendapatkan pendampingan orang tua',
         opsi: [
@@ -6601,7 +6557,7 @@
         ]
       },
       {
-        id: 'pk_13',
+        id: 'pk_13_sumber_penghasilan',
         nomor: '13',
         teks: 'Selama 3 bulan terakhir, terdapat paling sedikit satu anggota keluarga yang memiliki sumber penghasilan dan mampu memenuhi kebutuhan pokok per bulan',
         opsi: [
@@ -6659,7 +6615,7 @@
         teks: '21.1 Sumber air minum utama & 21.2 Jarak ke penampungan tinja/septic tank'
       },
       {
-        id: 'pk_22',
+        id: 'pk_22_fasilitas_jamban',
         nomor: '22',
         teks: 'Apakah memiliki fasilitas tempat buang air besar?',
         opsi: [
@@ -6677,7 +6633,7 @@
         teks: '23. Luas rumah/bangunan keseluruhan (m²) & 24. Orang yang tinggal dan menetap (orang)'
       },
       {
-        id: 'pk_25',
+        id: 'pk_25_bahan_bakar_masak',
         nomor: '25',
         teks: 'Bahan bakar utama untuk memasak:',
         opsi: [
@@ -6691,7 +6647,7 @@
         ]
       },
       {
-        id: 'pk_26',
+        id: 'pk_26_kepemilikan_rumah',
         nomor: '26',
         teks: 'Kepemilikan rumah / bangunan tempat tinggal:',
         opsi: [
@@ -9364,13 +9320,75 @@
         // GENERATE KODE KELUARGA (Format: prov+kab+kec+desa+dusun + [SPASI] + rt+rumah+no_urut)
         const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
 
-        // SUSUN DATA JAWABAN BLOK PK (Array multi di-join koma)
+        const daftarKolomPKSah = [
+          'pk_01_ibadah', 'pk_02_toleransi_agama', 'pk_03_1_tanpa_sapa', 'pk_03_2_pisah_ranjang',
+          'pk_03_3_pergi_rumah', 'pk_03_4_kdrt', 'pk_03_5_kekerasan_anak', 'pk_04_anggota_sakit',
+          'pk_05_rekreasi', 'pk_06_kegiatan_sosial', 'pk_07_bantuan_orang_lain', 'pk_08_akses_sarana_publik',
+          'pk_09_aman_nyaman', 'pk_10_makan_dua_kali', 'pk_10_1_jenis_makanan', 'pk_11_akses_internet',
+          'pk_12_internet_anak', 'pk_13_sumber_penghasilan', 'pk_14_memiliki_aset', 'pk_14_1_jenis_aset',
+          'pk_15_interaksi_harian', 'pk_15_1_jenis_interaksi', 'pk_16_1_ayah_menemani_anak',
+          'pk_16_2_ayah_komunikasi', 'pk_16_3_ayah_hak_dasar', 'pk_16_4_ayah_pekerjaan_rumah',
+          'pk_17_1_jenis_atap', 'pk_17_2_kondisi_atap', 'pk_18_1_jenis_dinding', 'pk_18_2_kondisi_dinding',
+          'pk_19_1_jenis_lantai', 'pk_19_2_kondisi_lantai', 'pk_20_1_sumber_penerangan',
+          'pk_20_2_daya_listrik', 'pk_21_1_sumber_air_minum', 'pk_21_2_jarak_tinja',
+          'pk_22_fasilitas_jamban', 'pk_23_luas_rumah', 'pk_24_jumlah_menetap',
+          'pk_25_bahan_bakar_masak', 'pk_26_kepemilikan_rumah', 'pk_27_pesan_informasi',
+          'pk_28_sumber_informasi', 'pk_29_persetujuan_keluarga'
+        ];
+
+        // Pemetaan jika di memori masih ada sisa nama kunci lama
+        const mapNamaLamaKeBaru = {
+          'pk_01': 'pk_01_ibadah',
+          'pk_02': 'pk_02_toleransi_agama',
+          'pk_03_1': 'pk_03_1_tanpa_sapa',
+          'pk_03_2': 'pk_03_2_pisah_ranjang',
+          'pk_03_3': 'pk_03_3_pergi_rumah',
+          'pk_03_4': 'pk_03_4_kdrt',
+          'pk_03_5': 'pk_03_5_kekerasan_anak',
+          'pk_04': 'pk_04_anggota_sakit',
+          'pk_05': 'pk_05_rekreasi',
+          'pk_06': 'pk_06_kegiatan_sosial',
+          'pk_07': 'pk_07_bantuan_orang_lain',
+          'pk_08': 'pk_08_akses_sarana_publik',
+          'pk_09': 'pk_09_aman_nyaman',
+          'pk_10': 'pk_10_makan_dua_kali',
+          'pk_10_1': 'pk_10_1_jenis_makanan',
+          'pk_11': 'pk_11_akses_internet',
+          'pk_12': 'pk_12_internet_anak',
+          'pk_13': 'pk_13_sumber_penghasilan',
+          'pk_14': 'pk_14_memiliki_aset',
+          'pk_14_1': 'pk_14_1_jenis_aset',
+          'pk_15': 'pk_15_interaksi_harian',
+          'pk_15_1': 'pk_15_1_jenis_interaksi',
+          'pk_16_1': 'pk_16_1_ayah_menemani_anak',
+          'pk_16_2': 'pk_16_2_ayah_komunikasi',
+          'pk_16_3': 'pk_16_3_ayah_hak_dasar',
+          'pk_16_4': 'pk_16_4_ayah_pekerjaan_rumah',
+          'pk_17_1': 'pk_17_1_jenis_atap',
+          'pk_17_2': 'pk_17_2_kondisi_atap',
+          'pk_18_1': 'pk_18_1_jenis_dinding',
+          'pk_18_2': 'pk_18_2_kondisi_dinding',
+          'pk_19_1': 'pk_19_1_jenis_lantai',
+          'pk_19_2': 'pk_19_2_kondisi_lantai',
+          'pk_20_1': 'pk_20_1_sumber_penerangan',
+          'pk_20_2': 'pk_20_2_daya_listrik',
+          'pk_21_1': 'pk_21_1_sumber_air_minum',
+          'pk_21_2': 'pk_21_2_jarak_tinja',
+          'pk_22': 'pk_22_fasilitas_jamban',
+          'pk_23': 'pk_23_luas_rumah',
+          'pk_24': 'pk_24_jumlah_menetap',
+          'pk_25': 'pk_25_bahan_bakar_masak',
+          'pk_26': 'pk_26_kepemilikan_rumah',
+          'pk_27': 'pk_27_pesan_informasi',
+          'pk_28': 'pk_28_sumber_informasi',
+          'pk_29': 'pk_29_persetujuan_keluarga'
+        };
+
         const payloadPK = {};
         for (const [k, v] of Object.entries(nilaiJawabanPK)) {
-          if (Array.isArray(v)) {
-            payloadPK[k] = v.join(',');
-          } else {
-            payloadPK[k] = v;
+          const keyBaru = mapNamaLamaKeBaru[k] || k;
+          if (daftarKolomPKSah.includes(keyBaru)) {
+            payloadPK[keyBaru] = Array.isArray(v) ? v.join(',') : v;
           }
         }
 
