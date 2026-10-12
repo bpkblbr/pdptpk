@@ -4925,7 +4925,7 @@
               kb_04_sedang_kb: String(k.KB_04_SEDANG_KB) === '1',
               kb_04_mulai_bulan: String(k.KB_04_MULAI_BULAN || '') || null,
               kb_04_mulai_tahun: parseInt(k.KB_04_MULAI_TAHUN, 10) || null,
-              kb_05_pernah_kb_12_bulan: String(k.KB_05_PERNAH_KB_12_BULAN) === '1',
+              kb_05_pernah_kb: String(k.KB_05_PERNAH_KB || k.KB_05_PERNAH_KB_12_BULAN || '') === '1' ? '1' : (String(k.KB_05_PERNAH_KB || k.KB_05_PERNAH_KB_12_BULAN || '') === '2' ? '2' : null),
               kb_05_mulai_bulan: String(k.KB_05_MULAI_BULAN || '') || null,
               kb_05_mulai_tahun: parseInt(k.KB_05_MULAI_TAHUN, 10) || null,
               kb_05_berhenti_bulan: String(k.KB_05_BERHENTI_BULAN || '') || null,
