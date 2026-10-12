@@ -1664,12 +1664,6 @@
     }
 
     function isiDataUjiCobaOtomatis() {
-      document.getElementById('kode_prov').value = document.getElementById('kode_prov').value || '52';
-      document.getElementById('kode_kab').value = document.getElementById('kode_kab').value || '01';
-      document.getElementById('kode_kec').value = document.getElementById('kode_kec').value || '08';
-      document.getElementById('kode_desa').value = document.getElementById('kode_desa').value || '2001';
-      document.getElementById('kode_dusun').value = document.getElementById('kode_dusun').value || '0100';
-
       // 1. Generate Angka Unik agar No. KK & NIK tidak bentrok
       const unik = Math.floor(1000 + Math.random() * 9000);
       const noKKTest = `520108${Date.now().toString().slice(-6)}${unik.toString().slice(-4)}`;
@@ -1684,6 +1678,12 @@
       if (elRt && elRt.options.length > 1) {
         elRt.selectedIndex = 1;
       }
+
+      document.getElementById('kode_prov').value = document.getElementById('kode_prov').value || '52';
+      document.getElementById('kode_kab').value = document.getElementById('kode_kab').value || '01';
+      document.getElementById('kode_kec').value = document.getElementById('kode_kec').value || '08';
+      document.getElementById('kode_desa').value = document.getElementById('kode_desa').value || '2001';
+      document.getElementById('kode_dusun').value = document.getElementById('kode_dusun').value || '0100';
 
       document.getElementById('nomor_kk').value = noKKTest;
       document.getElementById('status_keluarga').value = '1';
