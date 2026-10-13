@@ -275,14 +275,17 @@
         <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB, demografi sasaran, dan potensi keluarga berjenjang.</p>
       </div>
 
-      <div onclick="bukaHalamanBNBA()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
+      <div onclick="bukaHalamanCariEdit()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border-2 border-cyan-500 shadow-sm hover:shadow-md transition text-center space-y-3 group">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center group-hover:scale-110 transition">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
+        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Cari data keluarga berdasarkan NIK, No. KK atau nama, serta perbarui lembar isian formulir lengkap.</p>
+        <div>
+          <span class="inline-block mt-1 text-xs font-bold text-cyan-700 bg-cyan-50 px-3 py-1 rounded-full uppercase">Buka Modul &rarr;</span>
+        </div>
       </div>
 
       <div onclick="Swal.fire('Informasi', 'Modul Pencarian & Edit data sedang disiapkan.', 'info')" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
@@ -298,22 +301,22 @@
   </div>
 
   <!-- ========================================================
-       5. HALAMAN DATA BNBA (MASTER-DETAIL GAYA REKAP)
+       5. HALAMAN CARI & EDIT DATA (MASTER-DETAIL)
        ======================================================== -->
-  <div id="tampilan_bnba" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+  <div id="tampilan_cari_edit" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
     
-    <!-- Header Halaman BNBA -->
+    <!-- Header Halaman -->
     <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
       <div>
         <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
           &larr; KEMBALI KE DASHBOARD
         </button>
-        <h1 class="text-lg font-black text-slate-800 uppercase">Rekapitulasi Data Keluarga (BNBA)</h1>
+        <h1 class="text-lg font-black text-slate-800 uppercase">Cari & Edit Data Keluarga (BNBA)</h1>
       </div>
-      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnba">Otoritas Wilayah</span>
+      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasCariEdit">Otoritas Wilayah</span>
     </div>
 
-    <!-- PANEL PENCARIAN & FILTER WILAYAH (REKAP 1) -->
+    <!-- PANEL PENCARIAN & FILTER WILAYAH -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
       <div class="bg-[#2b4c80] text-white px-4 py-2.5 font-bold flex justify-between items-center cursor-pointer">
         <span>Pencarian</span>
@@ -321,41 +324,41 @@
       </div>
 
       <div class="p-4 space-y-3">
-        <!-- Baris Periode -->
+        <!-- Baris Periode & Nama KK -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Periode</label>
             <div class="grid grid-cols-2 gap-2">
-              <select id="bnba_filter_bulan" class="p-2 border rounded-lg bg-white outline-none">
+              <select id="cari_edit_filter_bulan" class="p-2 border rounded-lg bg-white outline-none">
                 <option value="10" selected>Oktober</option>
               </select>
-              <select id="bnba_filter_tahun" class="p-2 border rounded-lg bg-white outline-none">
+              <select id="cari_edit_filter_tahun" class="p-2 border rounded-lg bg-white outline-none">
                 <option value="2026" selected>2026</option>
               </select>
             </div>
           </div>
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Nama Kepala Keluarga</label>
-            <input type="text" id="bnba_cari_nama" placeholder="Cari Nama KK..." class="w-full p-2 border rounded-lg uppercase outline-none" />
+            <input type="text" id="cari_edit_cari_nama" placeholder="Cari Nama KK..." class="w-full p-2 border rounded-lg uppercase outline-none" />
           </div>
         </div>
 
         <div>
           <label class="block font-semibold text-slate-600 mb-1">NIK</label>
-          <input type="text" id="bnba_cari_nik" placeholder="Cari 16 Digit NIK..." class="w-full p-2 border rounded-lg font-mono outline-none" />
+          <input type="text" id="cari_edit_cari_nik" placeholder="Cari 16 Digit NIK..." class="w-full p-2 border rounded-lg font-mono outline-none" />
         </div>
 
-        <!-- Filter Wilayah Berjenjang & Terkunci Otomatis -->
+        <!-- Filter Wilayah Berjenjang -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Provinsi</label>
-            <select id="bnba_prov" disabled class="w-full p-2 border rounded-lg bg-slate-100 font-bold text-slate-700 outline-none">
+            <select id="cari_edit_prov" disabled class="w-full p-2 border rounded-lg bg-slate-100 font-bold text-slate-700 outline-none">
               <option value="52">52 - NUSA TENGGARA BARAT</option>
             </select>
           </div>
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Kab/Kota</label>
-            <select id="bnba_kab" onchange="saatBnbaKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
+            <select id="cari_edit_kab" onchange="saatCariEditKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
               <option value="">-- SEMUA KABUPATEN --</option>
             </select>
           </div>
@@ -364,13 +367,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Kecamatan</label>
-            <select id="bnba_kec" onchange="saatBnbaKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <select id="cari_edit_kec" onchange="saatCariEditKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
               <option value="">-- SEMUA KECAMATAN --</option>
             </select>
           </div>
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Desa/Kel</label>
-            <select id="bnba_desa" onchange="saatBnbaDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <select id="cari_edit_desa" onchange="saatCariEditDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
               <option value="">-- SEMUA DESA --</option>
             </select>
           </div>
@@ -379,31 +382,30 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Dusun/RW</label>
-            <select id="bnba_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
+            <select id="cari_edit_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
               <option value="">-- SEMUA DUSUN --</option>
             </select>
           </div>
           <div>
             <label class="block font-semibold text-slate-600 mb-1">RT</label>
-            <input type="text" id="bnba_rt" placeholder="Contoh: 001" class="w-full p-2 border rounded-lg outline-none font-mono" />
+            <input type="text" id="cari_edit_rt" placeholder="Contoh: 001" class="w-full p-2 border rounded-lg outline-none font-mono" />
           </div>
         </div>
 
-        <!-- TOMBOL TOGGLE PENCARIAN LANJUTAN -->
+        <!-- Tombol Toggle Pencarian Lanjutan -->
         <div class="pt-1">
-          <button type="button" onclick="togglePencarianLanjutan()" 
+          <button type="button" onclick="togglePencarianLanjutanCariEdit()" 
                   class="text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1.5 transition text-xs">
             <span class="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[11px] leading-none">+</span>
             <span>Pencarian Lanjutan</span>
           </button>
         </div>
 
-        <!-- PANEL 2 KOLOM PENCARIAN LANJUTAN (DEFAULT HIDDEN) -->
-        <div id="panelPencarianLanjutan" class="hidden pt-1">
+        <!-- Panel Pencarian Lanjutan -->
+        <div id="panelPencarianLanjutanCariEdit" class="hidden pt-1">
           <div class="flex items-center gap-2">
-            <!-- Kolom 1: Kategori Parameter -->
             <div class="w-1/2">
-              <select id="bnba_lanjutan_kategori" onchange="saatKategoriLanjutanBerubah()" 
+              <select id="cari_edit_lanjutan_kategori" onchange="saatKategoriLanjutanCariEditBerubah()" 
                       class="w-full p-2 border border-slate-300 rounded-lg bg-white outline-none font-semibold text-slate-700">
                 <option value="">Select...</option>
                 <option value="jkn">Kesertaan JKN</option>
@@ -422,25 +424,23 @@
               </select>
             </div>
 
-            <!-- Kolom 2: Nilai / Opsi Parameter -->
             <div class="w-1/2">
-              <select id="bnba_lanjutan_nilai" 
+              <select id="cari_edit_lanjutan_nilai" 
                       class="w-full p-2 border border-slate-300 rounded-lg bg-white outline-none font-semibold text-slate-700">
                 <option value="">Select...</option>
               </select>
             </div>
 
-            <!-- Tombol Reset Merah (✖) -->
-            <button type="button" onclick="resetPencarianLanjutan()" title="Hapus Kriteria Lanjutan"
+            <button type="button" onclick="resetPencarianLanjutanCariEdit()" title="Hapus Kriteria Lanjutan"
                     class="px-3 py-2 bg-[#b22222] hover:bg-[#8b0000] active:scale-95 text-white font-black rounded-lg transition text-xs shadow-sm flex items-center justify-center">
               ✖
             </button>
           </div>
         </div>
 
-        <!-- Tombol Filter -->
+        <!-- Tombol Aksi Filter & Cetak -->
         <div class="flex flex-wrap gap-2 pt-2 border-t">
-          <button type="button" onclick="muatDataBnbaKeluarga()" 
+          <button type="button" onclick="muatDataCariEditKeluarga()" 
                   class="px-6 py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
             🔍 Cari
           </button>
@@ -456,11 +456,11 @@
       </div>
     </div>
 
-    <!-- TABEL MASTER: REKAP 1 (DAFTAR KEPALA KELUARGA) -->
+    <!-- TABEL MASTER: DAFTAR KEPALA KELUARGA -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
       <div class="p-3 border-b bg-slate-50 font-bold text-slate-700 uppercase flex justify-between items-center">
         <span>📋 Data Keluarga & Individu</span>
-        <span id="labelTotalBnba" class="text-slate-500 font-semibold">Total: 0 Keluarga</span>
+        <span id="labelTotalCariEdit" class="text-slate-500 font-semibold">Total: 0 Keluarga</span>
       </div>
 
       <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
@@ -476,25 +476,25 @@
               <th class="p-2.5 text-center">Usia</th>
             </tr>
           </thead>
-          <tbody id="tbodyBnbaKeluarga" class="divide-y divide-slate-100">
+          <tbody id="tbodyCariEditKeluarga" class="divide-y divide-slate-100">
             <tr><td colspan="7" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- MODAL POPUP DETAIL: REKAP 2 (ANGGOTA KELUARGA & STATUS POKTAN) -->
-    <div id="modalDetailBnba" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <!-- MODAL DETAIL KELUARGA & POTENSI -->
+    <div id="modalDetailCariEdit" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
       <div class="bg-white rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-slate-100 space-y-4 max-h-[92vh] overflow-y-auto text-xs">
         
         <div class="flex justify-between items-center border-b pb-3">
           <div>
             <h3 class="text-sm sm:text-base font-black text-slate-800 uppercase flex items-center gap-2">
-              <span>👨‍👩‍👧‍👦 Detail Anggota Keluarga</span>
+              <span>👨‍👩‍👧‍👦 Detail Anggota Keluarga & Potensi</span>
             </h3>
-            <p id="subDetailKeluarga" class="text-[11px] text-slate-500 font-semibold"></p>
+            <p id="subDetailKeluargaCariEdit" class="text-[11px] text-slate-500 font-semibold"></p>
           </div>
-          <button type="button" onclick="tutupModalDetailBnba()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl px-2">&times;</button>
+          <button type="button" onclick="tutupModalDetailCariEdit()" class="text-slate-400 hover:text-slate-700 font-bold text-2xl px-2">&times;</button>
         </div>
 
         <!-- Tabel Anggota Keluarga (Bisa Edit & Hapus Masing-Masing Anggota) -->
@@ -511,65 +511,52 @@
                 <th class="p-2.5 text-center">Mutasi</th>
               </tr>
             </thead>
-            <tbody id="tbodyDetailAnggota" class="divide-y divide-slate-100">
-              <!-- Render otomatis baris anggota -->
+            <tbody id="tbodyDetailAnggotaCariEdit" class="divide-y divide-slate-100">
             </tbody>
           </table>
         </div>
 
-         <!-- Informasi Ringkasan Keluarga Sesuai Rekap 3.jpg -->
+        <!-- Informasi Ringkasan Keluarga Sesuai Format Rekap -->
         <div class="pt-4 space-y-3.5 text-xs text-slate-700">
-          
-          <!-- Jumlah Anak -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Jumlah Anak</label>
             <div class="sm:col-span-9">
-              <input type="text" id="det_jml_anak" readonly 
-                     class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
+              <input type="text" id="ce_det_jml_anak" readonly class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
             </div>
           </div>
 
-          <!-- Jumlah Baduta -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Jumlah Baduta</label>
             <div class="sm:col-span-9">
-              <input type="text" id="det_jml_baduta" readonly 
-                     class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
+              <input type="text" id="ce_det_jml_baduta" readonly class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
             </div>
           </div>
 
-          <!-- Jumlah Balita -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Jumlah Balita</label>
             <div class="sm:col-span-9">
-              <input type="text" id="det_jml_balita" readonly 
-                     class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
+              <input type="text" id="ce_det_jml_balita" readonly class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
             </div>
           </div>
 
-          <!-- Jumlah WUS -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Jumlah WUS</label>
             <div class="sm:col-span-9">
-              <input type="text" id="det_jml_wus" readonly 
-                     class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
+              <input type="text" id="ce_det_jml_wus" readonly class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-center font-bold text-slate-800 outline-none" />
             </div>
           </div>
 
-          <!-- Kode Keluarga -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Kode Keluarga</label>
-            <div class="sm:col-span-9 font-mono font-bold text-slate-800 italic" id="det_kode_keluarga">
+            <div class="sm:col-span-9 font-mono font-bold text-slate-800 italic" id="ce_det_kode_keluarga">
               -
             </div>
           </div>
 
-          <!-- Mutasi Keluarga -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Mutasi Keluarga</label>
             <div class="sm:col-span-9">
-              <select id="det_mutasi_keluarga" disabled 
-                      class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 outline-none">
+              <select id="ce_det_mutasi_keluarga" disabled class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 outline-none">
                 <option value="">Select...</option>
                 <option value="1">1. Anggota Pindah Keluar</option>
                 <option value="2">2. Meninggal Dunia</option>
@@ -579,12 +566,10 @@
             </div>
           </div>
 
-          <!-- Kesertaan JKN -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Kesertaan JKN</label>
             <div class="sm:col-span-9">
-              <select id="det_kesertaan_jkn" disabled 
-                      class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-semibold outline-none cursor-not-allowed">
+              <select id="ce_det_kesertaan_jkn" disabled class="w-full sm:w-1/2 p-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-700 font-semibold outline-none cursor-not-allowed">
                 <option value="">Select...</option>
                 <option value="1">1. PBI</option>
                 <option value="2">2. Bukan PBI</option>
@@ -594,37 +579,34 @@
             </div>
           </div>
 
-          <!-- Status PUS -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Status PUS</label>
             <div class="sm:col-span-9 flex items-center gap-6">
               <label class="flex items-center gap-1.5 cursor-pointer">
-                <input type="radio" name="det_rad_pus" id="det_rad_pus_ya" disabled class="accent-slate-500" />
+                <input type="radio" name="ce_det_rad_pus" id="ce_det_rad_pus_ya" disabled class="accent-slate-500" />
                 <span>Ya</span>
               </label>
               <label class="flex items-center gap-1.5 cursor-pointer">
-                <input type="radio" name="det_rad_pus" id="det_rad_pus_tidak" disabled class="accent-slate-500" />
+                <input type="radio" name="ce_det_rad_pus" id="ce_det_rad_pus_tidak" disabled class="accent-slate-500" />
                 <span>Tidak</span>
               </label>
             </div>
           </div>
 
-          <!-- Status Hamil -->
           <div class="grid grid-cols-1 sm:grid-cols-12 items-center gap-2">
             <label class="sm:col-span-3 font-medium text-slate-600">Status Hamil</label>
             <div class="sm:col-span-9 flex items-center gap-6">
               <label class="flex items-center gap-1.5 cursor-pointer">
-                <input type="radio" name="det_rad_hamil" id="det_rad_hamil_ya" disabled class="accent-slate-500" />
+                <input type="radio" name="ce_det_rad_hamil" id="ce_det_rad_hamil_ya" disabled class="accent-slate-500" />
                 <span>Ya</span>
               </label>
               <label class="flex items-center gap-1.5 cursor-pointer">
-                <input type="radio" name="det_rad_hamil" id="det_rad_hamil_tidak" disabled class="accent-slate-500" />
+                <input type="radio" name="ce_det_rad_hamil" id="ce_det_rad_hamil_tidak" disabled class="accent-slate-500" />
                 <span>Tidak</span>
               </label>
             </div>
           </div>
-
-        </div>     
+        </div>
 
       </div>
     </div>
@@ -1894,7 +1876,7 @@
     }
 
     function tampilkanLayar(layarId) {      
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_bnba', 'tampilan_rekapitulasi'];
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_cari_edit', 'tampilan_rekapitulasi'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('aktif');
@@ -2850,18 +2832,17 @@
     }
 
     // ========================================================
-    // MODUL DATA BNBA DENGAN LOCK WILAYAH SESUAI ROLE LOGIN
+    // MODUL CARI & EDIT DATA (SEBELUMNYA BNBA)
     // ========================================================
-    let dataBnbaCache = [];
+    let dataCariEditCache = [];
 
-    function bukaHalamanBNBA() {
-      tampilkanLayar('tampilan_bnba');
-      initFilterWilayahBnba();
+    function bukaHalamanCariEdit() {
+      tampilkanLayar('tampilan_cari_edit');
+      initFilterWilayahCariEdit();
       
-      // Kosongkan cache dan tampilkan instruksi awal di tabel
-      dataBnbaCache = [];
-      document.getElementById('labelTotalBnba').innerText = 'Total: 0 Keluarga';
-      document.getElementById('tbodyBnbaKeluarga').innerHTML = `
+      dataCariEditCache = [];
+      document.getElementById('labelTotalCariEdit').innerText = 'Total: 0 Keluarga';
+      document.getElementById('tbodyCariEditKeluarga').innerHTML = `
         <tr>
           <td colspan="7" class="p-8 text-center text-slate-400 font-semibold">
             Silakan pilih <b>Kecamatan</b> dan <b>Desa/Kelurahan</b> terlebih dahulu, lalu klik tombol <b>Cari</b>.
@@ -2870,11 +2851,11 @@
       `;
     }
 
-    function initFilterWilayahBnba() {
-      const selKab = document.getElementById('bnba_kab');
-      const selKec = document.getElementById('bnba_kec');
-      const selDesa = document.getElementById('bnba_desa');
-      const selDusun = document.getElementById('bnba_dusun');
+    function initFilterWilayahCariEdit() {
+      const selKab = document.getElementById('cari_edit_kab');
+      const selKec = document.getElementById('cari_edit_kec');
+      const selDesa = document.getElementById('cari_edit_desa');
+      const selDusun = document.getElementById('cari_edit_dusun');
 
       selKab.innerHTML = '<option value="">-- SEMUA KABUPATEN --</option>';
       selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
@@ -2887,19 +2868,18 @@
         selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
       });
 
-      // PENGUNCIAN OTOMATIS SESUAI ROLE
-      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+      if (['ADMIN_KABUPATEN', 'ADMIN_KECAMATAN', 'USER_DESA'].includes(userAktif.role)) {
         selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
         selKab.disabled = true;
-        saatBnbaKabBerubah();
+        saatCariEditKabBerubah();
       } else {
         selKab.disabled = false;
       }
     }
 
-    function saatBnbaKabBerubah() {
-      const kdKab = document.getElementById('bnba_kab').value;
-      const selKec = document.getElementById('bnba_kec');
+    function saatCariEditKabBerubah() {
+      const kdKab = document.getElementById('cari_edit_kab').value;
+      const selKec = document.getElementById('cari_edit_kec');
       selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
 
       if (!kdKab) return;
@@ -2912,19 +2892,19 @@
         selKec.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
       });
 
-      if (userAktif.role === 'ADMIN_KECAMATAN' || userAktif.role === 'USER_DESA') {
+      if (['ADMIN_KECAMATAN', 'USER_DESA'].includes(userAktif.role)) {
         selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
         selKec.disabled = true;
-        saatBnbaKecBerubah();
+        saatCariEditKecBerubah();
       } else {
         selKec.disabled = false;
       }
     }
 
-    function saatBnbaKecBerubah() {
-      const kdKab = document.getElementById('bnba_kab').value;
-      const kdKec = document.getElementById('bnba_kec').value;
-      const selDesa = document.getElementById('bnba_desa');
+    function saatCariEditKecBerubah() {
+      const kdKab = document.getElementById('cari_edit_kab').value;
+      const kdKec = document.getElementById('cari_edit_kec').value;
+      const selDesa = document.getElementById('cari_edit_desa');
       selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
 
       if (!kdKec) return;
@@ -2943,17 +2923,17 @@
       if (userAktif.role === 'USER_DESA') {
         selDesa.value = String(userAktif.kode_desa || '').padStart(4, '0');
         selDesa.disabled = true;
-        saatBnbaDesaBerubah();
+        saatCariEditDesaBerubah();
       } else {
         selDesa.disabled = false;
       }
     }
 
-    function saatBnbaDesaBerubah() {
-      const kdKab = document.getElementById('bnba_kab').value;
-      const kdKec = document.getElementById('bnba_kec').value;
-      const kdDesa = document.getElementById('bnba_desa').value;
-      const selDusun = document.getElementById('bnba_dusun');
+    function saatCariEditDesaBerubah() {
+      const kdKab = document.getElementById('cari_edit_kab').value;
+      const kdKec = document.getElementById('cari_edit_kec').value;
+      const kdDesa = document.getElementById('cari_edit_desa').value;
+      const selDusun = document.getElementById('cari_edit_dusun');
       selDusun.innerHTML = '<option value="">-- SEMUA DUSUN --</option>';
 
       if (!kdDesa) return;
@@ -2973,32 +2953,26 @@
       });
     }
 
-    // Toggle Buka/Tutup Pencarian Lanjutan
-    function togglePencarianLanjutan() {
-      const panel = document.getElementById('panelPencarianLanjutan');
-      if (panel) {
-        panel.classList.toggle('hidden');
-      }
+    function togglePencarianLanjutanCariEdit() {
+      const panel = document.getElementById('panelPencarianLanjutanCariEdit');
+      if (panel) panel.classList.toggle('hidden');
     }
 
-    // Reset Pencarian Lanjutan
-    function resetPencarianLanjutan() {
-      const kat = document.getElementById('bnba_lanjutan_kategori');
-      const nil = document.getElementById('bnba_lanjutan_nilai');
+    function resetPencarianLanjutanCariEdit() {
+      const kat = document.getElementById('cari_edit_lanjutan_kategori');
+      const nil = document.getElementById('cari_edit_lanjutan_nilai');
       if (kat) kat.value = '';
       if (nil) nil.innerHTML = '<option value="">Select...</option>';
     }
 
-    // Cascading Dropdown Kolom 1 -> Kolom 2
-    function saatKategoriLanjutanBerubah() {
-      const kat = document.getElementById('bnba_lanjutan_kategori').value;
-      const selNilai = document.getElementById('bnba_lanjutan_nilai');
+    function saatKategoriLanjutanCariEditBerubah() {
+      const kat = document.getElementById('cari_edit_lanjutan_kategori').value;
+      const selNilai = document.getElementById('cari_edit_lanjutan_nilai');
       if (!selNilai) return;
 
       selNilai.innerHTML = '<option value="">Select...</option>';
       if (!kat) return;
 
-      // Pemetaan opsi Kolom 2 berdasarkan Kolom 1
       const opsiMap = {
         jkn: [
           { val: '1', label: 'PBI' },
@@ -3006,95 +2980,55 @@
           { val: '3', label: 'SWASTA' },
           { val: '4', label: 'TIDAK MEMILIKI' }
         ],
-        pus: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        hamil: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
+        pus: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        hamil: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
         metode_kb: [
-          { val: '1', label: 'MOW' },
-          { val: '2', label: 'MOP' },
-          { val: '3', label: 'IUD' },
-          { val: '4', label: 'IMPLANT' },
-          { val: '5', label: 'SUNTIK' },
-          { val: '6', label: 'PIL' },
-          { val: '7', label: 'KONDOM' },
-          { val: '8', label: 'MAL' },
-          { val: '9', label: 'TRADISIONAL' }
+          { val: '1', label: 'MOW' }, { val: '2', label: 'MOP' }, { val: '3', label: 'IUD' },
+          { val: '4', label: 'IMPLANT' }, { val: '5', label: 'SUNTIK' }, { val: '6', label: 'PIL' },
+          { val: '7', label: 'KONDOM' }, { val: '8', label: 'MAL' }, { val: '9', label: 'TRADISIONAL' }
         ],
-        jalur_pelayanan: [
-          { val: 'pemerintah', label: 'PEMERINTAH' },
-          { val: 'swasta', label: 'SWASTA' }
-        ],
-        anak_segera: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        anak_kemudian: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        tidak_ingin_anak: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        pb_pa: [
-          { val: 'pb', label: 'PB (Peserta Baru)' },
-          { val: 'pa', label: 'PA (Peserta Aktif)' }
-        ],
-        hamil_saat_itu: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        hamil_nanti: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        tidak_ingin_hamil: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ],
-        unmet_need: [
-          { val: 'ya', label: 'YA' },
-          { val: 'tidak', label: 'TIDAK' }
-        ]
+        jalur_pelayanan: [{ val: 'pemerintah', label: 'PEMERINTAH' }, { val: 'swasta', label: 'SWASTA' }],
+        anak_segera: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        anak_kemudian: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        tidak_ingin_anak: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        pb_pa: [{ val: 'pb', label: 'PB (Peserta Baru)' }, { val: 'pa', label: 'PA (Peserta Aktif)' }],
+        hamil_saat_itu: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        hamil_nanti: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        tidak_ingin_hamil: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }],
+        unmet_need: [{ val: 'ya', label: 'YA' }, { val: 'tidak', label: 'TIDAK' }]
       };
 
       if (opsiMap[kat]) {
-        opsiMap[kat].forEach(o => {
-          selNilai.add(new Option(o.label, o.val));
-        });
+        opsiMap[kat].forEach(o => selNilai.add(new Option(o.label, o.val)));
       }
     }
 
-    // Ambil Data KK dari Supabase
-    async function muatDataBnbaKeluarga() {
-      const kdDesa = document.getElementById('bnba_desa').value;
+    async function muatDataCariEditKeluarga() {
+      const kdDesa = document.getElementById('cari_edit_desa').value;
+      const inputNik = document.getElementById('cari_edit_cari_nik').value.trim();
+      const inputNama = document.getElementById('cari_edit_cari_nama').value.trim();
 
-      // Validasi wajib pilih desa
-      if (!kdDesa) {
+      if (!kdDesa && !inputNik && !inputNama) {
         Swal.fire({
           icon: 'warning',
-          title: 'Pilih Desa Terlebih Dahulu',
-          text: 'Untuk mempercepat pencarian data, silakan pilih Kecamatan dan Desa/Kelurahan sebelum mencari!',
+          title: 'Pilih Desa atau Masukkan NIK',
+          text: 'Untuk mempercepat pencarian data, silakan pilih Kecamatan dan Desa/Kelurahan atau masukkan NIK!',
           confirmButtonColor: '#0284c7'
         });
         return;
       }
 
-      const tbody = document.getElementById('tbodyBnbaKeluarga');
-      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500 font-semibold animate-pulse">Mengambil data keluarga di desa terpilih...</td></tr>`;
+      const tbody = document.getElementById('tbodyCariEditKeluarga');
+      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500 font-semibold animate-pulse">Mengambil data keluarga di database...</td></tr>`;
 
       try {
-        const kdKab = document.getElementById('bnba_kab').value;
-        const kdKec = document.getElementById('bnba_kec').value;
-        const kdDusun = document.getElementById('bnba_dusun').value;
-        const noRt = document.getElementById('bnba_rt').value.trim();
+        const kdKab = document.getElementById('cari_edit_kab').value;
+        const kdKec = document.getElementById('cari_edit_kec').value;
+        const kdDusun = document.getElementById('cari_edit_dusun').value;
+        const noRt = document.getElementById('cari_edit_rt').value.trim();
 
         let query = supabaseClient.from('keluarga').select(`
+          kode_keluarga,
           nomor_kk,
           nama_kk,
           nik_kk,
@@ -3110,128 +3044,91 @@
           kb_04_sedang_kb,
           kb_03_sedang_hamil,
           anggota_keluarga (*)
-        `).eq('kode_desa', kdDesa).order('nomor_kk', { ascending: true });
+        `).order('kode_keluarga', { ascending: true });
 
+        if (kdDesa) query = query.eq('kode_desa', kdDesa);
         if (kdKab) query = query.eq('kode_kab', kdKab);
         if (kdKec) query = query.eq('kode_kec', kdKec);
         if (kdDusun) query = query.eq('kode_dusun', kdDusun);
         if (noRt) query = query.eq('rt', noRt);
+        if (inputNik) query = query.or(`nik_kk.eq.${inputNik},nomor_kk.eq.${inputNik}`);
 
         const { data, error } = await query;
         if (error) throw error;
 
-        dataBnbaCache = data || [];
-        renderTabelBnbaKeluarga();
+        dataCariEditCache = data || [];
+        renderTabelCariEditKeluarga();
 
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-rose-500 font-bold">Gagal memuat: ${err.message}</td></tr>`;
       }
     }
 
-    function renderTabelBnbaKeluarga() {
-      const tbody = document.getElementById('tbodyBnbaKeluarga');
-      const keywordNama = (document.getElementById('bnba_cari_nama').value || '').toLowerCase().trim();
-      const keywordNik = (document.getElementById('bnba_cari_nik').value || '').trim();
+    function renderTabelCariEditKeluarga() {
+      const tbody = document.getElementById('tbodyCariEditKeluarga');
+      const keywordNama = (document.getElementById('cari_edit_cari_nama').value || '').toLowerCase().trim();
+      const keywordNik = (document.getElementById('cari_edit_cari_nik').value || '').trim();
 
-      let data = dataBnbaCache;
-      // 1. Filter Kata Kunci Nama & NIK
+      let data = dataCariEditCache;
       if (keywordNama) data = data.filter(k => (k.nama_kk || '').toLowerCase().includes(keywordNama));
-      if (keywordNik) data = data.filter(k => (k.nik_kk || '').includes(keywordNik));
+      if (keywordNik) data = data.filter(k => (k.nik_kk || '').includes(keywordNik) || (k.nomor_kk || '').includes(keywordNik));
 
-      // 2. Filter Pencarian Lanjutan (Cascading)
-      const katLanjutan = document.getElementById('bnba_lanjutan_kategori')?.value || '';
-      const nilLanjutan = document.getElementById('bnba_lanjutan_nilai')?.value || '';
+      // Filter Pencarian Lanjutan
+      const katLanjutan = document.getElementById('cari_edit_lanjutan_kategori')?.value || '';
+      const nilLanjutan = document.getElementById('cari_edit_lanjutan_nilai')?.value || '';
 
       if (katLanjutan && nilLanjutan) {
         data = data.filter(k => {
           const listAng = k.anggota_keluarga || [];
           const istri = listAng.find(a => String(a.hubungan_dengan_kk) === '2');
-          
-          let usiaIstri = 0;
-          if (istri && istri.tanggal_lahir) {
-            usiaIstri = hitungUsiaTahun(istri.tanggal_lahir);
-          }
+          let usiaIstri = (istri && istri.tanggal_lahir) ? hitungUsiaTahun(istri.tanggal_lahir) : 0;
           const isPUS = (usiaIstri >= 10 && usiaIstri <= 49);
           const sedangKB = (k.kb_04_sedang_kb === true || String(k.kb_04_sedang_kb) === '1');
           const sedangHamil = (k.kb_03_sedang_hamil === true || String(k.kb_03_sedang_hamil) === '1');
 
           switch (katLanjutan) {
-            case 'jkn':
-              return String(k.kesertaan_jkn || '4') === nilLanjutan;
-
-            case 'pus':
-              return nilLanjutan === 'ya' ? isPUS : !isPUS;
-
-            case 'hamil':
-              return nilLanjutan === 'ya' ? sedangHamil : !sedangHamil;
-
-            case 'metode_kb':
-              return String(k.kb_07_jenis_kb || '') === nilLanjutan;
-
+            case 'jkn': return String(k.kesertaan_jkn || '4') === nilLanjutan;
+            case 'pus': return nilLanjutan === 'ya' ? isPUS : !isPUS;
+            case 'hamil': return nilLanjutan === 'ya' ? sedangHamil : !sedangHamil;
+            case 'metode_kb': return String(k.kb_07_jenis_kb || '') === nilLanjutan;
             case 'jalur_pelayanan':
               const faskes = parseInt(k.kb_08_sumber_pelayanan, 10) || 0;
-              // 1: RS Pem, 3: Puskesmas, 6: Bidan Desa (Pemerintah) | lainnya Swasta
-              const isPemerintah = [1, 3, 6, 8].includes(faskes);
-              return nilLanjutan === 'pemerintah' ? isPemerintah : !isPemerintah;
-
-            case 'anak_segera':
-              return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '1' : String(k.kb_03_keinginan_anak_lagi) !== '1';
-
-            case 'anak_kemudian':
-              return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '2' : String(k.kb_03_keinginan_anak_lagi) !== '2';
-
-            case 'tidak_ingin_anak':
-              return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '3' : String(k.kb_03_keinginan_anak_lagi) !== '3';
-
+              return nilLanjutan === 'pemerintah' ? [1, 3, 6, 8].includes(faskes) : ![1, 3, 6, 8].includes(faskes);
+            case 'anak_segera': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '1' : String(k.kb_03_keinginan_anak_lagi) !== '1';
+            case 'anak_kemudian': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '2' : String(k.kb_03_keinginan_anak_lagi) !== '2';
+            case 'tidak_ingin_anak': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '3' : String(k.kb_03_keinginan_anak_lagi) !== '3';
             case 'pb_pa':
-              const thnMulai = parseInt(k.kb_04_mulai_tahun, 10);
-              const thnSekarang = new Date().getFullYear();
-              const isPB = sedangKB && (thnMulai === thnSekarang);
+              const isPB = sedangKB && (parseInt(k.kb_04_mulai_tahun, 10) === new Date().getFullYear());
               return nilLanjutan === 'pb' ? isPB : (sedangKB && !isPB);
-
-            case 'hamil_saat_itu':
-              return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '1' : String(k.kb_03_status_ingin_hamil) !== '1';
-
-            case 'hamil_nanti':
-              return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '2' : String(k.kb_03_status_ingin_hamil) !== '2';
-
-            case 'tidak_ingin_hamil':
-              return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '3' : String(k.kb_03_status_ingin_hamil) !== '3';
-
-            case 'unmet_need':
-              // PUS, tidak ber-KB, tidak hamil, tapi ingin anak nanti / tidak ingin anak lagi
-              const isUnmet = isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(String(k.kb_03_keinginan_anak_lagi));
-              return nilLanjutan === 'ya' ? isUnmet : !isUnmet;
-
-            default:
-              return true;
+            case 'hamil_saat_itu': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '1' : String(k.kb_03_status_ingin_hamil) !== '1';
+            case 'hamil_nanti': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '2' : String(k.kb_03_status_ingin_hamil) !== '2';
+            case 'tidak_ingin_hamil': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '3' : String(k.kb_03_status_ingin_hamil) !== '3';
+            case 'unmet_need': return nilLanjutan === 'ya' ? (isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(String(k.kb_03_keinginan_anak_lagi))) : !(isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(String(k.kb_03_keinginan_anak_lagi)));
+            default: return true;
           }
         });
       }
 
-      // 3. Update Label Total Data
-      document.getElementById('labelTotalBnba').innerText = `Total: ${data.length} Keluarga`;
+      document.getElementById('labelTotalCariEdit').innerText = `Total: ${data.length} Keluarga`;
 
       if (data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-semibold uppercase">Tidak ada data keluarga yang sesuai.</td></tr>`;
         return;
       }
 
-      // 4. Render Baris Tabel
       let html = '';
       data.forEach((k, idx) => {
         const listAng = k.anggota_keluarga || [];
         const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
-
         const tglLahir = kepala.tanggal_lahir ? formatTglIndo(kepala.tanggal_lahir) : '-';
         const usia = kepala.tanggal_lahir ? hitungUsiaTahun(kepala.tanggal_lahir) : '-';
-        const kodeKeluarga = `${k.kode_prov || '52'}${k.kode_kab || '01'}${k.kode_kec || '08'}${k.kode_desa || '2001'}${k.kode_dusun || '0100'} ${k.rt || '001'}${k.kode_rumah || '001'}${k.no_urut_keluarga || '001'}`;
+        const kodeKeluarga = k.kode_keluarga || `${k.kode_prov || '52'}${k.kode_kab || '01'}${k.kode_kec || '08'}${k.kode_desa || '2001'}${k.kode_dusun || '0100'} ${k.rt || '001'}${k.kode_rumah || '001'}${k.no_urut_keluarga || '001'}`;
 
         html += `
           <tr class="hover:bg-slate-50 transition border-b">
             <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
             <td class="p-2.5 text-center">
-              <button type="button" onclick="bukaDetailKeluargaBnba('${k.nomor_kk}')" 
+              <button type="button" onclick="bukaDetailKeluargaCariEdit('${kodeKeluarga}')" 
                       title="Buka Rincian Anggota Keluarga"
                       class="px-2.5 py-1.5 bg-[#205493] hover:bg-[#163f73] active:scale-95 text-white rounded-lg font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm transition">
                 <span>👨‍👩‍👧‍👦</span>
@@ -3249,94 +3146,74 @@
       tbody.innerHTML = html;
     }
 
-    // Buka Modal Rekap 2: Detail Anggota & Penapisan POKTAN
-    async function bukaDetailKeluargaBnba(nomorKK) {
-      const kel = dataBnbaCache.find(k => k.nomor_kk === nomorKK);
+    async function bukaDetailKeluargaCariEdit(kodeKeluargaTarget) {
+      const kel = dataCariEditCache.find(k => (k.kode_keluarga || k.nomor_kk) === kodeKeluargaTarget);
       if (!kel) return;
 
-      document.getElementById('modalDetailBnba').classList.remove('hidden');
-      document.getElementById('subDetailKeluarga').innerText = `KK: ${kel.nomor_kk} | Nama KK: ${kel.nama_kk}`;
+      document.getElementById('modalDetailCariEdit').classList.remove('hidden');
+      document.getElementById('subDetailKeluargaCariEdit').innerText = `KK: ${kel.nomor_kk} | Nama KK: ${kel.nama_kk}`;
 
-      const kodeKeluarga = `${kel.kode_prov || '52'}${kel.kode_kab || '01'}${kel.kode_kec || '08'}${kel.kode_desa || '2001'}${kel.kode_dusun || '0100'} ${kel.rt || '001'}${kel.kode_rumah || '001'}${kel.no_urut_keluarga || '001'}`;
-
-      // Ambil data anggota langsung dari Supabase yang sudah terurut 1 s/d N
+      // Ambil data anggota langsung terurut dari database
       const { data: dataAnggotaTerurut, error } = await supabaseClient
         .from('anggota_keluarga')
         .select('*')
-        .eq('kode_keluarga', kodeKeluarga)
+        .eq('kode_keluarga', kodeKeluargaTarget)
         .order('nomor_anggota_keluarga', { ascending: true });
 
-      // Gunakan data hasil query Supabase jika berhasil, atau fallback ke cache jika offline
       const listAng = (!error && dataAnggotaTerurut && dataAnggotaTerurut.length > 0)
         ? dataAnggotaTerurut
         : (kel.anggota_keluarga || []);
 
-      // 1. Jumlah Anak (Prioritas dari Riwayat Blok KB jika ada, jika tidak ada hitung dari anggota dengan status anak '3')
       const anakKBMasihHidup = (parseInt(kel.kb_01_masih_laki, 10) || 0) + (parseInt(kel.kb_01_masih_perempuan, 10) || 0);
       const anakDiKK = listAng.filter(a => String(a.hubungan_dengan_kk) === '3').length;
       const totalAnak = (kel.kb_01_melahirkan !== null && kel.kb_01_melahirkan !== undefined && kel.kb_01_melahirkan !== '') 
                         ? anakKBMasihHidup 
                         : anakDiKK;
 
-      document.getElementById('det_jml_anak').value = totalAnak;      
-      let jmlBaduta = 0;
-      let jmlBalita = 0;
-      let jmlWus = 0;
+      document.getElementById('ce_det_jml_anak').value = totalAnak;      
+      let jmlBaduta = 0, jmlBalita = 0, jmlWus = 0;
 
       listAng.forEach(a => {
         if (!a.tanggal_lahir) return;
-        
         const usiaTh = hitungUsiaTahun(a.tanggal_lahir);
         const jk = String(a.jenis_kelamin || '');
-        
-        if (usiaTh < 2) {
-          jmlBaduta++;
-        }
-        
-        if (usiaTh < 5) {
-          jmlBalita++;
-        }
-        
-        if (jk === '2' && usiaTh >= 15 && usiaTh <= 49) {
-          jmlWus++;
-        }
+        if (usiaTh < 2) jmlBaduta++;
+        if (usiaTh < 5) jmlBalita++;
+        if (jk === '2' && usiaTh >= 15 && usiaTh <= 49) jmlWus++;
       });
       
-      document.getElementById('det_jml_baduta').value = jmlBaduta;
-      document.getElementById('det_jml_balita').value = jmlBalita;
-      document.getElementById('det_jml_wus').value = jmlWus;
-      document.getElementById('det_kode_keluarga').innerText = kodeKeluarga;
+      document.getElementById('ce_det_jml_baduta').value = jmlBaduta;
+      document.getElementById('ce_det_jml_balita').value = jmlBalita;
+      document.getElementById('ce_det_jml_wus').value = jmlWus;
+      document.getElementById('ce_det_kode_keluarga').innerText = kodeKeluargaTarget;
       
       const mutasiAktif = listAng.find(a => a.mutasi_anggota && a.mutasi_anggota !== '0');
-      document.getElementById('det_mutasi_keluarga').value = mutasiAktif ? String(mutasiAktif.mutasi_anggota) : '';
+      document.getElementById('ce_det_mutasi_keluarga').value = mutasiAktif ? String(mutasiAktif.mutasi_anggota) : '';
       
       const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1');
       const jknKK = kepala ? (kepala.kesertaan_jkn || kepala.kepesertaan_jkn) : null;
-      const jknKeluarga = kel.kesertaan_jkn || kel.kepesertaan_jkn || jknKK || '';
-      document.getElementById('det_kesertaan_jkn').value = String(jknKeluarga || '');
+      document.getElementById('ce_det_kesertaan_jkn').value = String(kel.kesertaan_jkn || jknKK || '');
       
       const adaIstri = listAng.find(a => String(a.hubungan_dengan_kk) === '2');
       let isPUS = false;
       if (adaIstri && adaIstri.tanggal_lahir) {
         const usiaIstri = hitungUsiaTahun(adaIstri.tanggal_lahir);
         const statusKawinIstri = String(adaIstri.status_perkawinan || '');
-        const isKawin = (statusKawinIstri === '2' || statusKawinIstri === '3');
-        isPUS = isKawin && (usiaIstri >= 10 && usiaIstri <= 49);
+        isPUS = (['2', '3'].includes(statusKawinIstri)) && (usiaIstri >= 10 && usiaIstri <= 49);
       } else if (kel.kb_04_sedang_kb === true || String(kel.kb_04_sedang_kb) === '1') {
         isPUS = true;
       }
 
-      document.getElementById('det_rad_pus_ya').checked = isPUS;
-      document.getElementById('det_rad_pus_tidak').checked = !isPUS;
+      document.getElementById('ce_det_rad_pus_ya').checked = isPUS;
+      document.getElementById('ce_det_rad_pus_tidak').checked = !isPUS;
       
       const isHamil = (kel.kb_03_sedang_hamil === true || String(kel.kb_03_sedang_hamil) === '1');
-      document.getElementById('det_rad_hamil_ya').checked = isHamil;
-      document.getElementById('det_rad_hamil_tidak').checked = !isHamil;
+      document.getElementById('ce_det_rad_hamil_ya').checked = isHamil;
+      document.getElementById('ce_det_rad_hamil_tidak').checked = !isHamil;
       
-      const tbody = document.getElementById('tbodyDetailAnggota');
+      const tbody = document.getElementById('tbodyDetailAnggotaCariEdit');
       let htmlAng = '';
 
-      // Tampilkan data anggota terurut (KK -> Istri -> Anak -> Lainnya)
       listAng.forEach(a => {
         let labelHub = 'Lainnya';
         if (String(a.hubungan_dengan_kk) === '1') labelHub = 'KK';
@@ -3360,15 +3237,13 @@
                         class="p-1.5 bg-[#439297] hover:bg-[#34787d] text-white rounded-md text-[10px] font-bold shadow-sm" title="Edit Anggota">
                   ✏️
                 </button>
-                <button type="button" onclick="hapusIndividuAnggota('${a.id}', '${a.nama_lengkap}', '${kel.nomor_kk}')" 
+                <button type="button" onclick="hapusIndividuAnggota('${a.id}', '${a.nama_lengkap}', '${kodeKeluargaTarget}')" 
                         class="p-1.5 bg-[#d9534f] hover:bg-[#c9302c] text-white rounded-md text-[10px] font-bold shadow-sm" title="Hapus Anggota">
                   🗑️
                 </button>
               </div>
             </td>
-            <td class="p-2 font-bold text-slate-800 uppercase">
-              ${a.nama_lengkap}
-            </td>
+            <td class="p-2 font-bold text-slate-800 uppercase">${a.nama_lengkap}</td>
             <td class="p-2 font-mono text-slate-600 font-semibold">${a.nik}</td>
             <td class="p-2 text-center font-bold text-slate-700">${labelHub}</td>
             <td class="p-2 text-center text-slate-600">${tgl}</td>
@@ -3381,8 +3256,8 @@
       tbody.innerHTML = htmlAng;
     }
 
-    function tutupModalDetailBnba() {
-      document.getElementById('modalDetailBnba').classList.add('hidden');
+    function tutupModalDetailCariEdit() {
+      document.getElementById('modalDetailCariEdit').classList.add('hidden');
     }
 
     // Fitur Edit Individu Anggota Keluarga
@@ -3390,7 +3265,7 @@
       let targetAnggota = null;
       let targetKK = null;
 
-      for (let k of dataBnbaCache) {
+      for (let k of dataCariEditCache) {
         const found = (k.anggota_keluarga || []).find(a => String(a.id) === String(idAnggota));
         if (found) {
           targetAnggota = found;
@@ -3749,8 +3624,8 @@
             }
 
             Swal.fire('Berhasil!', 'Data anggota keluarga berhasil diperbarui.', 'success');
-            await muatDataBnbaKeluarga();
-            bukaDetailKeluargaBnba(targetKK.nomor_kk);
+            await muatDataCariEditKeluarga();
+            bukaDetailKeluargaCariEdit(targetKK.nomor_kk);
 
           } catch (err) {
             console.error(err);
@@ -3777,8 +3652,8 @@
             if (error) throw error;
 
             Swal.fire('Terhapus', `Anggota ${nama} berhasil dihapus.`, 'success');
-            await muatDataBnbaKeluarga();
-            bukaDetailKeluargaBnba(nomorKK);
+            await muatDataCariEditKeluarga();
+            bukaDetailKeluargaCariEdit(nomorKK);
           } catch (err) {
             Swal.fire('Gagal', err.message, 'error');
           }
