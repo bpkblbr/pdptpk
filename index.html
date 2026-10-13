@@ -2463,6 +2463,7 @@
         const kdKec = document.getElementById('rekap_kec').value;
         const kdDesa = document.getElementById('rekap_desa').value;
 
+        // Gunakan nama kolom resmi skema terbaru
         let query = supabaseClient.from('keluarga').select(`
           nomor_kk,
           kode_kab,
@@ -2473,10 +2474,10 @@
           kb_03_keinginan_anak_lagi,
           kb_04_sedang_kb,
           kb_07_jenis_kb,
-          pk_17_1_penerangan,
-          pk_18_air_minum,
-          pk_19_jamban,
-          pk_23_kepemilikan_rumah,
+          pk_20_1_sumber_penerangan,
+          pk_21_1_sumber_air_minum,
+          pk_22_fasilitas_jamban,
+          pk_26_kepemilikan_rumah,
           anggota_keluarga (*)
         `);
 
@@ -2487,7 +2488,6 @@
         const { data: dataKeluarga, error } = await query;
         if (error) throw error;
 
-        // Tentukan level agregasi wilayah (jika pilih Desa -> agregat Dusun, jika pilih Kec -> agregat Desa, dsb)
         prosesAgregasiRekap(dataKeluarga || [], kdKec, kdDesa);
         Swal.close();
 
@@ -2621,20 +2621,20 @@
           else grup.jkn_tidak++;
         });
 
-        // Potensi Lingkungan
-        const air = String(k.pk_18_air_minum || '');
+        // Potensi Lingkungan (Menggunakan nama kolom skema baru dengan fallback ke kolom lama jika ada data lawas)
+        const air = String(k.pk_21_1_sumber_air_minum || k.pk_18_air_minum || '');
         if (['1', '2', '3', '4', '5', '7'].includes(air)) grup.air_layak++;
         else grup.air_tdk_layak++;
 
-        const jamban = String(k.pk_19_jamban || '');
+        const jamban = String(k.pk_22_fasilitas_jamban || k.pk_19_jamban || '');
         if (['1', '2'].includes(jamban)) grup.jamban_layak++;
         else grup.jamban_tdk_layak++;
 
-        const listrik = String(k.pk_17_1_penerangan || '');
+        const listrik = String(k.pk_20_1_sumber_penerangan || k.pk_17_1_penerangan || '');
         if (['1', '2'].includes(listrik)) grup.listrik_pln++;
         else grup.listrik_non_pln++;
 
-        const rumah = String(k.pk_23_kepemilikan_rumah || '');
+        const rumah = String(k.pk_26_kepemilikan_rumah || k.pk_23_kepemilikan_rumah || '');
         if (rumah === '1') grup.rumah_sendiri++;
         else grup.rumah_bukan_sendiri++;
       });
