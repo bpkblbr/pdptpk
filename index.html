@@ -250,6 +250,7 @@
 
     <!-- Grid Menu Dashboard -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      <!-- 1. FORM INPUT DATA KELUARGA (Border Emerald) -->
       <div onclick="bukaFormulirPendataan()" class="cursor-pointer bg-white hover:bg-emerald-50/60 p-6 rounded-2xl border-2 border-emerald-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
         <div class="space-y-3">
           <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
@@ -265,43 +266,54 @@
         </div>
       </div>
 
-      <div onclick="bukaHalamanRekapitulasi()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
+      <!-- 2. HALAMAN REKAPITULASI (Border Indigo) -->
+      <div onclick="bukaHalamanRekapitulasi()" class="cursor-pointer bg-white hover:bg-indigo-50/60 p-6 rounded-2xl border-2 border-indigo-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB, demografi sasaran, dan potensi keluarga berjenjang.</p>
         </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">HALAMAN REKAPITULASI</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Lihat rekapitulasi kepesertaan KB, demografi sasaran, dan potensi keluarga berjenjang.</p>
-      </div>
-
-      <div onclick="bukaHalamanCariEdit()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border-2 border-cyan-500 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Cari data keluarga berdasarkan NIK, No. KK atau nama, serta perbarui lembar isian formulir lengkap.</p>
         <div>
-          <span class="inline-block mt-1 text-xs font-bold text-cyan-700 bg-cyan-50 px-3 py-1 rounded-full uppercase">Buka Modul &rarr;</span>
+          <span class="inline-block mt-2 text-xs font-bold text-indigo-700 bg-indigo-100 px-3 py-1.5 rounded-full uppercase">Buka Rekap &rarr;</span>
         </div>
       </div>
 
-      <div onclick="bukaHalamanBNBA()" class="cursor-pointer bg-white hover:bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition text-center space-y-3 group">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
-          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+      <!-- 3. CARI & EDIT DATA (Border Cyan) -->
+      <div onclick="bukaHalamanCariEdit()" class="cursor-pointer bg-white hover:bg-cyan-50/60 p-6 rounded-2xl border-2 border-cyan-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">CARI & EDIT DATA</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Cari data keluarga berdasarkan NIK, No. KK atau nama, serta perbarui lembar isian formulir lengkap.</p>
         </div>
-        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
         <div>
-          <span class="inline-block mt-1 text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full uppercase">Buka Data &rarr;</span>
+          <span class="inline-block mt-2 text-xs font-bold text-cyan-700 bg-cyan-100 px-3 py-1.5 rounded-full uppercase">Buka Modul &rarr;</span>
+        </div>
+      </div>
+
+      <!-- 4. DATA BNBA (DETAIL) (Border Amber) -->
+      <div onclick="bukaHalamanBNBA()" class="cursor-pointer bg-white hover:bg-amber-50/60 p-6 rounded-2xl border-2 border-amber-500 shadow-md hover:shadow-xl transition duration-200 group text-center space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">DATA BNBA (DETAIL)</h3>
+          <p class="text-xs text-slate-500 leading-relaxed">Tampilkan data sasaran By Name By Address lengkap per desa dan dusun.</p>
+        </div>
+        <div>
+          <span class="inline-block mt-2 text-xs font-bold text-amber-700 bg-amber-100 px-3 py-1.5 rounded-full uppercase">Buka Data &rarr;</span>
         </div>
       </div>
     </div>
-  </div>
 
   <!-- ========================================================
        5. HALAMAN CARI & EDIT DATA (MASTER-DETAIL)
