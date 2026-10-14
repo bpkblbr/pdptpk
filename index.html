@@ -494,8 +494,15 @@
         <table class="w-full text-left border-collapse text-[11px]">
           <thead class="bg-slate-100 text-slate-600 uppercase font-bold sticky top-0 border-b">
             <tr>
-              <th class="p-2.5 text-center w-12">No</th>
-              <th class="p-2.5 text-center w-16">Aksi</th>
+              <!-- CHECKBOX SELECT ALL SEBELAH KIRI TULISAN NO -->
+              <th class="p-2.5 text-center w-16">
+                <div class="flex items-center justify-center gap-1.5">
+                  <input type="checkbox" id="cb_pilih_semua_ce" onchange="togglePilihSemuaCariEdit(this)" 
+                         class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600" />
+                  <span>NO</span>
+                </div>
+              </th>
+              <th class="p-2.5 text-center w-28">Aksi</th>
               <th class="p-2.5">Nama KK</th>
               <th class="p-2.5 font-mono">NIK</th>
               <th class="p-2.5 font-mono">Kode Keluarga</th>
@@ -504,7 +511,9 @@
             </tr>
           </thead>
           <tbody id="tbodyCariEditKeluarga" class="divide-y divide-slate-100">
-            <tr><td colspan="7" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td></tr>
+            <tr>
+              <td colspan="7" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -3229,47 +3238,19 @@
 
     function renderTabelCariEditKeluarga() {
       const tbody = document.getElementById('tbodyCariEditKeluarga');
-      const keywordNama = (document.getElementById('cari_edit_cari_nama').value || '').toLowerCase().trim();
-      const keywordNik = (document.getElementById('cari_edit_cari_nik').value || '').trim();
+      const keywordNama = (document.getElementById('cari_edit_cari_nama')?.value || '').toLowerCase().trim();
+      const keywordNik = (document.getElementById('cari_edit_cari_nik')?.value || '').trim();
 
       let data = dataCariEditCache;
       if (keywordNama) data = data.filter(k => (k.nama_kk || '').toLowerCase().includes(keywordNama));
       if (keywordNik) data = data.filter(k => (k.nik_kk || '').includes(keywordNik) || (k.nomor_kk || '').includes(keywordNik));
 
-      // Filter Pencarian Lanjutan
-      const katLanjutan = document.getElementById('cari_edit_lanjutan_kategori')?.value || '';
-      const nilLanjutan = document.getElementById('cari_edit_lanjutan_nilai')?.value || '';
-
-      if (katLanjutan && nilLanjutan) {
-        data = data.filter(k => {
-          const listAng = k.anggota_keluarga || [];
-          const istri = listAng.find(a => String(a.hubungan_dengan_kk) === '2');
-          let usiaIstri = (istri && istri.tanggal_lahir) ? hitungUsiaTahun(istri.tanggal_lahir) : 0;
-          const isPUS = (usiaIstri >= 10 && usiaIstri <= 49);
-          const sedangKB = (k.kb_04_sedang_kb === true || String(k.kb_04_sedang_kb) === '1');
-          const sedangHamil = (k.kb_03_sedang_hamil === true || String(k.kb_03_sedang_hamil) === '1');
-
-          switch (katLanjutan) {
-            case 'jkn': return String(k.kesertaan_jkn || '4') === nilLanjutan;
-            case 'pus': return nilLanjutan === 'ya' ? isPUS : !isPUS;
-            case 'hamil': return nilLanjutan === 'ya' ? sedangHamil : !sedangHamil;
-            case 'metode_kb': return String(k.kb_07_jenis_kb || '') === nilLanjutan;
-            case 'jalur_pelayanan':
-              const faskes = parseInt(k.kb_08_sumber_pelayanan, 10) || 0;
-              return nilLanjutan === 'pemerintah' ? [1, 3, 6, 8].includes(faskes) : ![1, 3, 6, 8].includes(faskes);
-            case 'anak_segera': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '1' : String(k.kb_03_keinginan_anak_lagi) !== '1';
-            case 'anak_kemudian': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '2' : String(k.kb_03_keinginan_anak_lagi) !== '2';
-            case 'tidak_ingin_anak': return nilLanjutan === 'ya' ? String(k.kb_03_keinginan_anak_lagi) === '3' : String(k.kb_03_keinginan_anak_lagi) !== '3';
-            case 'pb_pa':
-              const isPB = sedangKB && (parseInt(k.kb_04_mulai_tahun, 10) === new Date().getFullYear());
-              return nilLanjutan === 'pb' ? isPB : (sedangKB && !isPB);
-            case 'hamil_saat_itu': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '1' : String(k.kb_03_status_ingin_hamil) !== '1';
-            case 'hamil_nanti': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '2' : String(k.kb_03_status_ingin_hamil) !== '2';
-            case 'tidak_ingin_hamil': return nilLanjutan === 'ya' ? String(k.kb_03_status_ingin_hamil) === '3' : String(k.kb_03_status_ingin_hamil) !== '3';
-            case 'unmet_need': return nilLanjutan === 'ya' ? (isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(String(k.kb_03_keinginan_anak_lagi))) : !(isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(String(k.kb_03_keinginan_anak_lagi)));
-            default: return true;
-          }
-        });
+      // Reset checkbox header setiap kali render ulang
+      const cbAll = document.getElementById('cb_pilih_semua_ce');
+      if (cbAll) {
+        cbAll.checked = false;
+        cbAll.indeterminate = false;
+        cbAll.classList.remove('accent-slate-400', 'bg-slate-300');
       }
 
       document.getElementById('labelTotalCariEdit').innerText = `Total: ${data.length} Keluarga`;
@@ -3289,24 +3270,85 @@
 
         html += `
           <tr class="hover:bg-slate-50 transition border-b">
-            <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+            <!-- CHECKBOX BARIS & NOMOR URUT -->
+            <td class="p-2.5 text-center font-bold text-slate-600">
+              <div class="flex items-center justify-center gap-2">
+                <input type="checkbox" name="cb_baris_ce" value="${kodeKeluarga}" onchange="perbaruiStatusCheckboxHeaderCE()" 
+                       class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600" />
+                <span>${idx + 1}</span>
+              </div>
+            </td>
             <td class="p-2.5 text-center">
-              <button type="button" onclick="bukaDetailKeluargaCariEdit('${kodeKeluarga}')" 
-                      title="Buka Rincian Anggota Keluarga"
-                      class="px-2.5 py-1.5 bg-[#205493] hover:bg-[#163f73] active:scale-95 text-white rounded-lg font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm transition">
-                <span>👨‍👩‍👧‍👦</span>
-                <span>Rincian</span>
-              </button>
+              <div class="flex items-center justify-center gap-1.5">
+                <button type="button" onclick="bukaDetailKeluargaCariEdit('${kodeKeluarga}')" 
+                        title="Buka Rincian Anggota Keluarga"
+                        class="px-2 py-1 bg-[#205493] hover:bg-[#163f73] active:scale-95 text-white rounded-lg font-bold text-[10px] shadow-sm transition">
+                  👨‍👩‍👧‍👦 Rincian
+                </button>
+                <button type="button" onclick="editFormulirKeluargaLengkap('${kodeKeluarga}')" 
+                        title="Edit Formulir Lengkap"
+                        class="px-2 py-1 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-lg font-bold text-[10px] shadow-sm transition">
+                  ✏️ Edit
+                </button>
+              </div>
             </td>
             <td class="p-2.5 font-bold text-slate-800 uppercase">${k.nama_kk || '-'}</td>
             <td class="p-2.5 font-mono text-slate-600 font-semibold">${k.nik_kk || '-'}</td>
-            <td class="p-2.5 font-mono font-bold text-slate-700">${kodeKeluarga}</td>
+            <td class="p-2.5 font-mono font-bold text-slate-700 text-[10.5px]">${kodeKeluarga}</td>
             <td class="p-2.5 text-center text-slate-600">${tglLahir}</td>
             <td class="p-2.5 text-center font-bold text-slate-700">${usia}</td>
           </tr>
         `;
       });
       tbody.innerHTML = html;
+    }
+
+    // 1. Pilih Semua / Batalkan Semua (Select / Unselect All)
+    function togglePilihSemuaCariEdit(elHeader) {
+      const barisCheckboxes = document.querySelectorAll('input[name="cb_baris_ce"]');
+      barisCheckboxes.forEach(cb => {
+        cb.checked = elHeader.checked;
+      });
+      elHeader.indeterminate = false;
+      elHeader.classList.remove('accent-slate-400');
+    }
+
+    // 2. Evaluasi status Checkbox Header (Jika sebagian dicentang, jadi abu-abu/indeterminate)
+    function perbaruiStatusCheckboxHeaderCE() {
+      const cbAll = document.getElementById('cb_pilih_semua_ce');
+      const barisCheckboxes = document.querySelectorAll('input[name="cb_baris_ce"]');
+      if (!cbAll || barisCheckboxes.length === 0) return;
+
+      const total = barisCheckboxes.length;
+      const totalChecked = Array.from(barisCheckboxes).filter(cb => cb.checked).length;
+
+      if (totalChecked === 0) {
+        // Tidak ada yang dicentang
+        cbAll.checked = false;
+        cbAll.indeterminate = false;
+        cbAll.classList.remove('accent-slate-400');
+      } else if (totalChecked === total) {
+        // Semua dicentang
+        cbAll.checked = true;
+        cbAll.indeterminate = false;
+        cbAll.classList.remove('accent-slate-400');
+      } else {
+        // Sebagian dicentang (Ubah abu-abu / tanda strip indeterminate)
+        cbAll.checked = false;
+        cbAll.indeterminate = true;
+        cbAll.classList.add('accent-slate-400');
+      }
+    }
+
+    // 3. Helper mengambil data yang sedang dicentang untuk cetak/ekspor
+    function ambilDataCariEditTerpilih() {
+      const barisCheckboxes = document.querySelectorAll('input[name="cb_baris_ce"]:checked');
+      if (barisCheckboxes.length === 0) {
+        // Jika tidak ada satu pun yang dicentang, kembalikan semua data di tabel
+        return dataCariEditCache;
+      }
+      const setKode = new Set(Array.from(barisCheckboxes).map(cb => cb.value));
+      return dataCariEditCache.filter(k => setKode.has(k.kode_keluarga || k.nomor_kk));
     }
 
     async function bukaDetailKeluargaCariEdit(kodeKeluargaTarget) {
@@ -3462,16 +3504,17 @@
     }
     
     function eksporExcelCariEdit() {
-      if (!dataCariEditCache || dataCariEditCache.length === 0) {
-        Swal.fire('Data Kosong', 'Silakan lakukan pencarian data terlebih dahulu!', 'warning');
+      const dataSumber = ambilDataCariEditTerpilih();
+      if (!dataSumber || dataSumber.length === 0) {
+        Swal.fire('Data Kosong', 'Tidak ada data keluarga untuk diekspor!', 'warning');
         return;
       }
 
       const cakupan = document.getElementById('cari_edit_cakupan_cetak')?.value || 'kk';
       let rowsExcel = [];
 
-      if (cakupan === 'kk') {        
-        rowsExcel = dataCariEditCache.map((k, idx) => {
+      if (cakupan === 'kk') {
+        rowsExcel = dataSumber.map((k, idx) => {
           const w = terjemahkanWilayahKeNama(k);
           const listAng = k.anggota_keluarga || [];
           const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
@@ -3496,9 +3539,9 @@
             "STATUS KELUARGA": k.status_keluarga === '1' ? 'Ada' : (k.status_keluarga === '6' ? 'Keluarga Baru' : 'Mutasi')
           };
         });
-      } else {        
+      } else {
         let noUrutGlobal = 1;
-        dataCariEditCache.forEach((k) => {
+        dataSumber.forEach((k) => {
           const w = terjemahkanWilayahKeNama(k);
           const listAng = (k.anggota_keluarga && k.anggota_keluarga.length > 0)
             ? k.anggota_keluarga
@@ -3538,11 +3581,9 @@
       }
 
       const ws = XLSX.utils.json_to_sheet(rowsExcel);
-      
       if (ws['!ref']) {
         const range = XLSX.utils.decode_range(ws['!ref']);
         for (let R = range.s.r; R <= range.e.r; ++R) {
-          // Kolom Kode Keluarga, No KK, RT, NIK
           [1, 2, 8, 10, 12].forEach(colIdx => {
             const cell = XLSX.utils.encode_cell({ r: R, c: colIdx });
             if (ws[cell]) {
@@ -3558,18 +3599,16 @@
       XLSX.utils.book_append_sheet(wb, ws, namaSheet);
       XLSX.writeFile(wb, `CariEdit_${namaSheet}_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
-    
+
     function cetakPdfCariEdit() {
-      if (!dataCariEditCache || dataCariEditCache.length === 0) {
-        Swal.fire('Data Kosong', 'Silakan lakukan pencarian data terlebih dahulu!', 'warning');
+      const dataSumber = ambilDataCariEditTerpilih();
+      if (!dataSumber || dataSumber.length === 0) {
+        Swal.fire('Data Kosong', 'Tidak ada data keluarga untuk dicetak!', 'warning');
         return;
       }
 
       const cakupan = document.getElementById('cari_edit_cakupan_cetak')?.value || 'kk';
-      const judulCetak = (cakupan === 'kk') 
-        ? "DATA KEPALA KELUARGA (KK)" 
-        : "DATA LENGKAP ANGGOTA KELUARGA";
-
+      const judulCetak = (cakupan === 'kk') ? "DATA KEPALA KELUARGA (KK)" : "DATA LENGKAP ANGGOTA KELUARGA";
       let tabelHtml = '';
 
       if (cakupan === 'kk') {
@@ -3596,7 +3635,7 @@
             <tbody>
         `;
 
-        dataCariEditCache.forEach((k, idx) => {
+        dataSumber.forEach((k, idx) => {
           const w = terjemahkanWilayahKeNama(k);
           const listAng = k.anggota_keluarga || [];
           const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
@@ -3622,7 +3661,6 @@
             </tr>
           `;
         });
-
         tabelHtml += `</tbody></table>`;
       } else {
         tabelHtml = `
@@ -3651,7 +3689,7 @@
         `;
 
         let noUrutGlobal = 1;
-        dataCariEditCache.forEach((k) => {
+        dataSumber.forEach((k) => {
           const w = terjemahkanWilayahKeNama(k);
           const listAng = (k.anggota_keluarga && k.anggota_keluarga.length > 0)
             ? k.anggota_keluarga
@@ -3689,10 +3727,9 @@
             `;
           });
         });
-
         tabelHtml += `</tbody></table>`;
       }
-      
+
       const printWin = window.open('', '_blank');
       printWin.document.write(`
         <!DOCTYPE html>
@@ -3714,7 +3751,7 @@
         </head>
         <body>
           <h2>LAPORAN PENCARIAN DATA KELUARGA</h2>
-          <p>Kategori Cetak: <b>${judulCetak}</b> | Jumlah Data: <b>${dataCariEditCache.length} Keluarga</b> | Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
+          <p>Kategori Cetak: <b>${judulCetak}</b> | Jumlah Dicetak: <b>${dataSumber.length} Keluarga</b> | Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
           ${tabelHtml}
           <script>
             window.onload = function() { window.print(); window.close(); };
