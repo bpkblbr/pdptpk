@@ -617,6 +617,142 @@
   </div>
 
   <!-- ========================================================
+      MODUL LAPORAN BNBA DINAMIS (READ-ONLY & EKSPOR)
+      ======================================================== -->
+  <div id="tampilan_bnba_laporan" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Header Modul -->
+    <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div>
+        <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
+          &larr; KEMBALI KE DASHBOARD
+        </button>
+        <h1 class="text-lg font-black text-slate-800 uppercase">Laporan Rekapitulasi BNBA Dinamis</h1>
+        <p class="text-xs text-slate-500 font-medium">Filter sasaran spesifik By Name By Address sesuai kebutuhan analisis data lapangan.</p>
+      </div>
+      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnbaLaporan">Otoritas Wilayah</span>
+    </div>
+
+    <!-- Panel Filter Wilayah & Parameter Sasaran -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4 text-xs">
+      
+      <!-- Baris Filter Wilayah Terkunci -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kabupaten / Kota</label>
+          <select id="bnba_lap_kab" onchange="saatBnbaLapKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
+            <option value="">-- SEMUA KABUPATEN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kecamatan</label>
+          <select id="bnba_lap_kec" onchange="saatBnbaLapKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <option value="">-- SEMUA KECAMATAN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Desa / Kelurahan</label>
+          <select id="bnba_lap_desa" onchange="saatBnbaLapDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <option value="">-- SEMUA DESA --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Dusun / Lingkungan</label>
+          <select id="bnba_lap_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
+            <option value="">-- SEMUA DUSUN --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Baris Pemilihan Parameter Sasaran Dinamis -->
+      <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <div class="sm:col-span-5">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Pilih Kategori Indikator BNBA *</label>
+          <select id="bnba_lap_kategori" onchange="saatKategoriBnbaLapBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-indigo-700 outline-none">
+            <option value="">-- PILIH KATEGORI SASARAN --</option>
+            <optgroup label="Demografi & Sasaran Individu">
+              <option value="janda">Status Janda (Cerai Hidup / Mati)</option>
+              <option value="baduta">Sasaran Baduta (Usia &lt; 2 Tahun)</option>
+              <option value="balita">Sasaran Balita (Usia &lt; 5 Tahun)</option>
+              <option value="remaja">Sasaran Remaja (Usia 10 - 24 Tahun Belum Kawin)</option>
+              <option value="lansia">Sasaran Lansia (Usia &gt;= 60 Tahun)</option>
+              <option value="wus">Wanita Usia Subur (WUS 15 - 49 Tahun)</option>
+              <option value="jkn_individu">Kepesertaan JKN Individu</option>
+              <option value="disabilitas">Penyandang Disabilitas / Gangguan Fungsional</option>
+            </optgroup>
+            <optgroup label="Keluarga Berencana (KB)">
+              <option value="pus">Status Pasangan Usia Subur (PUS)</option>
+              <option value="ibu_hamil">Ibu Sedang Hamil</option>
+              <option value="peserta_kb">Peserta KB Aktif & Jenis Metode Kontrasepsi</option>
+              <option value="unmet_need">PUS Unmet Need (Butuh KB Belum Ber-KB)</option>
+              <option value="alasan_tidak_kb">Alasan Tidak Menggunakan Kontrasepsi</option>
+            </optgroup>
+            <optgroup label="Lingkungan & Sanitasi Rumah Tangga">
+              <option value="jamban">Kepemilikan Fasilitas BAB / Jamban</option>
+              <option value="air_minum">Sumber Air Minum Utama</option>
+              <option value="penerangan">Sumber Penerangan / Listrik</option>
+              <option value="atap">Jenis & Kondisi Atap Rumah</option>
+              <option value="dinding">Jenis & Kondisi Dinding Rumah</option>
+              <option value="lantai">Jenis & Kondisi Lantai Rumah</option>
+              <option value="kepemilikan_rumah">Status Kepemilikan Rumah</option>
+              <option value="bahan_bakar">Bahan Bakar Memasak</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="sm:col-span-5">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Sub-Pilihan / Item Spesifik</label>
+          <select id="bnba_lap_sub_item" class="w-full p-2 border rounded-lg bg-white font-medium text-slate-800 outline-none">
+            <option value="">-- TAMPILKAN SEMUA ITEM --</option>
+          </select>
+        </div>
+
+        <div class="sm:col-span-2 flex items-end">
+          <button type="button" onclick="eksekusiFilterBnbaDinamis()" class="w-full py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center justify-center gap-1.5 shadow-sm">
+            🔍 Tampilkan
+          </button>
+        </div>
+      </div>
+
+      <!-- Tombol Ekspor Berkas -->
+      <div class="flex flex-wrap justify-between items-center pt-1 border-t">
+        <span id="labelTotalBnbaLap" class="font-bold text-slate-700">Ditemukan: 0 Data</span>
+        <div class="flex gap-2">
+          <button type="button" onclick="cetakPdfBnbaDinamis()" class="px-4 py-1.5 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
+            📄 Cetak / PDF
+          </button>
+          <button type="button" onclick="eksporExcelBnbaDinamis()" class="px-4 py-1.5 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
+            📊 Unduh Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Hasil Laporan BNBA -->
+    <div id="areaCetakBnba" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
+      <div class="p-3 border-b bg-slate-50 flex justify-between items-center">
+        <h3 id="judulTabelBnbaLap" class="font-black text-slate-800 uppercase tracking-wide">TABEL REKAPITULASI SASARAN</h3>
+      </div>
+
+      <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+        <table id="tabelUtamaBnbaLap" class="w-full text-left border-collapse text-[11px]">
+          <thead id="theadBnbaLap" class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b">
+            <!-- Header kolom dibuat secara dinamis oleh JavaScript -->
+          </thead>
+          <tbody id="tbodyBnbaLap" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="12" class="p-8 text-center text-slate-400 font-semibold">
+                Silakan pilih <b>Kategori Indikator BNBA</b> dan klik tombol <b>🔍 Tampilkan</b>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================================
        HALAMAN REKAPITULASI BERJENJANG (DEMOGRAFI, KB & KRS)
        ======================================================== -->
   <div id="tampilan_rekapitulasi" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
@@ -3679,145 +3815,9 @@
       const m = hariIni.getMonth() - tglLahir.getMonth();
       if (m < 0 || (m === 0 && hariIni.getDate() < tglLahir.getDate())) usia--;
       return usia >= 0 ? usia : 0;
-    }
+    }    
 
-    <!-- ========================================================
-       MODUL LAPORAN BNBA DINAMIS (READ-ONLY & EKSPOR)
-       ======================================================== -->
-  <div id="tampilan_bnba_laporan" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-    
-    <!-- Header Modul -->
-    <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-      <div>
-        <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
-          &larr; KEMBALI KE DASHBOARD
-        </button>
-        <h1 class="text-lg font-black text-slate-800 uppercase">Laporan Rekapitulasi BNBA Dinamis</h1>
-        <p class="text-xs text-slate-500 font-medium">Filter sasaran spesifik By Name By Address sesuai kebutuhan analisis data lapangan.</p>
-      </div>
-      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnbaLaporan">Otoritas Wilayah</span>
-    </div>
-
-    <!-- Panel Filter Wilayah & Parameter Sasaran -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4 text-xs">
-      
-      <!-- Baris Filter Wilayah Terkunci -->
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-        <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Kabupaten / Kota</label>
-          <select id="bnba_lap_kab" onchange="saatBnbaLapKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
-            <option value="">-- SEMUA KABUPATEN --</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Kecamatan</label>
-          <select id="bnba_lap_kec" onchange="saatBnbaLapKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
-            <option value="">-- SEMUA KECAMATAN --</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Desa / Kelurahan</label>
-          <select id="bnba_lap_desa" onchange="saatBnbaLapDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
-            <option value="">-- SEMUA DESA --</option>
-          </select>
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Dusun / Lingkungan</label>
-          <select id="bnba_lap_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
-            <option value="">-- SEMUA DUSUN --</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Baris Pemilihan Parameter Sasaran Dinamis -->
-      <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-        <div class="sm:col-span-5">
-          <label class="block font-bold text-slate-700 uppercase mb-1">Pilih Kategori Indikator BNBA *</label>
-          <select id="bnba_lap_kategori" onchange="saatKategoriBnbaLapBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-indigo-700 outline-none">
-            <option value="">-- PILIH KATEGORI SASARAN --</option>
-            <optgroup label="Demografi & Sasaran Individu">
-              <option value="janda">Status Janda (Cerai Hidup / Mati)</option>
-              <option value="baduta">Sasaran Baduta (Usia &lt; 2 Tahun)</option>
-              <option value="balita">Sasaran Balita (Usia &lt; 5 Tahun)</option>
-              <option value="remaja">Sasaran Remaja (Usia 10 - 24 Tahun Belum Kawin)</option>
-              <option value="lansia">Sasaran Lansia (Usia &gt;= 60 Tahun)</option>
-              <option value="wus">Wanita Usia Subur (WUS 15 - 49 Tahun)</option>
-              <option value="jkn_individu">Kepesertaan JKN Individu</option>
-              <option value="disabilitas">Penyandang Disabilitas / Gangguan Fungsional</option>
-            </optgroup>
-            <optgroup label="Keluarga Berencana (KB)">
-              <option value="pus">Status Pasangan Usia Subur (PUS)</option>
-              <option value="ibu_hamil">Ibu Sedang Hamil</option>
-              <option value="peserta_kb">Peserta KB Aktif & Jenis Metode Kontrasepsi</option>
-              <option value="unmet_need">PUS Unmet Need (Butuh KB Belum Ber-KB)</option>
-              <option value="alasan_tidak_kb">Alasan Tidak Menggunakan Kontrasepsi</option>
-            </optgroup>
-            <optgroup label="Lingkungan & Sanitasi Rumah Tangga">
-              <option value="jamban">Kepemilikan Fasilitas BAB / Jamban</option>
-              <option value="air_minum">Sumber Air Minum Utama</option>
-              <option value="penerangan">Sumber Penerangan / Listrik</option>
-              <option value="atap">Jenis & Kondisi Atap Rumah</option>
-              <option value="dinding">Jenis & Kondisi Dinding Rumah</option>
-              <option value="lantai">Jenis & Kondisi Lantai Rumah</option>
-              <option value="kepemilikan_rumah">Status Kepemilikan Rumah</option>
-              <option value="bahan_bakar">Bahan Bakar Memasak</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <div class="sm:col-span-5">
-          <label class="block font-bold text-slate-700 uppercase mb-1">Sub-Pilihan / Item Spesifik</label>
-          <select id="bnba_lap_sub_item" class="w-full p-2 border rounded-lg bg-white font-medium text-slate-800 outline-none">
-            <option value="">-- TAMPILKAN SEMUA ITEM --</option>
-          </select>
-        </div>
-
-        <div class="sm:col-span-2 flex items-end">
-          <button type="button" onclick="eksekusiFilterBnbaDinamis()" class="w-full py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center justify-center gap-1.5 shadow-sm">
-            🔍 Tampilkan
-          </button>
-        </div>
-      </div>
-
-      <!-- Tombol Ekspor Berkas -->
-      <div class="flex flex-wrap justify-between items-center pt-1 border-t">
-        <span id="labelTotalBnbaLap" class="font-bold text-slate-700">Ditemukan: 0 Data</span>
-        <div class="flex gap-2">
-          <button type="button" onclick="cetakPdfBnbaDinamis()" class="px-4 py-1.5 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
-            📄 Cetak / PDF
-          </button>
-          <button type="button" onclick="eksporExcelBnbaDinamis()" class="px-4 py-1.5 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
-            📊 Unduh Excel
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabel Hasil Laporan BNBA -->
-    <div id="areaCetakBnba" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
-      <div class="p-3 border-b bg-slate-50 flex justify-between items-center">
-        <h3 id="judulTabelBnbaLap" class="font-black text-slate-800 uppercase tracking-wide">TABEL REKAPITULASI SASARAN</h3>
-      </div>
-
-      <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-        <table id="tabelUtamaBnbaLap" class="w-full text-left border-collapse text-[11px]">
-          <thead id="theadBnbaLap" class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b">
-            <!-- Header kolom dibuat secara dinamis oleh JavaScript -->
-          </thead>
-          <tbody id="tbodyBnbaLap" class="divide-y divide-slate-100">
-            <tr>
-              <td colspan="12" class="p-8 text-center text-slate-400 font-semibold">
-                Silakan pilih <b>Kategori Indikator BNBA</b> dan klik tombol <b>🔍 Tampilkan</b>.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  // ========================================================
+    // ========================================================
     // LOGIKA MODUL LAPORAN BNBA DINAMIS & EKSPOR
     // ========================================================
     let dataHasilBnbaLap = [];
