@@ -454,22 +454,33 @@
           </div>
         </div>
 
-        <!-- Tombol Aksi Filter & Cetak -->
-        <div class="flex flex-wrap gap-2 pt-2 border-t">
-          <button type="button" onclick="muatDataCariEditKeluarga()" 
-                  class="px-6 py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
-            🔍 Cari
-          </button>
-          <button type="button" onclick="downloadExcelKeluargaTerisi()" 
-                  class="px-5 py-2 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
-            📄 Cetak PDF
-          </button>
-          <button type="button" onclick="downloadExcelKeluargaTerisi()" 
-                  class="px-5 py-2 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5">
-            📊 Cetak Excel
-          </button>
+        <!-- Tombol Aksi Filter & Cetak -->        
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t">
+          <div class="flex gap-2">
+            <button type="button" onclick="muatDataCariEditKeluarga()" 
+                    class="px-6 py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5 shadow-sm">
+              🔍 Cari
+            </button>
+          </div>
+
+          <!-- OPSI PILIHAN CETAK / EKSPOR -->
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <label class="font-bold text-slate-700 uppercase">Cakupan Cetak:</label>
+            <select id="cari_edit_cakupan_cetak" class="p-2 border border-slate-300 rounded-lg bg-white font-semibold text-slate-800 outline-none">
+              <option value="kk">Data Kepala Keluarga (KK) Saja</option>
+              <option value="anggota">Semua Anggota Keluarga (Lengkap)</option>
+            </select>
+
+            <button type="button" onclick="cetakPdfCariEdit()" 
+                    class="px-4 py-2 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5 shadow-sm">
+              📄 Cetak PDF
+            </button>
+            <button type="button" onclick="eksporExcelCariEdit()" 
+                    class="px-4 py-2 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1.5 shadow-sm">
+              📊 Unduh Excel
+            </button>
+          </div>
         </div>
-      </div>
     </div>
 
     <!-- TABEL MASTER: DAFTAR KEPALA KELUARGA -->
@@ -3410,6 +3421,308 @@
 
     function tutupModalDetailCariEdit() {
       document.getElementById('modalDetailCariEdit').classList.add('hidden');
+    }
+    
+    function terjemahkanWilayahKeNama(k) {
+      const kdProv = String(k.kode_prov || '52').padStart(2, '0');
+      const kdKab  = String(k.kode_kab || '01').padStart(2, '0');
+      const kdKec  = String(k.kode_kec || '').padStart(2, '0');
+      const kdDesa = String(k.kode_desa || '').padStart(4, '0');
+      const kdDsn  = String(k.kode_dusun || '').padStart(4, '0');
+      
+      const itemWil = (rawWilayahList || []).find(w => 
+        String(w.kode_kec).padStart(2, '0') === kdKec &&
+        String(w.kode_desa).padStart(4, '0') === kdDesa &&
+        String(w.kode_dusun).padStart(4, '0') === kdDsn
+      );
+      
+      const itemDesa = itemWil || (rawWilayahList || []).find(w => 
+        String(w.kode_kec).padStart(2, '0') === kdKec &&
+        String(w.kode_desa).padStart(4, '0') === kdDesa
+      );
+
+      return {
+        provinsi: itemWil?.provinsi || (dataProvinsi[kdProv] || 'NUSA TENGGARA BARAT').toUpperCase(),
+        kabupaten: itemWil?.kabupaten || (dataKabupaten[kdProv]?.[kdKab] || 'LOMBOK BARAT').toUpperCase(),
+        kecamatan: itemWil?.kecamatan || itemDesa?.kecamatan || kdKec,
+        desa: itemWil?.desa || itemDesa?.desa || kdDesa,
+        dusun: itemWil?.dusun || kdDsn,
+        rt: String(k.rt || '001').padStart(3, '0')
+      };
+    }
+    
+    function labelHubunganKK(kode) {
+      switch (String(kode)) {
+        case '1': return 'Kepala Keluarga';
+        case '2': return 'Istri / Suami';
+        case '3': return 'Anak';
+        case '4': return 'Lainnya';
+        default: return '-';
+      }
+    }
+    
+    function eksporExcelCariEdit() {
+      if (!dataCariEditCache || dataCariEditCache.length === 0) {
+        Swal.fire('Data Kosong', 'Silakan lakukan pencarian data terlebih dahulu!', 'warning');
+        return;
+      }
+
+      const cakupan = document.getElementById('cari_edit_cakupan_cetak')?.value || 'kk';
+      let rowsExcel = [];
+
+      if (cakupan === 'kk') {        
+        rowsExcel = dataCariEditCache.map((k, idx) => {
+          const w = terjemahkanWilayahKeNama(k);
+          const listAng = k.anggota_keluarga || [];
+          const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
+          const tglLahir = kepala.tanggal_lahir ? formatTglIndo(kepala.tanggal_lahir) : '-';
+          const usia = kepala.tanggal_lahir ? hitungUsiaTahun(kepala.tanggal_lahir) : '-';
+
+          return {
+            "NO": idx + 1,
+            "KODE KELUARGA": k.kode_keluarga || '-',
+            "NO. KK": k.nomor_kk || '-',
+            "PROVINSI": w.provinsi,
+            "KABUPATEN": w.kabupaten,
+            "KECAMATAN": w.kecamatan,
+            "DESA / KELURAHAN": w.desa,
+            "DUSUN / RW": w.dusun,
+            "RT": w.rt,
+            "NAMA KEPALA KELUARGA": (k.nama_kk || kepala.nama_lengkap || '-').toUpperCase(),
+            "NIK KEPALA KELUARGA": k.nik_kk || kepala.nik || '-',
+            "TANGGAL LAHIR": tglLahir,
+            "USIA (TH)": usia,
+            "JUMLAH ANGGOTA": listAng.length || 1,
+            "STATUS KELUARGA": k.status_keluarga === '1' ? 'Ada' : (k.status_keluarga === '6' ? 'Keluarga Baru' : 'Mutasi')
+          };
+        });
+      } else {        
+        let noUrutGlobal = 1;
+        dataCariEditCache.forEach((k) => {
+          const w = terjemahkanWilayahKeNama(k);
+          const listAng = (k.anggota_keluarga && k.anggota_keluarga.length > 0)
+            ? k.anggota_keluarga
+            : [{
+                nama_lengkap: k.nama_kk,
+                nik: k.nik_kk,
+                hubungan_dengan_kk: '1',
+                jenis_kelamin: '1',
+                tanggal_lahir: ''
+              }];
+
+          listAng.forEach((ang) => {
+            const tglLahir = ang.tanggal_lahir ? formatTglIndo(ang.tanggal_lahir) : '-';
+            const usia = ang.tanggal_lahir ? hitungUsiaTahun(ang.tanggal_lahir) : '-';
+
+            rowsExcel.push({
+              "NO": noUrutGlobal++,
+              "KODE KELUARGA": k.kode_keluarga || '-',
+              "NO. KK": k.nomor_kk || '-',
+              "PROVINSI": w.provinsi,
+              "KABUPATEN": w.kabupaten,
+              "KECAMATAN": w.kecamatan,
+              "DESA / KELURAHAN": w.desa,
+              "DUSUN / RW": w.dusun,
+              "RT": w.rt,
+              "NAMA KEPALA KELUARGA": (k.nama_kk || '-').toUpperCase(),
+              "NIK KEPALA KELUARGA": k.nik_kk || '-',
+              "NAMA ANGGOTA": (ang.nama_lengkap || '-').toUpperCase(),
+              "NIK ANGGOTA": ang.nik || '-',
+              "HUBUNGAN DENGAN KK": labelHubunganKK(ang.hubungan_dengan_kk),
+              "JENIS KELAMIN": String(ang.jenis_kelamin) === '2' ? 'Perempuan' : 'Laki-laki',
+              "TANGGAL LAHIR": tglLahir,
+              "USIA (TH)": usia
+            });
+          });
+        });
+      }
+
+      const ws = XLSX.utils.json_to_sheet(rowsExcel);
+      
+      if (ws['!ref']) {
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          // Kolom Kode Keluarga, No KK, RT, NIK
+          [1, 2, 8, 10, 12].forEach(colIdx => {
+            const cell = XLSX.utils.encode_cell({ r: R, c: colIdx });
+            if (ws[cell]) {
+              ws[cell].t = 's';
+              ws[cell].z = '@';
+            }
+          });
+        }
+      }
+
+      const wb = XLSX.utils.book_new();
+      const namaSheet = (cakupan === 'kk') ? "Data_KK" : "Data_Anggota_Lengkap";
+      XLSX.utils.book_append_sheet(wb, ws, namaSheet);
+      XLSX.writeFile(wb, `CariEdit_${namaSheet}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+    
+    function cetakPdfCariEdit() {
+      if (!dataCariEditCache || dataCariEditCache.length === 0) {
+        Swal.fire('Data Kosong', 'Silakan lakukan pencarian data terlebih dahulu!', 'warning');
+        return;
+      }
+
+      const cakupan = document.getElementById('cari_edit_cakupan_cetak')?.value || 'kk';
+      const judulCetak = (cakupan === 'kk') 
+        ? "DATA KEPALA KELUARGA (KK)" 
+        : "DATA LENGKAP ANGGOTA KELUARGA";
+
+      let tabelHtml = '';
+
+      if (cakupan === 'kk') {
+        tabelHtml = `
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 25px; text-align: center;">NO</th>
+                <th>KODE KELUARGA</th>
+                <th>NO. KK</th>
+                <th>PROVINSI</th>
+                <th>KABUPATEN</th>
+                <th>KECAMATAN</th>
+                <th>DESA / KEL</th>
+                <th>DUSUN / RW</th>
+                <th style="text-align: center;">RT</th>
+                <th>NAMA KEPALA KELUARGA</th>
+                <th>NIK KK</th>
+                <th style="text-align: center;">TGL LAHIR</th>
+                <th style="text-align: center;">USIA</th>
+                <th style="text-align: center;">ANGGOTA</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        dataCariEditCache.forEach((k, idx) => {
+          const w = terjemahkanWilayahKeNama(k);
+          const listAng = k.anggota_keluarga || [];
+          const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
+          const tglLahir = kepala.tanggal_lahir ? formatTglIndo(kepala.tanggal_lahir) : '-';
+          const usia = kepala.tanggal_lahir ? hitungUsiaTahun(kepala.tanggal_lahir) : '-';
+
+          tabelHtml += `
+            <tr>
+              <td style="text-align: center;">${idx + 1}</td>
+              <td class="font-mono">${k.kode_keluarga || '-'}</td>
+              <td class="font-mono">${k.nomor_kk || '-'}</td>
+              <td>${w.provinsi}</td>
+              <td>${w.kabupaten}</td>
+              <td>${w.kecamatan}</td>
+              <td>${w.desa}</td>
+              <td>${w.dusun}</td>
+              <td style="text-align: center;">${w.rt}</td>
+              <td><b>${(k.nama_kk || kepala.nama_lengkap || '-').toUpperCase()}</b></td>
+              <td class="font-mono">${k.nik_kk || kepala.nik || '-'}</td>
+              <td style="text-align: center;">${tglLahir}</td>
+              <td style="text-align: center;">${usia}</td>
+              <td style="text-align: center;">${listAng.length || 1}</td>
+            </tr>
+          `;
+        });
+
+        tabelHtml += `</tbody></table>`;
+      } else {
+        tabelHtml = `
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 25px; text-align: center;">NO</th>
+                <th>KODE KELUARGA</th>
+                <th>NO. KK</th>
+                <th>PROVINSI</th>
+                <th>KABUPATEN</th>
+                <th>KECAMATAN</th>
+                <th>DESA / KEL</th>
+                <th>DUSUN / RW</th>
+                <th style="text-align: center;">RT</th>
+                <th>NAMA KK</th>
+                <th>NAMA ANGGOTA</th>
+                <th>NIK ANGGOTA</th>
+                <th>HUBUNGAN</th>
+                <th style="text-align: center;">L/P</th>
+                <th style="text-align: center;">TGL LAHIR</th>
+                <th style="text-align: center;">USIA</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        let noUrutGlobal = 1;
+        dataCariEditCache.forEach((k) => {
+          const w = terjemahkanWilayahKeNama(k);
+          const listAng = (k.anggota_keluarga && k.anggota_keluarga.length > 0)
+            ? k.anggota_keluarga
+            : [{
+                nama_lengkap: k.nama_kk,
+                nik: k.nik_kk,
+                hubungan_dengan_kk: '1',
+                jenis_kelamin: '1',
+                tanggal_lahir: ''
+              }];
+
+          listAng.forEach((ang) => {
+            const tglLahir = ang.tanggal_lahir ? formatTglIndo(ang.tanggal_lahir) : '-';
+            const usia = ang.tanggal_lahir ? hitungUsiaTahun(ang.tanggal_lahir) : '-';
+
+            tabelHtml += `
+              <tr>
+                <td style="text-align: center;">${noUrutGlobal++}</td>
+                <td class="font-mono">${k.kode_keluarga || '-'}</td>
+                <td class="font-mono">${k.nomor_kk || '-'}</td>
+                <td>${w.provinsi}</td>
+                <td>${w.kabupaten}</td>
+                <td>${w.kecamatan}</td>
+                <td>${w.desa}</td>
+                <td>${w.dusun}</td>
+                <td style="text-align: center;">${w.rt}</td>
+                <td>${(k.nama_kk || '-').toUpperCase()}</td>
+                <td><b>${(ang.nama_lengkap || '-').toUpperCase()}</b></td>
+                <td class="font-mono">${ang.nik || '-'}</td>
+                <td>${labelHubunganKK(ang.hubungan_dengan_kk)}</td>
+                <td style="text-align: center;">${String(ang.jenis_kelamin) === '2' ? 'P' : 'L'}</td>
+                <td style="text-align: center;">${tglLahir}</td>
+                <td style="text-align: center;">${usia}</td>
+              </tr>
+            `;
+          });
+        });
+
+        tabelHtml += `</tbody></table>`;
+      }
+      
+      const printWin = window.open('', '_blank');
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Cetak Data - ${judulCetak}</title>
+          <style>
+            body { font-family: sans-serif; font-size: 9px; margin: 12px; color: #0f172a; }
+            h2 { text-transform: uppercase; margin: 0 0 4px 0; font-size: 13px; color: #0f172a; }
+            p { margin: 0 0 8px 0; font-size: 9.5px; color: #475569; }
+            table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+            th, td { border: 1px solid #cbd5e1; padding: 4px 5px; text-align: left; }
+            th { background-color: #f1f5f9; text-transform: uppercase; font-size: 8.5px; font-weight: bold; }
+            .font-mono { font-family: monospace; font-size: 8.5px; }
+            @media print {
+              @page { size: landscape; margin: 8mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h2>LAPORAN PENCARIAN DATA KELUARGA</h2>
+          <p>Kategori Cetak: <b>${judulCetak}</b> | Jumlah Data: <b>${dataCariEditCache.length} Keluarga</b> | Tanggal: ${new Date().toLocaleDateString('id-ID')}</p>
+          ${tabelHtml}
+          <script>
+            window.onload = function() { window.print(); window.close(); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWin.document.close();
     }
 
     // Fitur Edit Individu Anggota Keluarga
