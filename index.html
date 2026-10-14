@@ -1879,7 +1879,7 @@
     }
 
     function tampilkanLayar(layarId) {      
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_cari_edit', 'tampilan_rekapitulasi'];
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_cari_edit', 'tampilan_rekapitulasi', 'tampilan_bnba_laporan'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('aktif');
@@ -3679,6 +3679,828 @@
       const m = hariIni.getMonth() - tglLahir.getMonth();
       if (m < 0 || (m === 0 && hariIni.getDate() < tglLahir.getDate())) usia--;
       return usia >= 0 ? usia : 0;
+    }
+
+    <!-- ========================================================
+       MODUL LAPORAN BNBA DINAMIS (READ-ONLY & EKSPOR)
+       ======================================================== -->
+  <div id="tampilan_bnba_laporan" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+    
+    <!-- Header Modul -->
+    <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+      <div>
+        <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
+          &larr; KEMBALI KE DASHBOARD
+        </button>
+        <h1 class="text-lg font-black text-slate-800 uppercase">Laporan Rekapitulasi BNBA Dinamis</h1>
+        <p class="text-xs text-slate-500 font-medium">Filter sasaran spesifik By Name By Address sesuai kebutuhan analisis data lapangan.</p>
+      </div>
+      <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnbaLaporan">Otoritas Wilayah</span>
+    </div>
+
+    <!-- Panel Filter Wilayah & Parameter Sasaran -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4 text-xs">
+      
+      <!-- Baris Filter Wilayah Terkunci -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kabupaten / Kota</label>
+          <select id="bnba_lap_kab" onchange="saatBnbaLapKabBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-slate-700 outline-none">
+            <option value="">-- SEMUA KABUPATEN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Kecamatan</label>
+          <select id="bnba_lap_kec" onchange="saatBnbaLapKecBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <option value="">-- SEMUA KECAMATAN --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Desa / Kelurahan</label>
+          <select id="bnba_lap_desa" onchange="saatBnbaLapDesaBerubah()" class="w-full p-2 border rounded-lg bg-white font-semibold text-slate-700 outline-none">
+            <option value="">-- SEMUA DESA --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Dusun / Lingkungan</label>
+          <select id="bnba_lap_dusun" class="w-full p-2 border rounded-lg bg-white outline-none">
+            <option value="">-- SEMUA DUSUN --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Baris Pemilihan Parameter Sasaran Dinamis -->
+      <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <div class="sm:col-span-5">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Pilih Kategori Indikator BNBA *</label>
+          <select id="bnba_lap_kategori" onchange="saatKategoriBnbaLapBerubah()" class="w-full p-2 border rounded-lg bg-white font-bold text-indigo-700 outline-none">
+            <option value="">-- PILIH KATEGORI SASARAN --</option>
+            <optgroup label="Demografi & Sasaran Individu">
+              <option value="janda">Status Janda (Cerai Hidup / Mati)</option>
+              <option value="baduta">Sasaran Baduta (Usia &lt; 2 Tahun)</option>
+              <option value="balita">Sasaran Balita (Usia &lt; 5 Tahun)</option>
+              <option value="remaja">Sasaran Remaja (Usia 10 - 24 Tahun Belum Kawin)</option>
+              <option value="lansia">Sasaran Lansia (Usia &gt;= 60 Tahun)</option>
+              <option value="wus">Wanita Usia Subur (WUS 15 - 49 Tahun)</option>
+              <option value="jkn_individu">Kepesertaan JKN Individu</option>
+              <option value="disabilitas">Penyandang Disabilitas / Gangguan Fungsional</option>
+            </optgroup>
+            <optgroup label="Keluarga Berencana (KB)">
+              <option value="pus">Status Pasangan Usia Subur (PUS)</option>
+              <option value="ibu_hamil">Ibu Sedang Hamil</option>
+              <option value="peserta_kb">Peserta KB Aktif & Jenis Metode Kontrasepsi</option>
+              <option value="unmet_need">PUS Unmet Need (Butuh KB Belum Ber-KB)</option>
+              <option value="alasan_tidak_kb">Alasan Tidak Menggunakan Kontrasepsi</option>
+            </optgroup>
+            <optgroup label="Lingkungan & Sanitasi Rumah Tangga">
+              <option value="jamban">Kepemilikan Fasilitas BAB / Jamban</option>
+              <option value="air_minum">Sumber Air Minum Utama</option>
+              <option value="penerangan">Sumber Penerangan / Listrik</option>
+              <option value="atap">Jenis & Kondisi Atap Rumah</option>
+              <option value="dinding">Jenis & Kondisi Dinding Rumah</option>
+              <option value="lantai">Jenis & Kondisi Lantai Rumah</option>
+              <option value="kepemilikan_rumah">Status Kepemilikan Rumah</option>
+              <option value="bahan_bakar">Bahan Bakar Memasak</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="sm:col-span-5">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Sub-Pilihan / Item Spesifik</label>
+          <select id="bnba_lap_sub_item" class="w-full p-2 border rounded-lg bg-white font-medium text-slate-800 outline-none">
+            <option value="">-- TAMPILKAN SEMUA ITEM --</option>
+          </select>
+        </div>
+
+        <div class="sm:col-span-2 flex items-end">
+          <button type="button" onclick="eksekusiFilterBnbaDinamis()" class="w-full py-2 bg-[#1e70bf] hover:bg-[#165a9b] text-white font-bold rounded-lg transition uppercase flex items-center justify-center gap-1.5 shadow-sm">
+            🔍 Tampilkan
+          </button>
+        </div>
+      </div>
+
+      <!-- Tombol Ekspor Berkas -->
+      <div class="flex flex-wrap justify-between items-center pt-1 border-t">
+        <span id="labelTotalBnbaLap" class="font-bold text-slate-700">Ditemukan: 0 Data</span>
+        <div class="flex gap-2">
+          <button type="button" onclick="cetakPdfBnbaDinamis()" class="px-4 py-1.5 bg-[#d9534f] hover:bg-[#c9302c] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
+            📄 Cetak / PDF
+          </button>
+          <button type="button" onclick="eksporExcelBnbaDinamis()" class="px-4 py-1.5 bg-[#28a745] hover:bg-[#218838] text-white font-bold rounded-lg transition uppercase flex items-center gap-1 shadow-sm">
+            📊 Unduh Excel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Hasil Laporan BNBA -->
+    <div id="areaCetakBnba" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-xs">
+      <div class="p-3 border-b bg-slate-50 flex justify-between items-center">
+        <h3 id="judulTabelBnbaLap" class="font-black text-slate-800 uppercase tracking-wide">TABEL REKAPITULASI SASARAN</h3>
+      </div>
+
+      <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+        <table id="tabelUtamaBnbaLap" class="w-full text-left border-collapse text-[11px]">
+          <thead id="theadBnbaLap" class="bg-slate-100 text-slate-700 uppercase font-bold sticky top-0 border-b">
+            <!-- Header kolom dibuat secara dinamis oleh JavaScript -->
+          </thead>
+          <tbody id="tbodyBnbaLap" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="12" class="p-8 text-center text-slate-400 font-semibold">
+                Silakan pilih <b>Kategori Indikator BNBA</b> dan klik tombol <b>🔍 Tampilkan</b>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  // ========================================================
+    // LOGIKA MODUL LAPORAN BNBA DINAMIS & EKSPOR
+    // ========================================================
+    let dataHasilBnbaLap = [];
+    let konfigurasiKolomAktif = [];
+
+    // Definisi Sub-Pilihan untuk setiap Kategori
+    const masterPilihanBnba = {
+      janda: [
+        { val: '4', label: 'Cerai Hidup Tercatat' },
+        { val: '5', label: 'Cerai Hidup Tidak Tercatat' },
+        { val: '6', label: 'Cerai Mati' }
+      ],
+      jamban: [
+        { val: '1', label: '1. Sendiri, Leher Angsa, Septik/IPAL, Disedot Berkala' },
+        { val: '2', label: '2. Sendiri, Leher Angsa, Tangki Septik/IPAL' },
+        { val: '3', label: '3. MCK Komunal, Leher Angsa, Septik/IPAL' },
+        { val: '4', label: '4. Lainnya' },
+        { val: '5', label: '5. Tidak Ada Fasilitas BAB' }
+      ],
+      air_minum: [
+        { val: '1', label: 'Air Kemasan Bermerek' },
+        { val: '2', label: 'Air Isi Ulang' },
+        { val: '3', label: 'Leding / PAM' },
+        { val: '4', label: 'Sumur Bor / Pompa' },
+        { val: '5', label: 'Sumur Terlindung' },
+        { val: '6', label: 'Sumur Tak Terlindung' },
+        { val: '7', label: 'Mata Air Terlindung' },
+        { val: '8', label: 'Mata Air Tak Terlindung' },
+        { val: '9', label: 'Air Permukaan (Sungai/Danau/Irigasi)' },
+        { val: '10', label: 'Kran Umum / Terminal Air' },
+        { val: '11', label: 'Penampungan Air Hujan (PAH)' },
+        { val: '12', label: 'Lainnya' }
+      ],
+      penerangan: [
+        { val: '1', label: 'Listrik PLN Meteran' },
+        { val: '2', label: 'Listrik PLN Non-Meteran' },
+        { val: '3', label: 'Listrik Non-PLN' },
+        { val: '4', label: 'Bukan Listrik' }
+      ],
+      atap: [
+        { val: '1', label: 'Beton' }, { val: '2', label: 'Genteng' }, { val: '3', label: 'Seng' },
+        { val: '4', label: 'Asbes' }, { val: '5', label: 'Kayu / Sirap' }, { val: '6', label: 'Bambu' },
+        { val: '7', label: 'Jerami / Ijuk / Daun' }, { val: '8', label: 'Lainnya' }
+      ],
+      dinding: [
+        { val: '1', label: 'Tembok' }, { val: '2', label: 'Plesteran Bambu / Kawat' },
+        { val: '3', label: 'Kayu / Papan / Gipsum' }, { val: '4', label: 'Anyaman Bambu' },
+        { val: '5', label: 'Batang Kayu' }, { val: '6', label: 'Bambu' }, { val: '7', label: 'Lainnya' }
+      ],
+      lantai: [
+        { val: '1', label: 'Marmer / Granit' }, { val: '2', label: 'Keramik' },
+        { val: '3', label: 'Parket / Vinil / Karpet' }, { val: '4', label: 'Ubin / Tegel / Teraso' },
+        { val: '5', label: 'Kayu / Papan' }, { val: '6', label: 'Semen / Bata Merah' },
+        { val: '7', label: 'Bambu' }, { val: '8', label: 'Tanah' }, { val: '9', label: 'Lainnya' }
+      ],
+      peserta_kb: [
+        { val: '1', label: 'MOW / Steril Wanita' },
+        { val: '2', label: 'MOP / Steril Pria' },
+        { val: '3', label: 'IUD / Spiral / AKDR' },
+        { val: '4', label: 'Implant / Susuk' },
+        { val: '5', label: 'Suntik' },
+        { val: '6', label: 'Pil' },
+        { val: '7', label: 'Kondom' },
+        { val: '8', label: 'MAL' },
+        { val: '9', label: 'Tradisional' }
+      ],
+      alasan_tidak_kb: [
+        { val: '1', label: 'Ingin Hamil / Anak' },
+        { val: '2', label: 'Tidak Tahu Tentang KB' },
+        { val: '3', label: 'Alasan Kesehatan' },
+        { val: '4', label: 'Efek Samping / Kegagalan KB' },
+        { val: '5', label: 'Tempat Pelayanan Jauh' },
+        { val: '6', label: 'Alat/Obat Tidak Tersedia' },
+        { val: '7', label: 'Biaya Mahal' },
+        { val: '8', label: 'Tidak Ada Alat yang Cocok' },
+        { val: '9', label: 'Suami / Keluarga Menolak' },
+        { val: '10', label: 'Alasan Agama' },
+        { val: '11', label: 'Tidak Ada Petugas Pelayanan KB' },
+        { val: '12', label: 'Baru Melahirkan' },
+        { val: '13', label: 'Suami Jauh / Jarang Berhubungan' },
+        { val: '14', label: '6 Bulan Tidak Menstruasi' },
+        { val: '15', label: 'Tidak Subur / Mandul' },
+        { val: '16', label: 'Menopause' }
+      ],
+      jkn_individu: [
+        { val: '1', label: 'PBI' },
+        { val: '2', label: 'Bukan PBI' },
+        { val: '3', label: 'Swasta' },
+        { val: '4', label: 'Tidak Memiliki JKN' }
+      ],
+      kepemilikan_rumah: [
+        { val: '1', label: 'Milik Sendiri (Bersertifikat)' },
+        { val: '2', label: 'Milik Sendiri (Tanpa Sertifikat)' },
+        { val: '3', label: 'Kontrak / Sewa' },
+        { val: '4', label: 'Bebas Sewa / Menumpang' },
+        { val: '5', label: 'Rumah Dinas' },
+        { val: '6', label: 'Lainnya' }
+      ],
+      bahan_bakar: [
+        { val: '1', label: 'Listrik' },
+        { val: '2', label: 'Gas 12 kg' },
+        { val: '3', label: 'Gas 5,5 kg / Blue Gaz' },
+        { val: '4', label: 'Gas 3 kg' },
+        { val: '5', label: 'Minyak Tanah' },
+        { val: '6', label: 'Briket / Arang / Kayu' },
+        { val: '7', label: 'Lainnya' }
+      ],
+      disabilitas: [
+        { val: '1', label: 'Disabilitas Fisik' },
+        { val: '2', label: 'Disabilitas Sensorik' },
+        { val: '3', label: 'Disabilitas Mental' },
+        { val: '4', label: 'Disabilitas Intelektual' }
+      ]
+    };
+
+    function bukaHalamanBNBA() {
+      tampilkanLayar('tampilan_bnba_laporan');
+      initFilterWilayahBnbaLap();
+      saatKategoriBnbaLapBerubah();
+    }
+
+    function initFilterWilayahBnbaLap() {
+      const selKab = document.getElementById('bnba_lap_kab');
+      const selKec = document.getElementById('bnba_lap_kec');
+      const selDesa = document.getElementById('bnba_lap_desa');
+      const selDusun = document.getElementById('bnba_lap_dusun');
+
+      selKab.innerHTML = '<option value="">-- SEMUA KABUPATEN --</option>';
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+      selDusun.innerHTML = '<option value="">-- SEMUA DUSUN --</option>';
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
+      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      // Kunci Otomatis Sesuai Role
+      if (['ADMIN_KABUPATEN', 'ADMIN_KECAMATAN', 'USER_DESA'].includes(userAktif.role)) {
+        selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
+        selKab.disabled = true;
+        saatBnbaLapKabBerubah();
+      } else {
+        selKab.disabled = false;
+      }
+    }
+
+    function saatBnbaLapKabBerubah() {
+      const selKab = document.getElementById('bnba_lap_kab');
+      const selKec = document.getElementById('bnba_lap_kec');
+      const kdKab = selKab ? selKab.value : '';
+
+      selKec.innerHTML = '<option value="">-- SEMUA KECAMATAN --</option>';
+      if (!kdKab) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listKec = dataAkses.filter(w => String(w.kode_kab).padStart(2, '0') === kdKab);
+      const listKecUnik = [...new Map(listKec.map(w => [w.kode_kec, w.kecamatan])).entries()];
+
+      listKecUnik.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
+        selKec.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (['ADMIN_KECAMATAN', 'USER_DESA'].includes(userAktif.role)) {
+        selKec.value = String(userAktif.kode_kec || '').padStart(2, '0');
+        selKec.disabled = true;
+        saatBnbaLapKecBerubah();
+      } else {
+        selKec.disabled = false;
+      }
+    }
+
+    function saatBnbaLapKecBerubah() {
+      const selKab = document.getElementById('bnba_lap_kab');
+      const selKec = document.getElementById('bnba_lap_kec');
+      const selDesa = document.getElementById('bnba_lap_desa');
+      const kdKab = selKab ? selKab.value : '';
+      const kdKec = selKec ? selKec.value : '';
+
+      selDesa.innerHTML = '<option value="">-- SEMUA DESA --</option>';
+      if (!kdKec) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDesa = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec
+      );
+      const listDesaUnik = [...new Map(listDesa.map(w => [String(w.kode_desa).padStart(4, '0'), w.desa])).entries()];
+      
+      listDesaUnik.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true })).forEach(([kd, nm]) => {
+        selDesa.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
+      });
+
+      if (userAktif.role === 'USER_DESA') {
+        selDesa.value = String(userAktif.kode_desa || '').padStart(4, '0');
+        selDesa.disabled = true;
+        saatBnbaLapDesaBerubah();
+      } else {
+        selDesa.disabled = false;
+      }
+    }
+
+    function saatBnbaLapDesaBerubah() {
+      const selKab = document.getElementById('bnba_lap_kab');
+      const selKec = document.getElementById('bnba_lap_kec');
+      const selDesa = document.getElementById('bnba_lap_desa');
+      const selDusun = document.getElementById('bnba_lap_dusun');
+
+      selDusun.innerHTML = '<option value="">-- SEMUA DUSUN --</option>';
+      const kdKab = selKab ? selKab.value : '';
+      const kdKec = selKec ? selKec.value : '';
+      const kdDesa = selDesa ? selDesa.value : '';
+
+      if (!kdDesa) return;
+
+      const dataAkses = getWilayahTersaringSesuaiRole();
+      const listDsn = dataAkses.filter(w => 
+        String(w.kode_kab).padStart(2, '0') === kdKab && 
+        String(w.kode_kec).padStart(2, '0') === kdKec && 
+        String(w.kode_desa).padStart(4, '0') === kdDesa
+      );
+      
+      listDsn.sort((a, b) => 
+        String(a.kode_dusun).localeCompare(String(b.kode_dusun), undefined, { numeric: true })
+      ).forEach(d => {
+        const cleanKd = String(d.kode_dusun).padStart(4, '0');
+        selDusun.add(new Option(`${cleanKd} - ${d.dusun.toUpperCase()}`, cleanKd));
+      });
+    }
+
+    function saatKategoriBnbaLapBerubah() {
+      const kat = document.getElementById('bnba_lap_kategori').value;
+      const selSub = document.getElementById('bnba_lap_sub_item');
+      selSub.innerHTML = '<option value="">-- TAMPILKAN SEMUA ITEM --</option>';
+
+      if (masterPilihanBnba[kat]) {
+        masterPilihanBnba[kat].forEach(item => {
+          selSub.add(new Option(item.label, item.val));
+        });
+      }
+    }
+
+    // Penamaan label untuk tabel & file ekspor
+    function dapatkanNamaWilayah(kdKec, kdDesa, kdDusun) {
+      const wil = (rawWilayahList || []).find(w => 
+        String(w.kode_kec).padStart(2, '0') === String(kdKec).padStart(2, '0') &&
+        String(w.kode_desa).padStart(4, '0') === String(kdDesa).padStart(4, '0') &&
+        String(w.kode_dusun).padStart(4, '0') === String(kdDusun).padStart(4, '0')
+      );
+      return {
+        prov: wil?.provinsi || 'NUSA TENGGARA BARAT',
+        kab: wil?.kabupaten || 'LOMBOK BARAT',
+        kec: wil?.kecamatan || kdKec || '-',
+        desa: wil?.desa || kdDesa || '-',
+        dusun: wil?.dusun || kdDusun || '-'
+      };
+    }
+
+    // Eksekusi Pengambilan Data & Penapisan Dinamis
+    async function eksekusiFilterBnbaDinamis() {
+      const kategori = document.getElementById('bnba_lap_kategori').value;
+      const subItem = document.getElementById('bnba_lap_sub_item').value;
+      const kdDesa = document.getElementById('bnba_lap_desa').value;
+
+      if (!kategori) {
+        Swal.fire('Peringatan', 'Silakan pilih Kategori Indikator BNBA terlebih dahulu!', 'warning');
+        return;
+      }
+
+      Swal.fire({
+        title: 'Menyusun Laporan BNBA...',
+        html: 'Menyaring data keluarga sesuai indikator yang dipilih...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        const kdKab = document.getElementById('bnba_lap_kab').value;
+        const kdKec = document.getElementById('bnba_lap_kec').value;
+        const kdDusun = document.getElementById('bnba_lap_dusun').value;
+
+        let query = supabaseClient.from('keluarga').select(`
+          kode_keluarga, nomor_kk, nama_kk, nik_kk,
+          kode_prov, kode_kab, kode_kec, kode_desa, kode_dusun, rt,
+          kb_03_sedang_hamil, kb_03_usia_kehamilan, kb_03_keinginan_anak_lagi,
+          kb_04_sedang_kb, kb_07_jenis_kb, kb_06_alasan_tidak_kb,
+          pk_17_1_jenis_atap, pk_18_1_jenis_dinding, pk_19_1_jenis_lantai,
+          pk_20_1_sumber_penerangan, pk_21_1_sumber_air_minum, pk_22_fasilitas_jamban,
+          pk_25_bahan_bakar_masak, pk_26_kepemilikan_rumah,
+          anggota_keluarga (*)
+        `).order('kode_keluarga', { ascending: true });
+
+        if (kdKab) query = query.eq('kode_kab', kdKab);
+        if (kdKec) query = query.eq('kode_kec', kdKec);
+        if (kdDesa) query = query.eq('kode_desa', kdDesa);
+        if (kdDusun) query = query.eq('kode_dusun', kdDusun);
+
+        const { data: dataKeluarga, error } = await query;
+        if (error) throw error;
+
+        prosesPenyaringanBnba(dataKeluarga || [], kategori, subItem);
+        Swal.close();
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Menyaring Data', err.message || 'Terjadi kesalahan sistem.', 'error');
+      }
+    }
+
+    // Memproses Data & Menyesuaikan Kolom Berdasarkan Kategori
+    function prosesPenyaringanBnba(listKeluarga, kategori, subItem) {
+      dataHasilBnbaLap = [];
+      const isIndividu = ['janda', 'baduta', 'balita', 'remaja', 'lansia', 'wus', 'jkn_individu', 'disabilitas'].includes(kategori);
+
+      listKeluarga.forEach(k => {
+        const wil = dapatkanNamaWilayah(k.kode_kec, k.kode_desa, k.kode_dusun);
+        const listAng = k.anggota_keluarga || [];
+
+        // -------------------------------------------------------------
+        // KASUS A: KATEGORI BERBASIS INDIVIDU
+        // Kolom: No, Kode Keluarga, Prov, Kab, Kec, Desa, Dusun, RT, Nama KK, NIK KK, Nama Anggota, NIK Anggota, Indikator
+        // -------------------------------------------------------------
+        if (isIndividu) {
+          listAng.forEach(ang => {
+            const usia = ang.tanggal_lahir ? hitungUsiaTahun(ang.tanggal_lahir) : 0;
+            const jk = String(ang.jenis_kelamin || '');
+            const statusKawin = String(ang.status_perkawinan || '');
+            let lolos = false;
+            let nilaiIndikator = '';
+
+            if (kategori === 'janda') {
+              // Cerai Hidup / Mati (4, 5, 6) & Jenis Kelamin Perempuan (2)
+              const listJanda = ['4', '5', '6'];
+              if (jk === '2' && listJanda.includes(statusKawin)) {
+                if (!subItem || subItem === statusKawin) {
+                  lolos = true;
+                  nilaiIndikator = (masterPilihanBnba.janda.find(o => o.val === statusKawin)?.label) || 'Janda';
+                }
+              }
+            } else if (kategori === 'baduta') {
+              if (usia < 2) {
+                lolos = true;
+                nilaiIndikator = `${usia} Tahun (${ang.tanggal_lahir || '-'})`;
+              }
+            } else if (kategori === 'balita') {
+              if (usia < 5) {
+                lolos = true;
+                nilaiIndikator = `${usia} Tahun (${ang.tanggal_lahir || '-'})`;
+              }
+            } else if (kategori === 'remaja') {
+              if (usia >= 10 && usia <= 24 && statusKawin === '1') {
+                lolos = true;
+                nilaiIndikator = `${usia} Tahun (Belum Kawin)`;
+              }
+            } else if (kategori === 'lansia') {
+              if (usia >= 60) {
+                lolos = true;
+                nilaiIndikator = `${usia} Tahun`;
+              }
+            } else if (kategori === 'wus') {
+              if (jk === '2' && usia >= 15 && usia <= 49) {
+                lolos = true;
+                nilaiIndikator = `${usia} Tahun (Status: ${statusKawin === '1' ? 'Belum Kawin' : 'Kawin/Pernah Kawin'})`;
+              }
+            } else if (kategori === 'jkn_individu') {
+              const jkn = String(ang.kesertaan_jkn || '4');
+              if (!subItem || subItem === jkn) {
+                lolos = true;
+                nilaiIndikator = (masterPilihanBnba.jkn_individu.find(o => o.val === jkn)?.label) || jkn;
+              }
+            } else if (kategori === 'disabilitas') {
+              const dis = String(ang.gangguan_fungsional || '5');
+              if (dis !== '5') {
+                if (!subItem || subItem === dis) {
+                  lolos = true;
+                  nilaiIndikator = (masterPilihanBnba.disabilitas.find(o => o.val === dis)?.label) || 'Penyandang Disabilitas';
+                }
+              }
+            }
+
+            if (lolos) {
+              dataHasilBnbaLap.push({
+                kode_keluarga: k.kode_keluarga,
+                provinsi: wil.prov,
+                kabupaten: wil.kab,
+                kecamatan: wil.kec,
+                desa: wil.desa,
+                dusun: wil.dusun,
+                rt: k.rt || '001',
+                nama_kk: k.nama_kk || '-',
+                nik_kk: k.nik_kk || '-',
+                nama_anggota: ang.nama_lengkap || '-',
+                nik_anggota: ang.nik || '-',
+                indikator: nilaiIndikator
+              });
+            }
+          });
+        }
+
+        // -------------------------------------------------------------
+        // KASUS B: KATEGORI BERBASIS KELUARGA / LINGKUNGAN / KB
+        // Kolom: No, Kode Keluarga, Prov, Kab, Kec, Desa, Dusun, RT, Nama KK, NIK KK, Indikator Spesifik
+        // -------------------------------------------------------------
+        else {
+          let lolos = false;
+          let nilaiIndikator = '';
+
+          const istri = listAng.find(a => String(a.hubungan_dengan_kk) === '2');
+          let usiaIstri = (istri && istri.tanggal_lahir) ? hitungUsiaTahun(istri.tanggal_lahir) : 0;
+          const statusKawinIstri = String(istri?.status_perkawinan || '');
+          const isPUS = (['2', '3'].includes(statusKawinIstri)) && (usiaIstri >= 10 && usiaIstri <= 49);
+          const sedangKB = (k.kb_04_sedang_kb === true || String(k.kb_04_sedang_kb) === '1');
+          const sedangHamil = (k.kb_03_sedang_hamil === true || String(k.kb_03_sedang_hamil) === '1');
+
+          if (kategori === 'jamban') {
+            const valJamban = String(k.pk_22_fasilitas_jamban || '5');
+            if (!subItem || subItem === valJamban) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.jamban.find(o => o.val === valJamban)?.label) || valJamban;
+            }
+          } else if (kategori === 'air_minum') {
+            const valAir = String(k.pk_21_1_sumber_air_minum || '');
+            if (valAir && (!subItem || subItem === valAir)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.air_minum.find(o => o.val === valAir)?.label) || valAir;
+            }
+          } else if (kategori === 'penerangan') {
+            const valListrik = String(k.pk_20_1_sumber_penerangan || '');
+            if (valListrik && (!subItem || subItem === valListrik)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.penerangan.find(o => o.val === valListrik)?.label) || valListrik;
+            }
+          } else if (kategori === 'atap') {
+            const valAtap = String(k.pk_17_1_jenis_atap || '');
+            if (valAtap && (!subItem || subItem === valAtap)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.atap.find(o => o.val === valAtap)?.label) || valAtap;
+            }
+          } else if (kategori === 'dinding') {
+            const valDinding = String(k.pk_18_1_jenis_dinding || '');
+            if (valDinding && (!subItem || subItem === valDinding)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.dinding.find(o => o.val === valDinding)?.label) || valDinding;
+            }
+          } else if (kategori === 'lantai') {
+            const valLantai = String(k.pk_19_1_jenis_lantai || '');
+            if (valLantai && (!subItem || subItem === valLantai)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.lantai.find(o => o.val === valLantai)?.label) || valLantai;
+            }
+          } else if (kategori === 'kepemilikan_rumah') {
+            const valRumah = String(k.pk_26_kepemilikan_rumah || '');
+            if (valRumah && (!subItem || subItem === valRumah)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.kepemilikan_rumah.find(o => o.val === valRumah)?.label) || valRumah;
+            }
+          } else if (kategori === 'bahan_bakar') {
+            const valBakar = String(k.pk_25_bahan_bakar_masak || '');
+            if (valBakar && (!subItem || subItem === valBakar)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.bahan_bakar.find(o => o.val === valBakar)?.label) || valBakar;
+            }
+          } else if (kategori === 'pus') {
+            if (isPUS) {
+              lolos = true;
+              nilaiIndikator = `PUS (Istri: ${istri?.nama_lengkap || '-'}, Usia ${usiaIstri} Th)`;
+            }
+          } else if (kategori === 'ibu_hamil') {
+            if (sedangHamil) {
+              lolos = true;
+              nilaiIndikator = `Hamil (Usia Kehamilan: ${k.kb_03_usia_kehamilan || '-'} Minggu)`;
+            }
+          } else if (kategori === 'peserta_kb') {
+            if (sedangKB) {
+              const alkon = String(k.kb_07_jenis_kb || '');
+              if (!subItem || subItem === alkon) {
+                lolos = true;
+                nilaiIndikator = (masterPilihanBnba.peserta_kb.find(o => o.val === alkon)?.label) || 'Peserta KB Aktif';
+              }
+            }
+          } else if (kategori === 'unmet_need') {
+            // PUS, Tidak Ber-KB, Tidak Hamil, ingin anak tunda/tidak ingin anak lagi
+            const ingin = String(k.kb_03_keinginan_anak_lagi || '');
+            if (isPUS && !sedangKB && !sedangHamil && ['2', '3'].includes(ingin)) {
+              lolos = true;
+              nilaiIndikator = (ingin === '2') ? 'Ingin Anak Ditunda (> 2 Tahun)' : 'Tidak Ingin Anak Lagi';
+            }
+          } else if (kategori === 'alasan_tidak_kb') {
+            const alasan = String(k.kb_06_alasan_tidak_kb || '');
+            if (alasan && (!subItem || subItem === alasan)) {
+              lolos = true;
+              nilaiIndikator = (masterPilihanBnba.alasan_tidak_kb.find(o => o.val === alasan)?.label) || alasan;
+            }
+          }
+
+          if (lolos) {
+            dataHasilBnbaLap.push({
+              kode_keluarga: k.kode_keluarga,
+              provinsi: wil.prov,
+              kabupaten: wil.kab,
+              kecamatan: wil.kec,
+              desa: wil.desa,
+              dusun: wil.dusun,
+              rt: k.rt || '001',
+              nama_kk: k.nama_kk || '-',
+              nik_kk: k.nik_kk || '-',
+              indikator: nilaiIndikator
+            });
+          }
+        }
+      });
+
+      renderTabelBnbaDinamis(isIndividu, kategori);
+    }
+
+    // Render Tampilan Tabel
+    function renderTabelBnbaDinamis(isIndividu, kategori) {
+      const thead = document.getElementById('theadBnbaLap');
+      const tbody = document.getElementById('tbodyBnbaLap');
+      const lblTotal = document.getElementById('labelTotalBnbaLap');
+      const judulTabel = document.getElementById('judulTabelBnbaLap');
+
+      lblTotal.innerText = `Ditemukan: ${dataHasilBnbaLap.length} Baris Data`;
+      judulTabel.innerText = `REKAPITULASI BNBA: ${kategori.toUpperCase().replace(/_/g, ' ')}`;
+
+      // Buat Konfigurasi Header
+      let headerHtml = `
+        <tr>
+          <th class="p-2.5 text-center w-10">NO</th>
+          <th class="p-2.5 font-mono">KODE KELUARGA</th>
+          <th class="p-2.5">PROVINSI</th>
+          <th class="p-2.5">KABUPATEN</th>
+          <th class="p-2.5">KECAMATAN</th>
+          <th class="p-2.5">DESA / KEL</th>
+          <th class="p-2.5">DUSUN / RW</th>
+          <th class="p-2.5 text-center">RT</th>
+          <th class="p-2.5">NAMA KK</th>
+          <th class="p-2.5 font-mono">NIK KK</th>
+      `;
+
+      if (isIndividu) {
+        headerHtml += `
+          <th class="p-2.5 text-emerald-800">NAMA ANGGOTA</th>
+          <th class="p-2.5 font-mono text-emerald-800">NIK ANGGOTA</th>
+        `;
+      }
+
+      headerHtml += `<th class="p-2.5 text-indigo-800">KETERANGAN / INDIKATOR</th></tr>`;
+      thead.innerHTML = headerHtml;
+
+      if (dataHasilBnbaLap.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${isIndividu ? 13 : 11}" class="p-8 text-center text-slate-400 font-semibold uppercase">Tidak ada data sasaran yang sesuai dengan kriteria yang dipilih.</td></tr>`;
+        return;
+      }
+
+      let bodyHtml = '';
+      dataHasilBnbaLap.forEach((row, idx) => {
+        bodyHtml += `
+          <tr class="hover:bg-slate-50 transition border-b">
+            <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 font-mono font-bold text-slate-700">${row.kode_keluarga}</td>
+            <td class="p-2.5">${row.provinsi}</td>
+            <td class="p-2.5 font-semibold">${row.kabupaten}</td>
+            <td class="p-2.5">${row.kecamatan}</td>
+            <td class="p-2.5 font-semibold text-emerald-900">${row.desa}</td>
+            <td class="p-2.5">${row.dusun}</td>
+            <td class="p-2.5 text-center font-mono">${row.rt}</td>
+            <td class="p-2.5 font-bold uppercase text-slate-800">${row.nama_kk}</td>
+            <td class="p-2.5 font-mono text-slate-600">${row.nik_kk}</td>
+        `;
+
+        if (isIndividu) {
+          bodyHtml += `
+            <td class="p-2.5 font-bold uppercase text-emerald-800">${row.nama_anggota}</td>
+            <td class="p-2.5 font-mono text-slate-600">${row.nik_anggota}</td>
+          `;
+        }
+
+        bodyHtml += `
+            <td class="p-2.5 font-semibold text-indigo-700">${row.indikator}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = bodyHtml;
+    }
+
+    // 4. Fitur Ekspor ke Excel (.xlsx) dengan Tipe String Presisi
+    function eksporExcelBnbaDinamis() {
+      if (dataHasilBnbaLap.length === 0) {
+        Swal.fire('Data Kosong', 'Tidak ada data untuk diekspor ke Excel!', 'warning');
+        return;
+      }
+
+      const kategori = document.getElementById('bnba_lap_kategori').value;
+      const isIndividu = ['janda', 'baduta', 'balita', 'remaja', 'lansia', 'wus', 'jkn_individu', 'disabilitas'].includes(kategori);
+
+      const rowsExcel = dataHasilBnbaLap.map((r, i) => {
+        const item = {
+          "NO": i + 1,
+          "KODE KELUARGA": r.kode_keluarga,
+          "PROVINSI": r.provinsi,
+          "KABUPATEN": r.kabupaten,
+          "KECAMATAN": r.kecamatan,
+          "DESA / KELURAHAN": r.desa,
+          "DUSUN / RW": r.dusun,
+          "RT": r.rt,
+          "NAMA KK": r.nama_kk,
+          "NIK KK": r.nik_kk
+        };
+
+        if (isIndividu) {
+          item["NAMA ANGGOTA"] = r.nama_anggota;
+          item["NIK ANGGOTA"] = r.nik_anggota;
+        }
+
+        item["INDIKATOR / STATUS"] = r.indikator;
+        return item;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rowsExcel);
+
+      // Kunci format kolom teks string agar angka 0 dan digit panjang NIK tidak rusak
+      if (ws['!ref']) {
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          [1, 7, 9, 11].forEach(colIdx => {
+            const cell = XLSX.utils.encode_cell({ r: R, c: colIdx });
+            if (ws[cell]) {
+              ws[cell].t = 's';
+              ws[cell].z = '@';
+            }
+          });
+        }
+      }
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan_BNBA");
+      XLSX.writeFile(wb, `Laporan_BNBA_${kategori}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    // 5. Fitur Cetak Langsung / Simpan PDF
+    function cetakPdfBnbaDinamis() {
+      if (dataHasilBnbaLap.length === 0) {
+        Swal.fire('Data Kosong', 'Tidak ada data untuk dicetak!', 'warning');
+        return;
+      }
+
+      const kategori = document.getElementById('bnba_lap_kategori').selectedOptions[0].text;
+      const kontenTabel = document.getElementById('tabelUtamaBnbaLap').outerHTML;
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Cetak Laporan BNBA</title>
+          <style>
+            body { font-family: sans-serif; font-size: 10px; margin: 15px; color: #1e293b; }
+            h2 { text-transform: uppercase; margin-bottom: 4px; font-size: 13px; }
+            p { margin: 0 0 10px 0; font-size: 10px; color: #64748b; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            th, td { border: 1px solid #cbd5e1; padding: 4.5px 6px; text-align: left; }
+            th { background-color: #f1f5f9; text-transform: uppercase; font-size: 9px; }
+            .text-center { text-align: center; }
+            .font-mono { font-family: monospace; }
+            @media print {
+              @page { size: landscape; margin: 10mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <h2>LAPORAN SASARAN BY NAME BY ADDRESS (BNBA)</h2>
+          <p>Indikator: <b>${kategori}</b> | Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</p>
+          ${kontenTabel}
+          <script>
+            window.onload = function() { window.print(); window.close(); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
     }
 
     function resetMwForm() {
