@@ -3331,6 +3331,25 @@
       let html = '';
       data.forEach((k, idx) => {
         const listAng = k.anggota_keluarga || [];
+        const daftarAnomali = periksaSeluruhAnomaliKeluarga(listAng);
+        const isTerkonfirmasi = k.anomali_status === 'TERKONFIRMASI';
+
+        let badgeAnomali = '';
+        if (daftarAnomali.length > 0) {
+          if (isTerkonfirmasi) {
+            badgeAnomali = `
+              <span class="inline-block px-2 py-0.5 mt-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full font-bold text-[9px] uppercase tracking-wider">
+                ✅ Anomali Terkonfirmasi
+              </span>
+            `;
+          } else {
+            badgeAnomali = `
+              <span class="inline-block px-2 py-0.5 mt-1 bg-rose-100 text-rose-700 border border-rose-300 rounded-full font-bold text-[9px] uppercase tracking-wider animate-pulse">
+                ⚠️ Perlu Konfirmasi (${daftarAnomali.length})
+              </span>
+            `;
+          }
+        }
         const kepala = listAng.find(a => String(a.hubungan_dengan_kk) === '1') || {};
         const tglLahir = kepala.tanggal_lahir ? formatTglIndo(kepala.tanggal_lahir) : '-';
         const usia = kepala.tanggal_lahir ? hitungUsiaTahun(kepala.tanggal_lahir) : '-';
@@ -10653,6 +10672,80 @@
       });
     }
 
+    // ========================================================
+    // SISTEM DETEKSI DATA ANOMALI KELUARGA
+    // ========================================================
+    function deteksiAnomaliAnggota(anggota) {
+      const tgl = anggota.tanggal_lahir;
+      const usia = tgl ? hitungUsiaTahun(tgl) : 0;
+      const nik = String(anggota.nik || '').trim();
+      const kawin = String(anggota.status_perkawinan || '1');
+      const hub = String(anggota.hubungan_dengan_kk || '3');
+      const kerja = String(anggota.jenis_pekerjaan || '1');
+      const didik = String(anggota.pendidikan || '1');
+
+      const daftarAnomali = [];
+
+      // 1. Usia >= 17 tahun NIK diisi 9999999999999999
+      if (usia >= 17 && nik === '9999999999999999') {
+        daftarAnomali.push({
+          kode: 'NIK_DUMMY_DEWASA',
+          pesan: `Usia ${usia} tahun (>= 17 th) menggunakan NIK dummy 9999999999999999.`
+        });
+      }
+
+      // 2. Usia < 10 tahun status kawin/cerai
+      if (usia < 10 && ['2', '3', '4', '5', '6'].includes(kawin)) {
+        daftarAnomali.push({
+          kode: 'KAWIN_DIBAWAH_UMUR',
+          pesan: `Usia ${usia} tahun (< 10 th) memiliki status perkawinan.`
+        });
+      }
+
+      // 3. Usia < 10 tahun sebagai Kepala Keluarga
+      if (usia < 10 && hub === '1') {
+        daftarAnomali.push({
+          kode: 'KK_DIBAWAH_UMUR',
+          pesan: `Usia ${usia} tahun (< 10 th) terdaftar sebagai Kepala Keluarga.`
+        });
+      }
+
+      // 4. Usia < 10 tahun memiliki pekerjaan
+      if (usia < 10 && kerja !== '1' && kerja !== '') {
+        daftarAnomali.push({
+          kode: 'ANAK_BEKERJA',
+          pesan: `Usia ${usia} tahun (< 10 th) tercatat memiliki pekerjaan.`
+        });
+      }
+
+      // 5. Usia < 5 tahun memiliki pendidikan selain Tidak/Belum Sekolah
+      if (usia < 5 && didik !== '1' && didik !== '') {
+        daftarAnomali.push({
+          kode: 'BALITA_BERSEKOLAH',
+          pesan: `Usia ${usia} tahun (< 5 th) memiliki jenjang pendidikan selain Tidak/Belum Sekolah.`
+        });
+      }
+
+      return daftarAnomali;
+    }
+
+    // Cek seluruh anggota keluarga sebelum simpan final
+    function periksaSeluruhAnomaliKeluarga(listAnggota) {
+      const hasil = [];
+      listAnggota.forEach((ang, idx) => {
+        const listErr = deteksiAnomaliAnggota(ang);
+        if (listErr.length > 0) {
+          hasil.push({
+            noUrut: idx + 1,
+            nama: ang.nama_lengkap || `Anggota #${idx + 1}`,
+            nik: ang.nik || '-',
+            anomali: listErr
+          });
+        }
+      });
+      return hasil;
+    }
+
     function validasiKelengkapanSebelumSimpan() {
       // 1. Cek Blok KB
       if (dataNilaiKB.kb_01_melahirkan === '' || dataNilaiKB.kb_01_melahirkan === null) {
@@ -10716,7 +10809,7 @@
     }
 
     async function eksekusiSimpanFinal() {
-      // 1. Cek Validasi Kelengkapan Isian
+      // 1. Validasi Kelengkapan Isian Form
       if (typeof validasiKelengkapanSebelumSimpan === 'function') {
         const pesanBelumLengkap = validasiKelengkapanSebelumSimpan();
         if (pesanBelumLengkap) {
@@ -10730,6 +10823,114 @@
         }
       }
 
+      // Helper konversi tipe data
+      const keInteger = (val) => {
+        if (val === '' || val === null || val === undefined) return null;
+        const n = parseInt(val, 10);
+        return isNaN(n) ? null : n;
+      };
+
+      const keFloat = (val) => {
+        if (val === '' || val === null || val === undefined) return null;
+        const n = parseFloat(val);
+        return isNaN(n) ? null : n;
+      };
+
+      const bersihkanNama = (str) => {
+        if (!str) return '';
+        return str.replace(/\s*\([^)]*\)/g, '').trim().toUpperCase();
+      };
+
+      // 2. Kumpulkan & Ekstrak Data Mentah Anggota Keluarga dari Form
+      const listElAnggota = Array.from(document.querySelectorAll('.item-anggota-page'));
+      let rawDaftarAnggota = listElAnggota.map((hal, idx) => {
+        const urutanForm = idx + 1;
+        const selectHub = hal.querySelector('[name="hubungan_dengan_kk"]');
+        let hubVal = (urutanForm === 1) ? '1' : (selectHub ? selectHub.value : '3');
+        if (!hubVal || hubVal === '') hubVal = (urutanForm === 1 ? '1' : '3');
+
+        const tglLahirVal = hal.querySelector('[name="tanggal_lahir"]')?.value || null;
+        const statusKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
+        const usiaKawinVal = hal.querySelector('[name="usia_kawin_pertama"]')?.value;
+        const rawNama = hal.querySelector('[name="nama_lengkap"]')?.value || '';
+
+        return {
+          nama_lengkap: bersihkanNama(rawNama),
+          nik: (hal.querySelector('[name="nik"]')?.value || '').trim(),
+          jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
+          tanggal_lahir: tglLahirVal,
+          status_perkawinan: statusKawin,
+          usia_kawin_pertama: statusKawin === '1' ? null : keInteger(usiaKawinVal),
+          memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]')?.value || '1',
+          hubungan_dengan_kk: hubVal,
+          kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
+          agama: hal.querySelector('[name="agama"]')?.value || '1',
+          jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
+          pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '1',
+          kesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
+          gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
+          kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]')?.value || '4',
+          bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
+          mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0'
+        };
+      });
+
+      // 3. Deteksi Data Anomali & Tampilkan Dialog Konfirmasi Cerdas
+      let statusKonfirmasiAnomali = 'NORMAL';
+      if (typeof periksaSeluruhAnomaliKeluarga === 'function') {
+        const anomaliTerdeteksi = periksaSeluruhAnomaliKeluarga(rawDaftarAnggota);
+
+        if (anomaliTerdeteksi.length > 0) {
+          let rincianHtml = anomaliTerdeteksi.map(item => `
+            <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl mb-2 text-left">
+              <p class="font-bold text-slate-800 text-xs">${item.noUrut}. ${item.nama.toUpperCase()} (NIK: ${item.nik})</p>
+              <ul class="list-disc pl-4 text-[11px] text-rose-700 font-semibold space-y-0.5 mt-1">
+                ${item.anomali.map(a => `<li>${a.pesan}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('');
+
+          const hasilKonfirmasi = await Swal.fire({
+            icon: 'warning',
+            title: 'Terdeteksi Data Anomali!',
+            html: `
+              <div class="text-xs text-slate-600 mb-2">
+                Sistem menemukan data yang tidak lazim. Mohon pastikan kebenaran data berikut sebelum menyimpan:
+              </div>
+              <div class="max-h-48 overflow-y-auto mb-3">
+                ${rincianHtml}
+              </div>
+              <label class="flex items-center gap-2 p-2.5 bg-slate-100 rounded-xl cursor-pointer text-xs font-bold text-slate-800 border">
+                <input type="checkbox" id="cbKonfirmasiAnomali" class="w-4 h-4 rounded text-emerald-600 focus:ring-0 cursor-pointer accent-emerald-600" />
+                <span>Saya menyatakan data anomali ini benar sesuai kondisi lapangan.</span>
+              </label>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '💾 Tetap Simpan & Konfirmasi',
+            cancelButtonText: 'Periksa Kembali Form',
+            confirmButtonColor: '#059669',
+            cancelButtonColor: '#64748b',
+            focusConfirm: false,
+            preConfirm: () => {
+              const cb = document.getElementById('cbKonfirmasiAnomali');
+              if (!cb || !cb.checked) {
+                Swal.showValidationMessage('Centang kotak pernyataan jika Anda yakin data lapangan sudah benar!');
+                return false;
+              }
+              return true;
+            }
+          });
+
+          // Jika kader memilih "Periksa Kembali Form" atau membatalkan, proses berhenti di sini
+          if (!hasilKonfirmasi.isConfirmed) {
+            return;
+          }
+
+          statusKonfirmasiAnomali = 'TERKONFIRMASI';
+        }
+      }
+
+      // 4. Ubah Tombol Simpan Menjadi Status Loading
       const btnSimpan = document.getElementById('btnSimpan');
       if (btnSimpan) {
         btnSimpan.disabled = true;
@@ -10744,26 +10945,7 @@
       });
 
       try {
-        // Helper konversi tipe data angka (String kosong "" -> null agar PostgreSQL tidak error)
-        const keInteger = (val) => {
-          if (val === '' || val === null || val === undefined) return null;
-          const n = parseInt(val, 10);
-          return isNaN(n) ? null : n;
-        };
-
-        const keFloat = (val) => {
-          if (val === '' || val === null || val === undefined) return null;
-          const n = parseFloat(val);
-          return isNaN(n) ? null : n;
-        };
-
-        // Helper pembersih label (menghilangkan embel-embel "(KK)", "(ISTRI)", dll)
-        const bersihkanNama = (str) => {
-          if (!str) return '';
-          return str.replace(/\s*\([^)]*\)/g, '').trim().toUpperCase();
-        };
-
-        // Identitas Wilayah & Rumah
+        // Data Wilayah & Rumah
         const noKK = (document.getElementById('nomor_kk')?.value || '').trim();
         const kdProv = (document.getElementById('kode_prov')?.value || '52').trim();
         const kdKab = (document.getElementById('kode_kab')?.value || '01').trim();
@@ -10783,10 +10965,10 @@
         const namaKK = bersihkanNama(rawNamaKK);
         const nikKK = halKK ? (halKK.querySelector('[name="nik"]')?.value || '').trim() : '';
 
-        // GENERATE KODE KELUARGA
+        // Generate Kode Keluarga
         const kodeKeluarga = `${kdProv}${kdKab}${kdKec}${kdDesa}${kdDusun} ${rt}${kodeRumah}${noUrutKel}`;
 
-        // PEMETAAN & PEMBERSIHAN KOLOM BLOK PK
+        // Pemetaan Kolom Blok PK
         const daftarKolomPKSah = [
           'pk_01_ibadah', 'pk_02_toleransi_agama', 'pk_03_1_tanpa_sapa', 'pk_03_2_pisah_ranjang',
           'pk_03_3_pergi_rumah', 'pk_03_4_kdrt', 'pk_03_5_kekerasan_anak', 'pk_04_anggota_sakit',
@@ -10804,50 +10986,28 @@
         ];
 
         const mapNamaLamaKeBaru = {
-          'pk_01': 'pk_01_ibadah',
-          'pk_02': 'pk_02_toleransi_agama',
-          'pk_03_1': 'pk_03_1_tanpa_sapa',
-          'pk_03_2': 'pk_03_2_pisah_ranjang',
-          'pk_03_3': 'pk_03_3_pergi_rumah',
-          'pk_03_4': 'pk_03_4_kdrt',
-          'pk_03_5': 'pk_03_5_kekerasan_anak',
-          'pk_04': 'pk_04_anggota_sakit',
-          'pk_05': 'pk_05_rekreasi',
-          'pk_06': 'pk_06_kegiatan_sosial',
-          'pk_07': 'pk_07_bantuan_orang_lain',
-          'pk_08': 'pk_08_akses_sarana_publik',
-          'pk_09': 'pk_09_aman_nyaman',
-          'pk_10': 'pk_10_makan_dua_kali',
-          'pk_10_1': 'pk_10_1_jenis_makanan',
-          'pk_11': 'pk_11_akses_internet',
-          'pk_12': 'pk_12_internet_anak',
-          'pk_13': 'pk_13_sumber_penghasilan',
-          'pk_14': 'pk_14_memiliki_aset',
-          'pk_14_1': 'pk_14_1_jenis_aset',
-          'pk_15': 'pk_15_interaksi_harian',
-          'pk_15_1': 'pk_15_1_jenis_interaksi',
-          'pk_16_1': 'pk_16_1_ayah_menemani_anak',
-          'pk_16_2': 'pk_16_2_ayah_komunikasi',
-          'pk_16_3': 'pk_16_3_ayah_hak_dasar',
-          'pk_16_4': 'pk_16_4_ayah_pekerjaan_rumah',
-          'pk_17_1': 'pk_17_1_jenis_atap',
-          'pk_17_2': 'pk_17_2_kondisi_atap',
-          'pk_18_1': 'pk_18_1_jenis_dinding',
-          'pk_18_2': 'pk_18_2_kondisi_dinding',
-          'pk_19_1': 'pk_19_1_jenis_lantai',
-          'pk_19_2': 'pk_19_2_kondisi_lantai',
-          'pk_20_1': 'pk_20_1_sumber_penerangan',
-          'pk_20_2': 'pk_20_2_daya_listrik',
-          'pk_21_1': 'pk_21_1_sumber_air_minum',
-          'pk_21_2': 'pk_21_2_jarak_tinja',
-          'pk_22': 'pk_22_fasilitas_jamban',
-          'pk_23': 'pk_23_luas_rumah',
-          'pk_24': 'pk_24_jumlah_menetap',
-          'pk_25': 'pk_25_bahan_bakar_masak',
-          'pk_26': 'pk_26_kepemilikan_rumah',
-          'pk_27': 'pk_27_pesan_informasi',
-          'pk_28': 'pk_28_sumber_informasi',
-          'pk_29': 'pk_29_persetujuan_keluarga'
+          'pk_01': 'pk_01_ibadah', 'pk_02': 'pk_02_toleransi_agama',
+          'pk_03_1': 'pk_03_1_tanpa_sapa', 'pk_03_2': 'pk_03_2_pisah_ranjang',
+          'pk_03_3': 'pk_03_3_pergi_rumah', 'pk_03_4': 'pk_03_4_kdrt',
+          'pk_03_5': 'pk_03_5_kekerasan_anak', 'pk_04': 'pk_04_anggota_sakit',
+          'pk_05': 'pk_05_rekreasi', 'pk_06': 'pk_06_kegiatan_sosial',
+          'pk_07': 'pk_07_bantuan_orang_lain', 'pk_08': 'pk_08_akses_sarana_publik',
+          'pk_09': 'pk_09_aman_nyaman', 'pk_10': 'pk_10_makan_dua_kali',
+          'pk_10_1': 'pk_10_1_jenis_makanan', 'pk_11': 'pk_11_akses_internet',
+          'pk_12': 'pk_12_internet_anak', 'pk_13': 'pk_13_sumber_penghasilan',
+          'pk_14': 'pk_14_memiliki_aset', 'pk_14_1': 'pk_14_1_jenis_aset',
+          'pk_15': 'pk_15_interaksi_harian', 'pk_15_1': 'pk_15_1_jenis_interaksi',
+          'pk_16_1': 'pk_16_1_ayah_menemani_anak', 'pk_16_2': 'pk_16_2_ayah_komunikasi',
+          'pk_16_3': 'pk_16_3_ayah_hak_dasar', 'pk_16_4': 'pk_16_4_ayah_pekerjaan_rumah',
+          'pk_17_1': 'pk_17_1_jenis_atap', 'pk_17_2': 'pk_17_2_kondisi_atap',
+          'pk_18_1': 'pk_18_1_jenis_dinding', 'pk_18_2': 'pk_18_2_kondisi_dinding',
+          'pk_19_1': 'pk_19_1_jenis_lantai', 'pk_19_2': 'pk_19_2_kondisi_lantai',
+          'pk_20_1': 'pk_20_1_sumber_penerangan', 'pk_20_2': 'pk_20_2_daya_listrik',
+          'pk_21_1': 'pk_21_1_sumber_air_minum', 'pk_21_2': 'pk_21_2_jarak_tinja',
+          'pk_22': 'pk_22_fasilitas_jamban', 'pk_23': 'pk_23_luas_rumah',
+          'pk_24': 'pk_24_jumlah_menetap', 'pk_25': 'pk_25_bahan_bakar_masak',
+          'pk_26': 'pk_26_kepemilikan_rumah', 'pk_27': 'pk_27_pesan_informasi',
+          'pk_28': 'pk_28_sumber_informasi', 'pk_29': 'pk_29_persetujuan_keluarga'
         };
 
         const payloadPK = {};
@@ -10858,7 +11018,7 @@
           }
         }
 
-        // SUSUN PAYLOAD TABEL KELUARGA
+        // 5. Susun Objek Tabel Keluarga (Termasuk Kolom anomali_status)
         const payloadKeluarga = {
           kode_keluarga: kodeKeluarga,
           nomor_kk: noKK,
@@ -10877,8 +11037,9 @@
           no_hp: noHp,
           latitude: keFloat(document.getElementById('review_lat')?.innerText),
           longitude: keFloat(document.getElementById('review_lng')?.innerText),
+          anomali_status: statusKonfirmasiAnomali, // Status anomali tersimpan ke database
 
-          // Data Blok KB (Sanitasi String Kosong -> NULL/0)
+          // Data Blok KB
           kb_01_melahirkan: keInteger(dataNilaiKB.kb_01_melahirkan) ?? 0,
           kb_01_hidup_laki: keInteger(dataNilaiKB.kb_01_hidup_laki) ?? 0,
           kb_01_hidup_perempuan: keInteger(dataNilaiKB.kb_01_hidup_perempuan) ?? 0,
@@ -10912,106 +11073,50 @@
           diperbarui_pada: new Date()
         };
 
-        // -------------------------------------------------------------
-        // SUSUN & URUTKAN ANGGOTA KELUARGA (1: KK, 2: Istri, 3: Anak, 4: Lainnya)
-        // -------------------------------------------------------------
-        const bobotHierarkiHubungan = {
-          '1': 1, // Kepala Keluarga
-          '2': 2, // Istri / Suami
-          '3': 3, // Anak
-          '4': 4  // Lainnya
-        };
+        // 6. Urutkan Anggota Keluarga Sesuai Hierarki & Usia
+        const bobotHierarkiHubungan = { '1': 1, '2': 2, '3': 3, '4': 4 };
 
-        const listElAnggota = Array.from(document.querySelectorAll('.item-anggota-page'));
-        
-        // 1. Ekstrak data mentah ke Array Objek JavaScript
-        let rawDaftarAnggota = listElAnggota.map((hal, idx) => {
-          const urutanForm = idx + 1;
-          const selectHub = hal.querySelector('[name="hubungan_dengan_kk"]');
-          
-          let hubVal = (urutanForm === 1) ? '1' : (selectHub ? selectHub.value : '3');
-          if (!hubVal || hubVal === '') hubVal = (urutanForm === 1 ? '1' : '3');
-
-          const tglLahirVal = hal.querySelector('[name="tanggal_lahir"]')?.value || null;
-          const statusKawin = hal.querySelector('[name="status_perkawinan"]')?.value || '1';
-          const usiaKawinVal = hal.querySelector('[name="usia_kawin_pertama"]')?.value;
-          const rawNama = hal.querySelector('[name="nama_lengkap"]')?.value || '';
-
-          return {
-            nama_lengkap: bersihkanNama(rawNama),
-            nik: (hal.querySelector('[name="nik"]')?.value || '').trim(),
-            jenis_kelamin: hal.querySelector('[name="jenis_kelamin"]')?.value || '1',
-            tanggal_lahir: tglLahirVal,
-            status_perkawinan: statusKawin,
-            usia_kawin_pertama: statusKawin === '1' ? null : keInteger(usiaKawinVal),
-            memiliki_akta_lahir: hal.querySelector('[name="memiliki_akta_lahir"]')?.value || '1',
-            hubungan_dengan_kk: hubVal,
-            kode_ibu_kandung: hal.querySelector('[name="kode_ibu_kandung"]')?.value || '00',
-            agama: hal.querySelector('[name="agama"]')?.value || '1',
-            jenis_pekerjaan: hal.querySelector('[name="jenis_pekerjaan"]')?.value || '1',
-            pendidikan: hal.querySelector('[name="pendidikan"]')?.value || '1',
-            kesertaan_jkn: hal.querySelector('[name="kepesertaan_jkn"]')?.value || '1',
-            gangguan_fungsional: hal.querySelector('[name="gangguan_fungsional"]')?.value || '5',
-            kemampuan_mengurus_diri: hal.querySelector('[name="kemampuan_mengurus_diri"]')?.value || '4',
-            bekerja_luar_negeri: hal.querySelector('[name="bekerja_luar_negeri"]')?.value || '4',
-            mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0'
-          };
-        });
-
-        // 2. Lakukan Pengurutan Hierarki & Usia
         rawDaftarAnggota.sort((a, b) => {
           const skorA = bobotHierarkiHubungan[a.hubungan_dengan_kk] || 4;
           const skorB = bobotHierarkiHubungan[b.hubungan_dengan_kk] || 4;
-          
-          if (skorA !== skorB) {
-            return skorA - skorB;
-          }
-
-          // Jika sesama anak, urutkan tanggal lahir lebih dulu (yang lebih tua di atas)
+          if (skorA !== skorB) return skorA - skorB;
           if (a.tanggal_lahir && b.tanggal_lahir) {
             return new Date(a.tanggal_lahir) - new Date(b.tanggal_lahir);
           }
           return 0;
         });
 
-        // 3. Beri nomor_anggota_keluarga berurutan 1, 2, 3, 4 ...
-        const payloadAnggota = rawDaftarAnggota.map((item, index) => {
-          return {
-            kode_keluarga: kodeKeluarga,
-            nomor_kk: noKK,
-            nomor_anggota_keluarga: index + 1, // Pasti berurutan 1 s/d N
-            nama_lengkap: item.nama_lengkap,
-            nik: item.nik,
-            jenis_kelamin: item.jenis_kelamin,
-            tanggal_lahir: item.tanggal_lahir,
-            status_perkawinan: item.status_perkawinan,
-            usia_kawin_pertama: item.usia_kawin_pertama,
-            memiliki_akta_lahir: item.memiliki_akta_lahir,
-            hubungan_dengan_kk: item.hubungan_dengan_kk,
-            kode_ibu_kandung: item.kode_ibu_kandung,
-            agama: item.agama,
-            jenis_pekerjaan: item.jenis_pekerjaan,
-            pendidikan: item.pendidikan,
-            kesertaan_jkn: item.kesertaan_jkn,
-            gangguan_fungsional: item.gangguan_fungsional,
-            kemampuan_mengurus_diri: item.kemampuan_mengurus_diri,
-            bekerja_luar_negeri: item.bekerja_luar_negeri,
-            mutasi_anggota: item.mutasi_anggota
-          };
-        });
+        // Tetapkan nomor anggota berurutan 1 s/d N
+        const payloadAnggota = rawDaftarAnggota.map((item, index) => ({
+          kode_keluarga: kodeKeluarga,
+          nomor_kk: noKK,
+          nomor_anggota_keluarga: index + 1,
+          nama_lengkap: item.nama_lengkap,
+          nik: item.nik,
+          jenis_kelamin: item.jenis_kelamin,
+          tanggal_lahir: item.tanggal_lahir,
+          status_perkawinan: item.status_perkawinan,
+          usia_kawin_pertama: item.usia_kawin_pertama,
+          memiliki_akta_lahir: item.memiliki_akta_lahir,
+          hubungan_dengan_kk: item.hubungan_dengan_kk,
+          kode_ibu_kandung: item.kode_ibu_kandung,
+          agama: item.agama,
+          jenis_pekerjaan: item.jenis_pekerjaan,
+          pendidikan: item.pendidikan,
+          kesertaan_jkn: item.kesertaan_jkn,
+          gangguan_fungsional: item.gangguan_fungsional,
+          kemampuan_mengurus_diri: item.kemampuan_mengurus_diri,
+          bekerja_luar_negeri: item.bekerja_luar_negeri,
+          mutasi_anggota: item.mutasi_anggota
+        }));
 
-        // -------------------------------------------------------------
-        // EKSEKUSI DATABASE SUPABASE
-        // -------------------------------------------------------------
-        
-        // A. Upsert Tabel KELUARGA
+        // 7. Pengiriman ke Supabase
         const { error: errKel } = await supabaseClient
           .from('keluarga')
           .upsert([payloadKeluarga], { onConflict: 'kode_keluarga' });
-        
+
         if (errKel) throw errKel;
 
-        // B. Replace Anggota Keluarga Terurut (Hapus berdasarkan kode_keluarga lalu insert baru)
         if (payloadAnggota.length > 0) {
           await supabaseClient.from('anggota_keluarga').delete().eq('kode_keluarga', kodeKeluarga);
           const { error: errAng } = await supabaseClient.from('anggota_keluarga').insert(payloadAnggota);
