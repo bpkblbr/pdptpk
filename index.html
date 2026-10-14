@@ -3467,6 +3467,224 @@
     function tutupModalDetailCariEdit() {
       document.getElementById('modalDetailCariEdit').classList.add('hidden');
     }
+
+    // ========================================================
+    // EDIT FORMULIR KELUARGA LENGKAP DARI TABEL CARI & EDIT
+    // ========================================================
+    async function editFormulirKeluargaLengkap(kodeKelTarget) {
+      let kel = (dataCariEditCache || []).find(k => (k.kode_keluarga || k.nomor_kk) === kodeKelTarget);
+
+      Swal.fire({
+        title: 'Memuat Formulir Lengkap...',
+        html: 'Menyiapkan lembar isian dan data anggota keluarga...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        // Ambil data terbaru langsung dari Supabase untuk memastikan kelengkapan data
+        const { data: dataKelDb, error: errKel } = await supabaseClient
+          .from('keluarga')
+          .select(`*, anggota_keluarga (*)`)
+          .or(`kode_keluarga.eq.${kodeKelTarget},nomor_kk.eq.${kodeKelTarget}`)
+          .single();
+
+        if (!errKel && dataKelDb) {
+          kel = dataKelDb;
+        }
+
+        if (!kel) {
+          throw new Error('Data keluarga tidak ditemukan di database.');
+        }
+
+        // 1. Pindah ke Halaman Formulir Utama
+        tampilkanLayar('tampilan_formulir');
+        pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+
+        // 2. Isi Data Wilayah (Langkah 1)
+        const kdProv = String(kel.kode_prov || '52').padStart(2, '0');
+        const kdKab  = String(kel.kode_kab || '01').padStart(2, '0');
+        const kdKec  = String(kel.kode_kec || '').padStart(2, '0');
+        const kdDesa = String(kel.kode_desa || '').padStart(4, '0');
+        const kdDsn  = String(kel.kode_dusun || '').padStart(4, '0');
+
+        document.getElementById('provinsi').value = kdProv;
+        updateFormKabupaten();
+        document.getElementById('kabupaten').value = kdKab;
+        updateFormKecamatan();
+        document.getElementById('kecamatan').value = kdKec;
+        updateFormDesa();
+        document.getElementById('desa').value = kdDesa;
+        updateFormDusun();
+        document.getElementById('dusun').value = kdDsn;
+        updateFormRT();
+        document.getElementById('rt').value = String(kel.rt || '001').padStart(3, '0');
+
+        sinkronkanLabelWilayah();
+
+        document.getElementById('kode_prov').value = kdProv;
+        document.getElementById('kode_kab').value = kdKab;
+        document.getElementById('kode_kec').value = kdKec;
+        document.getElementById('kode_desa').value = kdDesa;
+        document.getElementById('kode_dusun').value = kdDsn;
+
+        document.getElementById('nomor_kk').value = kel.nomor_kk || '';
+        document.getElementById('status_keluarga').value = String(kel.status_keluarga || '1');
+        document.getElementById('kode_rumah').value = kel.kode_rumah || '001';
+        document.getElementById('no_urut_keluarga').value = kel.no_urut_keluarga || '001';
+        document.getElementById('no_hp').value = kel.no_hp || '';
+        document.getElementById('alamat_detail').value = kel.alamat_detail || '';
+
+        evaluasiStatusKeluarga();
+
+        // 3. Susun Ulang Anggota Keluarga (Langkah 2)
+        const rawAnggota = kel.anggota_keluarga || [];
+        // Urutkan anggota (Kepala Keluarga no 1, Istri no 2, Anak no 3 dst)
+        rawAnggota.sort((a, b) => (parseInt(a.nomor_anggota_keluarga, 10) || 0) - (parseInt(b.nomor_anggota_keluarga, 10) || 0));
+
+        const containerAnggota = document.getElementById('area_anggota_keluarga');
+        containerAnggota.innerHTML = '';
+        totalHalamanAnggota = 0;
+
+        const jmlAng = Math.max(rawAnggota.length, 1);
+        document.getElementById('jumlah_anggota_input').value = jmlAng;
+
+        for (let i = 1; i <= jmlAng; i++) {
+          tambahHalamanAnggotaBaru();
+          const dataAng = rawAnggota[i - 1];
+          if (dataAng) {
+            const hal = document.getElementById(`hal_anggota_${i}`);
+            if (hal) {
+              hal.querySelector('[name="nama_lengkap"]').value = dataAng.nama_lengkap || '';
+              hal.querySelector('[name="nik"]').value = dataAng.nik || '';
+              hal.querySelector('[name="jenis_kelamin"]').value = String(dataAng.jenis_kelamin || '1');
+              hal.querySelector('[name="tanggal_lahir"]').value = dataAng.tanggal_lahir || '';
+              hal.querySelector('[name="display_usia"]').value = dataAng.tanggal_lahir ? hitungUsiaTahun(dataAng.tanggal_lahir) : '';
+              
+              const selKawin = hal.querySelector('[name="status_perkawinan"]');
+              selKawin.value = String(dataAng.status_perkawinan || '1');
+              evaluasiUsiaKawin(selKawin, i);
+              if (dataAng.usia_kawin_pertama) {
+                hal.querySelector('[name="usia_kawin_pertama"]').value = dataAng.usia_kawin_pertama;
+              }
+
+              hal.querySelector('[name="memiliki_akta_lahir"]').value = String(dataAng.memiliki_akta_lahir || '1');
+              hal.querySelector('[name="hubungan_dengan_kk"]').value = String(dataAng.hubungan_dengan_kk || (i === 1 ? '1' : '3'));
+              hal.querySelector('[name="agama"]').value = String(dataAng.agama || '1');
+              hal.querySelector('[name="jenis_pekerjaan"]').value = String(dataAng.jenis_pekerjaan || '1');
+              hal.querySelector('[name="pendidikan"]').value = String(dataAng.pendidikan || '1');
+              hal.querySelector('[name="kepesertaan_jkn"]').value = String(dataAng.kesertaan_jkn || dataAng.kepesertaan_jkn || '1');
+              hal.querySelector('[name="gangguan_fungsional"]').value = String(dataAng.gangguan_fungsional || '5');
+              hal.querySelector('[name="kemampuan_mengurus_diri"]').value = String(dataAng.kemampuan_mengurus_diri || '4');
+              hal.querySelector('[name="bekerja_luar_negeri"]').value = String(dataAng.bekerja_luar_negeri || '4');
+              hal.querySelector('[name="mutasi_anggota"]').value = String(dataAng.mutasi_anggota || '0');
+            }
+          }
+        }
+
+        perbaruiSemuaOpsiIbuKandung();
+        rawAnggota.forEach((ang, idx) => {
+          const hal = document.getElementById(`hal_anggota_${idx + 1}`);
+          if (hal && ang.kode_ibu_kandung) {
+            const selIbu = hal.querySelector('[name="kode_ibu_kandung"]');
+            if (selIbu) selIbu.value = String(ang.kode_ibu_kandung);
+          }
+        });
+
+        // 4. Isi Data Blok KB (Langkah 3)
+        dataNilaiKB.kb_01_melahirkan = kel.kb_01_melahirkan ?? '';
+        dataNilaiKB.kb_01_hidup_laki = kel.kb_01_hidup_laki ?? '';
+        dataNilaiKB.kb_01_hidup_perempuan = kel.kb_01_hidup_perempuan ?? '';
+        dataNilaiKB.kb_01_masih_laki = kel.kb_01_masih_laki ?? '';
+        dataNilaiKB.kb_01_masih_perempuan = kel.kb_01_masih_perempuan ?? '';
+        dataNilaiKB.kb_02_anak_ideal = kel.kb_02_anak_ideal ?? '';
+        dataNilaiKB.kb_03_sedang_hamil = kel.kb_03_sedang_hamil === true ? '1' : (kel.kb_03_sedang_hamil === false ? '2' : String(kel.kb_03_sedang_hamil || ''));
+        dataNilaiKB.kb_03_usia_kehamilan = kel.kb_03_usia_kehamilan ?? '';
+        dataNilaiKB.kb_03_status_ingin_hamil = kel.kb_03_status_ingin_hamil || '';
+        dataNilaiKB.kb_03_keinginan_anak_lagi = kel.kb_03_keinginan_anak_lagi || '';
+        dataNilaiKB.kb_04_sedang_kb = kel.kb_04_sedang_kb === true ? '1' : (kel.kb_04_sedang_kb === false ? '2' : String(kel.kb_04_sedang_kb || ''));
+        dataNilaiKB.kb_04_mulai_bulan = kel.kb_04_mulai_bulan || '';
+        dataNilaiKB.kb_04_mulai_tahun = kel.kb_04_mulai_tahun || '';
+        dataNilaiKB.kb_05_pernah_kb = kel.kb_05_pernah_kb || '';
+        dataNilaiKB.kb_05_mulai_bulan = kel.kb_05_mulai_bulan || '';
+        dataNilaiKB.kb_05_mulai_tahun = kel.kb_05_mulai_tahun || '';
+        dataNilaiKB.kb_05_berhenti_bulan = kel.kb_05_berhenti_bulan || '';
+        dataNilaiKB.kb_05_berhenti_tahun = kel.kb_05_berhenti_tahun || '';
+        dataNilaiKB.kb_06_alasan_tidak_kb = kel.kb_06_alasan_tidak_kb || '';
+        dataNilaiKB.kb_07_jenis_kb = kel.kb_07_jenis_kb || '';
+        dataNilaiKB.kb_08_sumber_pelayanan = kel.kb_08_sumber_pelayanan || '';
+        dataNilaiKB.kb_09_info_jenis = kel.kb_09_info_jenis === true ? '1' : (kel.kb_09_info_jenis === false ? '2' : String(kel.kb_09_info_jenis || ''));
+        dataNilaiKB.kb_09_info_efek_samping = kel.kb_09_info_efek_samping === true ? '1' : (kel.kb_09_info_efek_samping === false ? '2' : String(kel.kb_09_info_efek_samping || ''));
+        dataNilaiKB.kb_09_info_tindakan = kel.kb_09_info_tindakan === true ? '1' : (kel.kb_09_info_tindakan === false ? '2' : String(kel.kb_09_info_tindakan || ''));
+
+        // 5. Isi Data Blok PK (Langkah 4)
+        const parseArrayPK = (val) => {
+          if (!val) return [];
+          return Array.isArray(val) ? val : String(val).split(',').map(s => s.trim());
+        };
+
+        nilaiJawabanPK = {
+          pk_01_ibadah: kel.pk_01_ibadah || '',
+          pk_02_toleransi_agama: kel.pk_02_toleransi_agama || '',
+          pk_03_1_tanpa_sapa: kel.pk_03_1_tanpa_sapa || '',
+          pk_03_2_pisah_ranjang: kel.pk_03_2_pisah_ranjang || '',
+          pk_03_3_pergi_rumah: kel.pk_03_3_pergi_rumah || '',
+          pk_03_4_kdrt: kel.pk_03_4_kdrt || '',
+          pk_03_5_kekerasan_anak: kel.pk_03_5_kekerasan_anak || '',
+          pk_04_anggota_sakit: kel.pk_04_anggota_sakit || '',
+          pk_05_rekreasi: kel.pk_05_rekreasi || '',
+          pk_06_kegiatan_sosial: kel.pk_06_kegiatan_sosial || '',
+          pk_07_bantuan_orang_lain: kel.pk_07_bantuan_orang_lain || '',
+          pk_08_akses_sarana_publik: kel.pk_08_akses_sarana_publik || '',
+          pk_09_aman_nyaman: kel.pk_09_aman_nyaman || '',
+          pk_10_makan_dua_kali: kel.pk_10_makan_dua_kali || (kel.pk_10 || ''),
+          pk_10_1_jenis_makanan: parseArrayPK(kel.pk_10_1_jenis_makanan || kel.pk_10_1),
+          pk_11_akses_internet: kel.pk_11_akses_internet || '',
+          pk_12_internet_anak: kel.pk_12_internet_anak || '',
+          pk_13_sumber_penghasilan: kel.pk_13_sumber_penghasilan || '',
+          pk_14_memiliki_aset: kel.pk_14_memiliki_aset || (kel.pk_14 || ''),
+          pk_14_1_jenis_aset: parseArrayPK(kel.pk_14_1_jenis_aset || kel.pk_14_1),
+          pk_15_interaksi_harian: kel.pk_15_interaksi_harian || (kel.pk_15 || ''),
+          pk_15_1_jenis_interaksi: parseArrayPK(kel.pk_15_1_jenis_interaksi || kel.pk_15_1),
+          pk_16_1_ayah_menemani_anak: kel.pk_16_1_ayah_menemani_anak || '',
+          pk_16_2_ayah_komunikasi: kel.pk_16_2_ayah_komunikasi || '',
+          pk_16_3_ayah_hak_dasar: kel.pk_16_3_ayah_hak_dasar || '',
+          pk_16_4_ayah_pekerjaan_rumah: kel.pk_16_4_ayah_pekerjaan_rumah || '',
+          pk_17_1_jenis_atap: kel.pk_17_1_jenis_atap || '',
+          pk_17_2_kondisi_atap: kel.pk_17_2_kondisi_atap || '',
+          pk_18_1_jenis_dinding: kel.pk_18_1_jenis_dinding || '',
+          pk_18_2_kondisi_dinding: kel.pk_18_2_kondisi_dinding || '',
+          pk_19_1_jenis_lantai: kel.pk_19_1_jenis_lantai || '',
+          pk_19_2_kondisi_lantai: kel.pk_19_2_kondisi_lantai || '',
+          pk_20_1_sumber_penerangan: kel.pk_20_1_sumber_penerangan || '',
+          pk_20_2_daya_listrik: kel.pk_20_2_daya_listrik || '',
+          pk_21_1_sumber_air_minum: kel.pk_21_1_sumber_air_minum || '',
+          pk_21_2_jarak_tinja: kel.pk_21_2_jarak_tinja || '',
+          pk_22_fasilitas_jamban: kel.pk_22_fasilitas_jamban || '',
+          pk_23_luas_rumah: kel.pk_23_luas_rumah || '',
+          pk_24_jumlah_menetap: kel.pk_24_jumlah_menetap || '',
+          pk_25_bahan_bakar_masak: kel.pk_25_bahan_bakar_masak || '',
+          pk_26_kepemilikan_rumah: kel.pk_26_kepemilikan_rumah || '',
+          pk_27_pesan_informasi: parseArrayPK(kel.pk_27_pesan_informasi || kel.pk_27),
+          pk_28_sumber_informasi: parseArrayPK(kel.pk_28_sumber_informasi || kel.pk_28),
+          pk_29_persetujuan_keluarga: parseArrayPK(kel.pk_29_persetujuan_keluarga || kel.pk_29)
+        };
+
+        // Inisialisasi tampilan wizard KB dan PK
+        indexStepKB = 0;
+        riwayatStepKB = [];
+        indexStepPK = 0;
+        riwayatStepPK = [];
+        tampilkanStepKB();
+        tampilkanStepPK();
+
+        Swal.close();
+
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Membuka Formulir', err.message || 'Terjadi kesalahan sistem.', 'error');
+      }
+    }
     
     function terjemahkanWilayahKeNama(k) {
       const kdProv = String(k.kode_prov || '52').padStart(2, '0');
