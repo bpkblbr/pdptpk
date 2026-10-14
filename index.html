@@ -494,25 +494,24 @@
         <table class="w-full text-left border-collapse text-[11px]">
           <thead class="bg-slate-100 text-slate-600 uppercase font-bold sticky top-0 border-b">
             <tr>
-              <!-- CHECKBOX SELECT ALL SEBELAH KIRI TULISAN NO -->
-              <th class="p-2.5 text-center w-16">
-                <div class="flex items-center justify-center gap-1.5">
-                  <input type="checkbox" id="cb_pilih_semua_ce" onchange="togglePilihSemuaCariEdit(this)" 
-                         class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600" />
-                  <span>NO</span>
-                </div>
+              <!-- 1. KOLOM KHUSUS CHECKBOX PILIH -->
+              <th class="p-2.5 text-center w-10">
+                <input type="checkbox" id="cb_pilih_semua_ce" onchange="togglePilihSemuaCariEdit(this)" 
+                       class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600 mx-auto block" />
               </th>
-              <th class="p-2.5 text-center w-28">Aksi</th>
-              <th class="p-2.5">Nama KK</th>
+              <!-- 2. KOLOM NO URUT -->
+              <th class="p-2.5 text-center w-12">NO</th>
+              <th class="p-2.5 text-center w-28">AKSI</th>
+              <th class="p-2.5">NAMA KK</th>
               <th class="p-2.5 font-mono">NIK</th>
-              <th class="p-2.5 font-mono">Kode Keluarga</th>
-              <th class="p-2.5 text-center">Tanggal Lahir</th>
-              <th class="p-2.5 text-center">Usia</th>
+              <th class="p-2.5 font-mono">KODE KELUARGA</th>
+              <th class="p-2.5 text-center">TANGGAL LAHIR</th>
+              <th class="p-2.5 text-center">USIA</th>
             </tr>
           </thead>
           <tbody id="tbodyCariEditKeluarga" class="divide-y divide-slate-100">
             <tr>
-              <td colspan="7" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td>
+              <td colspan="8" class="p-6 text-center text-slate-400">Silakan klik tombol <b>Cari</b> untuk menampilkan data.</td>
             </tr>
           </tbody>
         </table>
@@ -3245,18 +3244,18 @@
       if (keywordNama) data = data.filter(k => (k.nama_kk || '').toLowerCase().includes(keywordNama));
       if (keywordNik) data = data.filter(k => (k.nik_kk || '').includes(keywordNik) || (k.nomor_kk || '').includes(keywordNik));
 
-      // Reset checkbox header setiap kali render ulang
+      // Reset checkbox header saat merender
       const cbAll = document.getElementById('cb_pilih_semua_ce');
       if (cbAll) {
         cbAll.checked = false;
         cbAll.indeterminate = false;
-        cbAll.classList.remove('accent-slate-400', 'bg-slate-300');
+        cbAll.classList.remove('accent-slate-400');
       }
 
       document.getElementById('labelTotalCariEdit').innerText = `Total: ${data.length} Keluarga`;
 
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-semibold uppercase">Tidak ada data keluarga yang sesuai.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-semibold uppercase">Tidak ada data keluarga yang sesuai.</td></tr>`;
         return;
       }
 
@@ -3270,14 +3269,16 @@
 
         html += `
           <tr class="hover:bg-slate-50 transition border-b">
-            <!-- CHECKBOX BARIS & NOMOR URUT -->
-            <td class="p-2.5 text-center font-bold text-slate-600">
-              <div class="flex items-center justify-center gap-2">
-                <input type="checkbox" name="cb_baris_ce" value="${kodeKeluarga}" onchange="perbaruiStatusCheckboxHeaderCE()" 
-                       class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600" />
-                <span>${idx + 1}</span>
-              </div>
+            <!-- 1. KOLOM CHECKBOX TUNGGAL -->
+            <td class="p-2.5 text-center">
+              <input type="checkbox" name="cb_baris_ce" value="${kodeKeluarga}" onchange="perbaruiStatusCheckboxHeaderCE()" 
+                     class="w-4 h-4 rounded border-slate-300 text-cyan-600 focus:ring-0 cursor-pointer accent-cyan-600 mx-auto block" />
             </td>
+
+            <!-- 2. KOLOM NO MANDIRI -->
+            <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+
+            <!-- 3. AKSI -->
             <td class="p-2.5 text-center">
               <div class="flex items-center justify-center gap-1.5">
                 <button type="button" onclick="bukaDetailKeluargaCariEdit('${kodeKeluarga}')" 
@@ -3292,6 +3293,8 @@
                 </button>
               </div>
             </td>
+
+            <!-- 4. DATA IDENTITAS -->
             <td class="p-2.5 font-bold text-slate-800 uppercase">${k.nama_kk || '-'}</td>
             <td class="p-2.5 font-mono text-slate-600 font-semibold">${k.nik_kk || '-'}</td>
             <td class="p-2.5 font-mono font-bold text-slate-700 text-[10.5px]">${kodeKeluarga}</td>
