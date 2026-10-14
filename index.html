@@ -627,7 +627,7 @@
         <button type="button" onclick="kembaliKeDashboard()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 mb-1 transition">
           &larr; KEMBALI KE DASHBOARD
         </button>
-        <h1 class="text-lg font-black text-slate-800 uppercase">Laporan Rekapitulasi BNBA Dinamis</h1>
+        <h1 class="text-lg font-black text-slate-800 uppercase">DATA BNBA</h1>
         <p class="text-xs text-slate-500 font-medium">Filter sasaran spesifik By Name By Address sesuai kebutuhan analisis data lapangan.</p>
       </div>
       <span class="text-xs font-bold text-slate-500 uppercase" id="labelOtoritasBnbaLaporan">Otoritas Wilayah</span>
@@ -4342,7 +4342,7 @@
       const judulTabel = document.getElementById('judulTabelBnbaLap');
 
       lblTotal.innerText = `Ditemukan: ${dataHasilBnbaLap.length} Baris Data`;
-      judulTabel.innerText = `REKAPITULASI BNBA: ${kategori.toUpperCase().replace(/_/g, ' ')}`;
+      judulTabel.innerText = `JENIS DATA BNBA: ${kategori.toUpperCase().replace(/_/g, ' ')}`;
 
       // Buat Konfigurasi Header
       let headerHtml = `
