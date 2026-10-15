@@ -6397,11 +6397,15 @@
       tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data akun dari database...</td></tr>`;
 
       try {
-        // Pastikan master wilayah sudah termuat agar nama wilayah tidak jadi kode
-        if (!window.rawWilayahList || window.rawWilayahList.length === 0) {
-          await loadMasterWilayahFromDB();
+        // 1. Ambil data master wilayah terbaru dari Supabase dan simpan ke window.rawWilayahList
+        const { data: dataWilayahDb } = await supabaseClient
+          .from('master_wilayah')
+          .select('*');
+        if (dataWilayahDb) {
+          window.rawWilayahList = dataWilayahDb;
         }
 
+        // 2. Ambil data users
         let query = supabaseClient.from('users').select('*').order('username', { ascending: true });
 
         if (userAktif.role === 'ADMIN_KECAMATAN') {
@@ -6495,91 +6499,65 @@
     }
 
     function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
-      // Normalisasi nilai ke bentuk angka murni (integer) dan string bersih
-      const numKab = kdKab !== null && kdKab !== undefined && kdKab !== '' ? parseInt(kdKab, 10) : null;
-      const numKec = kdKec !== null && kdKec !== undefined && kdKec !== '' ? parseInt(kdKec, 10) : null;
-      const numDesa = kdDesa !== null && kdDesa !== undefined && kdDesa !== '' ? parseInt(kdDesa, 10) : null;
+      const listWil = window.rawWilayahList || [];
+
+      const strKab = kdKab ? String(kdKab).trim() : '';
+      const strKec = kdKec ? String(kdKec).trim() : '';
+      const strDesa = kdDesa ? String(kdDesa).trim() : '';
+
+      const intKab = parseInt(strKab, 10);
+      const intKec = parseInt(strKec, 10);
+      const intDesa = parseInt(strDesa, 10);
 
       let namaKab = '';
       let namaKec = '';
       let namaDesa = '';
 
-      const listWil = window.rawWilayahList || [];
-
       if (Array.isArray(listWil) && listWil.length > 0) {
-        // 1. CARI NAMA DESA (Cari berdasarkan kode desa, prioritaskan yang kec-nya cocok jika ada)
-        if (numDesa !== null && !isNaN(numDesa)) {
-          let itemDesa = null;
-          if (numKec !== null && !isNaN(numKec)) {
-            itemDesa = listWil.find(w => {
-              const wDesa = parseInt(w.kode_desa, 10);
-              const wKec = parseInt(w.kode_kec || w.kode_kecamatan, 10);
-              return wDesa === numDesa && wKec === numKec;
-            });
-          }
-          if (!itemDesa) {
-            itemDesa = listWil.find(w => parseInt(w.kode_desa, 10) === numDesa);
-          }
-
-          if (itemDesa) {
-            namaDesa = itemDesa.desa || '';
-            if (!namaKec) namaKec = itemDesa.kecamatan || '';
-            if (!namaKab) namaKab = itemDesa.kabupaten || '';
+        // Cari Desa
+        if (strDesa) {
+          const itemD = listWil.find(w => {
+            const kdD = String(w.kode_desa || '').trim();
+            return kdD === strDesa || parseInt(kdD, 10) === intDesa;
+          });
+          if (itemD) {
+            namaDesa = itemD.desa || itemD.nama_desa || itemD.kelurahan || '';
+            namaKec = itemD.kecamatan || itemD.nama_kecamatan || '';
+            namaKab = itemD.kabupaten || itemD.nama_kabupaten || '';
           }
         }
 
-        // 2. CARI NAMA KECAMATAN (Jika belum ditemukan)
-        if (!namaKec && numKec !== null && !isNaN(numKec)) {
-          let itemKec = null;
-          if (numKab !== null && !isNaN(numKab)) {
-            itemKec = listWil.find(w => {
-              const wKec = parseInt(w.kode_kec || w.kode_kecamatan, 10);
-              const wKab = parseInt(w.kode_kab || w.kode_kabupaten, 10);
-              return wKec === numKec && wKab === numKab;
-            });
-          }
-          if (!itemKec) {
-            itemKec = listWil.find(w => parseInt(w.kode_kec || w.kode_kecamatan, 10) === numKec);
-          }
-
-          if (itemKec) {
-            namaKec = itemKec.kecamatan || '';
-            if (!namaKab) namaKab = itemKec.kabupaten || '';
+        // Cari Kecamatan
+        if (!namaKec && strKec) {
+          const itemK = listWil.find(w => {
+            const kdK = String(w.kode_kec || w.kode_kecamatan || '').trim();
+            return kdK === strKec || parseInt(kdK, 10) === intKec;
+          });
+          if (itemK) {
+            namaKec = itemK.kecamatan || itemK.nama_kecamatan || '';
+            if (!namaKab) namaKab = itemK.kabupaten || itemK.nama_kabupaten || '';
           }
         }
 
-        // 3. CARI NAMA KABUPATEN (Jika belum ditemukan)
-        if (!namaKab && numKab !== null && !isNaN(numKab)) {
-          const itemKab = listWil.find(w => parseInt(w.kode_kab || w.kode_kabupaten, 10) === numKab);
-          if (itemKab) {
-            namaKab = itemKab.kabupaten || '';
+        // Cari Kabupaten
+        if (!namaKab && strKab) {
+          const itemB = listWil.find(w => {
+            const kdB = String(w.kode_kab || w.kode_kabupaten || '').trim();
+            return kdB === strKab || parseInt(kdB, 10) === intKab;
+          });
+          if (itemB) {
+            namaKab = itemB.kabupaten || itemB.nama_kabupaten || '';
           }
         }
       }
 
-      // 4. FALLBACK MENGGUNAKAN OBJECT KAMUS JIKA DI rawWilayahList MASIH KOSONG
-      const padKab = numKab !== null ? String(numKab).padStart(2, '0') : '';
-      const padKec = numKec !== null ? String(numKec).padStart(2, '0') : '';
-      const padDesa = numDesa !== null ? String(numDesa).padStart(4, '0') : '';
-
-      if (!namaKab && padKab) {
-        namaKab = (window.dataKabupaten?.['52']?.[padKab]) || (padKab === '01' ? 'LOMBOK BARAT' : '');
-      }
-
-      if (!namaKec && padKec) {
-        namaKec = (window.dataKecamatan?.[padKab]?.[padKec]) || 
-                  (window.dataKecamatan?.['01']?.[padKec]) || '';
-      }
-
-      if (!namaDesa && padDesa) {
-        const keyDesa = `${padKab || '01'}_${padKec}`;
-        namaDesa = (window.dataDesa?.[keyDesa]?.[padDesa]) || '';
-      }
+      // Fallback default jika masih kosong
+      if (!namaKab && (strKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
 
       return {
-        kab: (namaKab || kdKab || '-').toUpperCase(),
-        kec: (namaKec || kdKec || '-').toUpperCase(),
-        desa: (namaDesa || kdDesa || '-').toUpperCase()
+        kab: (namaKab || strKab || '-').toUpperCase(),
+        kec: (namaKec || strKec || '-').toUpperCase(),
+        desa: (namaDesa || strDesa || '-').toUpperCase()
       };
     }
 
