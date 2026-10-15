@@ -2529,17 +2529,18 @@
       }
 
       try {
-        // 1. Cek Akun Statis Superadmin Bawaan (jika masih diperlukan)
         const uLow = user.toLowerCase();
+        
+        // Akun Uji Coba Superadmin Statis
         if (uLow === 'superadmin' && (pass === 'AdminPus2026!' || pass.length >= 3)) {
           userAktif = {
             username: 'superadmin',
             nama_lengkap: 'SUPER ADMINISTRATOR',
             role: 'SUPER_ADMIN',
-            provinsi: '', kode_prov: '', kabupaten: '', kode_kab: '', kecamatan: '', kode_kec: '', desa: '', kode_desa: ''
+            kode_prov: '52', kode_kab: '01', kode_kec: '', kode_desa: ''
           };
         } else {
-          // 2. Ambil Akun Nyata Langsung dari Tabel 'users' di Supabase
+          // TARIK DATA REAL DARI TABEL 'users' DI SUPABASE
           const { data: dbUser, error } = await supabaseClient
             .from('users')
             .select('*')
@@ -2548,50 +2549,50 @@
 
           if (error) throw error;
           if (!dbUser) {
-            throw new Error('Username atau kata sandi tidak ditemukan.');
+            throw new Error('Username atau password tidak ditemukan!');
           }
 
-          // Verifikasi password (password_hash)
           if (dbUser.password_hash !== pass) {
-            throw new Error('Kata sandi yang Anda masukkan salah.');
+            throw new Error('Kata sandi yang Anda masukkan salah!');
           }
 
           // Normalisasi Role
-          let normalizedRole = dbUser.role;
-          if (dbUser.role === 'User Desa' || dbUser.role === 'Kader') normalizedRole = 'USER_DESA';
-          else if (dbUser.role === 'Admin Kec') normalizedRole = 'ADMIN_KECAMATAN';
-          else if (dbUser.role === 'Admin Kab') normalizedRole = 'ADMIN_KABUPATEN';
-          else if (dbUser.role === 'Super Admin') normalizedRole = 'SUPER_ADMIN';
+          let roleBersih = dbUser.role;
+          if (dbUser.role === 'User Desa' || dbUser.role === 'Kader') roleBersih = 'USER_DESA';
+          else if (dbUser.role === 'Admin Kec') roleBersih = 'ADMIN_KECAMATAN';
+          else if (dbUser.role === 'Admin Kab') roleBersih = 'ADMIN_KABUPATEN';
+          else if (dbUser.role === 'Super Admin') roleBersih = 'SUPER_ADMIN';
 
           userAktif = {
             id: dbUser.id,
             username: dbUser.username,
             nama_lengkap: dbUser.nama_lengkap || dbUser.username,
-            role: normalizedRole,
+            role: roleBersih,
             kode_prov: dbUser.kode_prov || '52',
             kode_kab: dbUser.kode_kab || '01',
-            kode_kec: dbUser.kode_kec || null,
-            kode_desa: dbUser.kode_desa || null,
-            allowed_dusun: dbUser.allowed_dusun || null,
-            allowed_wilayah_rt: dbUser.allowed_wilayah_rt || null
+            kode_kec: dbUser.kode_kec || '',
+            kode_desa: dbUser.kode_desa || '',
+            allowed_dusun: dbUser.allowed_dusun || '',
+            allowed_wilayah_rt: dbUser.allowed_wilayah_rt || ''
           };
         }
 
+        // Simpan sesi ke localStorage
         localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
 
-        // Pastikan master wilayah termuat untuk menerjemahkan nama wilayah
+        // WAJIB AWAIT: Pastikan master wilayah terunduh lengkap sebelum membuka layar
         await loadMasterWilayahFromDB();
 
-        // Percabangan Tampilan
+        // Arahkan tampilan sesuai role
         if (userAktif.role === 'USER_DESA') {
-          inisialisasiLayarKader();
+          await inisialisasiLayarKader();
         } else {
           terapkanDataSesiUser();
           tampilkanLayar('tampilan_dashboard');
         }
 
       } catch (err) {
-        Swal.fire('Gagal Masuk', err.message || 'Terjadi kesalahan sistem autentikasi.', 'error');
+        Swal.fire('Gagal Masuk', err.message || 'Terjadi kesalahan autentikasi.', 'error');
       } finally {
         if (btnLogin) {
           btnLogin.disabled = false;
@@ -6558,9 +6559,9 @@
     function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
       const listWil = window.rawWilayahList || [];
 
-      const strKab = kdKab ? String(kdKab).trim() : '';
-      const strKec = kdKec ? String(kdKec).trim() : '';
-      const strDesa = kdDesa ? String(kdDesa).trim() : '';
+      const strKab = kdKab !== null && kdKab !== undefined ? String(kdKab).trim() : '';
+      const strKec = kdKec !== null && kdKec !== undefined ? String(kdKec).trim() : '';
+      const strDesa = kdDesa !== null && kdDesa !== undefined ? String(kdDesa).trim() : '';
 
       const intKab = parseInt(strKab, 10);
       const intKec = parseInt(strKec, 10);
@@ -6571,11 +6572,11 @@
       let namaDesa = '';
 
       if (Array.isArray(listWil) && listWil.length > 0) {
-        // 1. CARI DESA (Jika ada kode desa, langsung ambil desa + kec + kab miliknya)
+        // 1. CARI BERDASARKAN KODE DESA
         if (strDesa) {
           const itemD = listWil.find(w => {
-            const kdD = String(w.kode_desa || '').trim();
-            return kdD === strDesa || (!isNaN(intDesa) && parseInt(kdD, 10) === intDesa);
+            const d = String(w.kode_desa || '').trim();
+            return d === strDesa || (!isNaN(intDesa) && parseInt(d, 10) === intDesa);
           });
           if (itemD) {
             namaDesa = itemD.desa || itemD.nama_desa || itemD.kelurahan || '';
@@ -6584,11 +6585,11 @@
           }
         }
 
-        // 2. CARI KECAMATAN (Jika belum ditemukan)
+        // 2. CARI BERDASARKAN KODE KECAMATAN
         if (!namaKec && strKec) {
           const itemK = listWil.find(w => {
-            const kdK = String(w.kode_kec || w.kode_kecamatan || '').trim();
-            return kdK === strKec || (!isNaN(intKec) && parseInt(kdK, 10) === intKec);
+            const k = String(w.kode_kec || w.kode_kecamatan || '').trim();
+            return k === strKec || (!isNaN(intKec) && parseInt(k, 10) === intKec);
           });
           if (itemK) {
             namaKec = itemK.kecamatan || itemK.nama_kecamatan || '';
@@ -6596,11 +6597,11 @@
           }
         }
 
-        // 3. CARI KABUPATEN (Jika belum ditemukan)
+        // 3. CARI BERDASARKAN KODE KABUPATEN
         if (!namaKab && strKab) {
           const itemB = listWil.find(w => {
-            const kdB = String(w.kode_kab || w.kode_kabupaten || '').trim();
-            return kdB === strKab || (!isNaN(intKab) && parseInt(kdB, 10) === intKab);
+            const b = String(w.kode_kab || w.kode_kabupaten || '').trim();
+            return b === strKab || (!isNaN(intKab) && parseInt(b, 10) === intKab);
           });
           if (itemB) {
             namaKab = itemB.kabupaten || itemB.nama_kabupaten || '';
@@ -6608,19 +6609,17 @@
         }
       }
 
-      // Fallback Kamus Lokal jika master wilayah belum ada
-      if (!namaKab && (strKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
-      
+      // Fallback Kamus Object Lokal
       const padKab = !isNaN(intKab) ? String(intKab).padStart(2, '0') : '';
       const padKec = !isNaN(intKec) ? String(intKec).padStart(2, '0') : '';
       const padDesa = !isNaN(intDesa) ? String(intDesa).padStart(4, '0') : '';
 
+      if (!namaKab && (padKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
       if (!namaKec && padKec) {
-        namaKec = (window.dataKecamatan?.[padKab]?.[padKec]) || (window.dataKecamatan?.['01']?.[padKec]) || '';
+        namaKec = window.dataKecamatan?.[padKab]?.[padKec] || window.dataKecamatan?.['01']?.[padKec] || '';
       }
       if (!namaDesa && padDesa) {
-        const keyDesa = `${padKab || '01'}_${padKec}`;
-        namaDesa = (window.dataDesa?.[keyDesa]?.[padDesa]) || '';
+        namaDesa = window.dataDesa?.[`${padKab || '01'}_${padKec}`]?.[padDesa] || '';
       }
 
       return {
@@ -12214,29 +12213,41 @@
       tampilkanLayar('tampilan_kader_app');
       perbaruiIndikatorSinyalKader();
 
-      // PASTIKAN MASTER WILAYAH SUDAH TERMUAT KE MEMORI
+      // Pastikan master wilayah sudah terisi
       if (!window.rawWilayahList || window.rawWilayahList.length === 0) {
         await loadMasterWilayahFromDB();
       }
 
-      // 1. Nama Lengkap & Username Kader
-      const namaUser = userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA';
-      document.getElementById('kaderHomeNamaUser').innerText = namaUser.toUpperCase();
+      // Ambil Nama Asli
+      const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
+      const namaUser = (userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA').toUpperCase();
+
+      // 1. Terapkan ke Home
+      document.getElementById('kaderHomeNamaUser').innerText = namaUser;
       const elUsername = document.getElementById('kaderHomeUsername');
       if (elUsername) elUsername.innerText = `@${userAktif.username.toLowerCase()}`;
-
-      // 2. Terjemahkan Kode ke Nama Asli Wilayah (Otomatis Lengkapi Kec & Kab jika belum ada di sesi)
-      const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
-      
-      // Simpan nama wilayah ke objek sesi userAktif agar tab lain bisa langsung pakai
-      userAktif.nama_desa_asli = namaWil.desa;
-      userAktif.nama_kec_asli = namaWil.kec;
-      userAktif.nama_kab_asli = namaWil.kab;
-
-      // Pasang Nama Desa di Banner Home
       document.getElementById('kaderHomeDesa').innerText = namaWil.desa;
 
-      // 3. Hitung Jumlah RT yang Benar Sesuai Akun
+      // 2. Terapkan ke Rekap
+      const subRekap = document.getElementById('kaderRekapSubHeader');
+      if (subRekap) subRekap.innerText = `${namaUser} - ${namaWil.desa}`;
+      const elKab = document.getElementById('kaderRekapKab');
+      const elKec = document.getElementById('kaderRekapKec');
+      const elDesa = document.getElementById('kaderRekapDesa');
+      if (elKab) elKab.innerText = namaWil.kab;
+      if (elKec) elKec.innerText = namaWil.kec;
+      if (elDesa) elDesa.innerText = namaWil.desa;
+
+      // 3. Terapkan ke Profile
+      const subProf = document.getElementById('kaderProfileSubHeader');
+      if (subProf) subProf.innerText = `${namaUser} - ${namaWil.desa}`;
+      document.getElementById('kaderProfId').innerText = `KDR-${userAktif.kode_desa || '0000'}-${userAktif.username.toUpperCase()}`;
+      document.getElementById('kaderProfNama').innerText = namaUser;
+      document.getElementById('kaderProfUsername').innerText = `@${userAktif.username.toLowerCase()}`;
+      document.getElementById('kaderProfKec').innerText = namaWil.kec;
+      document.getElementById('kaderProfDesa').innerText = namaWil.desa;
+
+      // 4. Hitung RT Tugas
       let totalRtTugas = 0;
       if (userAktif.allowed_wilayah_rt) {
         try {
@@ -12250,10 +12261,7 @@
       }
       document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas} RT`;
 
-      // Masuk ke Tab Home secara default
       navigasiKaderTab('home');
-
-      // 4. Muat Data & Kalkulasi Metrik
       await muatDataKeluargaKader();
       hitungMetrikRingkasanKader();
     }
