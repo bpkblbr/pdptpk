@@ -6133,16 +6133,21 @@
       saatUserDesaBerubah();
     }
 
-    function saatUserDesaBerubah() {
-      const kdKab = document.getElementById('user_kab').value;
-      const kdKec = document.getElementById('user_kec').value;
-      const kdDesa = document.getElementById('user_desa').value;
-      const container = document.getElementById('userDusunContainer');
+    let penugasanWilayahKaderForm = [];
 
-      if (!kdKab || !kdKec || !kdDesa) {
-        container.innerHTML = '<span class="text-slate-400 italic">Pilih Desa terlebih dahulu...</span>';
-        return;
-      }
+    // 1. Saat Desa Dipilih -> Muat Daftar Dusun ke Dropdown
+    function saatUserDesaBerubah() {
+      const kdKab = document.getElementById('user_kab')?.value;
+      const kdKec = document.getElementById('user_kec')?.value;
+      const kdDesa = document.getElementById('user_desa')?.value;
+      const selDusun = document.getElementById('user_pilih_dusun');
+      const areaRt = document.getElementById('areaCheckboxRtPerDusun');
+
+      if (!selDusun) return;
+      selDusun.innerHTML = '<option value="">-- PILIH DUSUN --</option>';
+      if (areaRt) areaRt.classList.add('hidden');
+
+      if (!kdKab || !kdKec || !kdDesa) return;
 
       const dataAkses = getWilayahTersaringSesuaiRole();
       const listDsn = dataAkses.filter(w => 
@@ -6151,63 +6156,129 @@
         String(w.kode_desa).padStart(4, '0') === kdDesa
       );
 
-      if (listDsn.length === 0) {
-        container.innerHTML = '<span class="text-rose-500 font-semibold">Tidak ada dusun terdaftar pada desa ini.</span>';
+      // Urutkan kode dusun secara numerik (0100, 0200, dst)
+      listDsn.sort((a, b) => String(a.kode_dusun).localeCompare(String(b.kode_dusun), undefined, { numeric: true }));
+
+      listDsn.forEach(d => {
+        const cleanKd = String(d.kode_dusun).padStart(4, '0');
+        const opt = new Option(`[${cleanKd}] Dusun ${d.dusun.toUpperCase()}`, cleanKd);
+        opt.setAttribute('data-nama', d.dusun.toUpperCase());
+        opt.setAttribute('data-rt', d.jumlah_rt || 1);
+        selDusun.add(opt);
+      });
+    }
+
+    // 2. Saat Dusun Dipilih -> Munculkan Checkbox RT Sesuai Jumlah RT Dusun Tersebut
+    function saatUserPilihDusunBerubah() {
+      const selDusun = document.getElementById('user_pilih_dusun');
+      const areaRt = document.getElementById('areaCheckboxRtPerDusun');
+      const gridRt = document.getElementById('gridCheckboxRtDusun');
+
+      if (!selDusun || !selDusun.value) {
+        if (areaRt) areaRt.classList.add('hidden');
         return;
       }
 
-      // Urutkan kode dusun secara numerik
-      listDsn.sort((a, b) => String(a.kode_dusun).localeCompare(String(b.kode_dusun), undefined, { numeric: true }));
+      const optTerpilih = selDusun.selectedOptions[0];
+      const jumlahRt = parseInt(optTerpilih.getAttribute('data-rt'), 10) || 1;
+      const kdDsn = selDusun.value;
 
-      let html = '';
-      listDsn.forEach(d => {
-        const cleanKdDsn = String(d.kode_dusun).padStart(4, '0');
-        const jmlRt = parseInt(d.jumlah_rt, 10) || 1;
+      // Cek apakah dusun ini sudah pernah memiliki RT yang tersimpan di penugasanWilayahKaderForm
+      const existing = penugasanWilayahKaderForm.find(item => item.kode_dusun === kdDsn);
+      const rtSudahAda = existing ? existing.rt : [];
 
-        html += `
-          <div class="border border-slate-200 bg-white rounded-xl p-2.5 space-y-1.5 shadow-sm">
-            <div class="flex items-center justify-between border-b pb-1">
-              <span class="font-bold text-slate-800 uppercase text-[11px]">[${cleanKdDsn}] Dusun ${d.dusun}</span>
-              <button type="button" onclick="togglePilihRtPerDusun('${cleanKdDsn}')" class="text-[10px] text-indigo-600 hover:underline font-semibold">Toggle RT</button>
-            </div>
-            
-            <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5 pt-1">
+      let htmlRt = '';
+      for (let i = 1; i <= jumlahRt; i++) {
+        const strRt = String(i).padStart(3, '0');
+        const isChecked = rtSudahAda.includes(strRt) ? 'checked' : '';
+
+        htmlRt += `
+          <label class="flex items-center gap-1.5 p-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs font-mono font-bold text-slate-800">
+            <input type="checkbox" name="cb_rt_item" value="${strRt}" ${isChecked} 
+                   class="w-4 h-4 rounded text-amber-600 focus:ring-0 accent-amber-600 cursor-pointer" />
+            <span>RT ${strRt}</span>
+          </label>
         `;
+      }
 
-        for (let i = 1; i <= jmlRt; i++) {
-          const strRt = String(i).padStart(3, '0');
-          html += `
-            <label class="flex items-center gap-1.5 p-1 rounded bg-slate-50 border border-slate-100 hover:bg-slate-100 cursor-pointer text-[11px] font-mono">
-              <input type="checkbox" name="cb_user_rt" 
-                     data-kodedusun="${cleanKdDsn}" 
-                     data-namadusun="${d.dusun}" 
-                     value="${cleanKdDsn}_${strRt}" 
-                     class="rounded text-amber-600 focus:ring-0 cb-dsn-${cleanKdDsn}" />
-              <span>RT ${strRt}</span>
-            </label>
-          `;
-        }
-
-        html += `
-            </div>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
+      gridRt.innerHTML = htmlRt;
+      areaRt.classList.remove('hidden');
     }
 
-    // Toggle pilih semua RT dalam satu dusun
-    function togglePilihRtPerDusun(kodeDusun) {
-      const cbs = document.querySelectorAll(`.cb-dsn-${kodeDusun}`);
+    // 3. Toggle Pilih Semua RT di Dusun Terpilih
+    function toggleSemuaRtDusunTerpilih() {
+      const cbs = document.querySelectorAll('input[name="cb_rt_item"]');
       const adaYangBelum = Array.from(cbs).some(c => !c.checked);
       cbs.forEach(c => c.checked = adaYangBelum);
     }
 
-    // Toggle pilih semua RT di seluruh dusun
-    function pilihSemuaRtKader(pilihSemua) {
-      const cbs = document.querySelectorAll('input[name="cb_user_rt"]');
-      cbs.forEach(c => c.checked = pilihSemua);
+    // 4. Klik Tombol Tambahkan Wilayah Tugas
+    function tambahkanPenugasanDusunRt() {
+      const selDusun = document.getElementById('user_pilih_dusun');
+      if (!selDusun || !selDusun.value) return;
+
+      const kdDsn = selDusun.value;
+      const nmDsn = selDusun.selectedOptions[0].getAttribute('data-nama');
+      const checkedRt = Array.from(document.querySelectorAll('input[name="cb_rt_item"]:checked')).map(c => c.value);
+
+      if (checkedRt.length === 0) {
+        Swal.fire('Perhatian', 'Pilih minimal satu RT untuk dusun ini!', 'warning');
+        return;
+      }
+
+      // Hapus entri lama dusun ini jika sudah ada, lalu masukkan yang baru
+      penugasanWilayahKaderForm = penugasanWilayahKaderForm.filter(item => item.kode_dusun !== kdDsn);
+      penugasanWilayahKaderForm.push({
+        kode_dusun: kdDsn,
+        dusun: nmDsn,
+        rt: checkedRt.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      });
+
+      // Urutkan dusun berdasarkan kode
+      penugasanWilayahKaderForm.sort((a, b) => a.kode_dusun.localeCompare(b.kode_dusun, undefined, { numeric: true }));
+
+      renderDaftarWilayahTerpilih();
+
+      // Reset dropdown dan sembunyikan checkbox RT
+      selDusun.value = '';
+      document.getElementById('areaCheckboxRtPerDusun').classList.add('hidden');
+    }
+
+    // 5. Render Daftar Tag / Ringkasan Dusun & RT yang Dipilih
+    function renderDaftarWilayahTerpilih() {
+      const wadah = document.getElementById('wadahListWilayahTerpilih');
+      if (!wadah) return;
+
+      if (penugasanWilayahKaderForm.length === 0) {
+        wadah.innerHTML = '<span class="text-slate-400 italic text-[11px]">Belum ada dusun/RT yang ditambahkan.</span>';
+        return;
+      }
+
+      let html = '';
+      penugasanWilayahKaderForm.forEach(item => {
+        const badgeRt = item.rt.map(r => `<span class="bg-amber-100 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold">RT ${r}</span>`).join(' ');
+
+        html += `
+          <div class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+            <div class="space-y-1">
+              <p class="font-bold text-slate-800 uppercase text-[11px]">[${item.kode_dusun}] Dusun ${item.dusun}</p>
+              <div class="flex flex-wrap gap-1">${badgeRt}</div>
+            </div>
+            <button type="button" onclick="hapusWilayahTugasItem('${item.kode_dusun}')" title="Hapus Dusun Ini"
+                    class="p-1.5 bg-rose-100 hover:bg-rose-600 text-rose-700 hover:text-white rounded-lg font-bold text-xs transition">
+              🗑️
+            </button>
+          </div>
+        `;
+      });
+
+      wadah.innerHTML = html;
+    }
+
+    // 6. Hapus Satu Entri Dusun dari Daftar
+    function hapusWilayahTugasItem(kodeDusun) {
+      penugasanWilayahKaderForm = penugasanWilayahKaderForm.filter(item => item.kode_dusun !== kodeDusun);
+      renderDaftarWilayahTerpilih();
     }
 
     function resetFormUser() {
@@ -6215,6 +6286,8 @@
       document.getElementById('user_id').value = '';
       document.getElementById('user_username').readOnly = false;
       document.getElementById('btnSimpanAkun').innerText = '💾 SIMPAN AKUN';
+      penugasanWilayahKaderForm = [];
+      renderDaftarWilayahTerpilih();
       saatRoleUserBerubah();
     }
 
@@ -6230,56 +6303,52 @@
       const password = document.getElementById('user_password').value.trim();
       const role = document.getElementById('user_role').value;
 
-      const kdKab = (role === 'Admin Kab' || role === 'Admin Kec' || role === 'User Desa') 
-        ? (document.getElementById('user_kab').value || userAktif.kode_kab || null) 
-        : null;
-
-      const kdKec = (role === 'Admin Kec' || role === 'User Desa') 
-        ? (document.getElementById('user_kec').value || null) 
-        : null;
-
-      const kdDesa = (role === 'User Desa') 
-        ? (document.getElementById('user_desa').value || null) 
-        : null;
-
-      // VALIDASI KADER: WAJIB PILIH 1 DESA
-      if (role === 'User Desa' && !kdDesa) {
-        Swal.fire('Peringatan', 'Kader pendata wajib terdaftar pada satu desa/kelurahan!', 'warning');
+      // Validasi kelengkapan isian pokok
+      if (!username || !password || !role) {
+        Swal.fire('Peringatan', 'Username, password, dan role wajib diisi!', 'warning');
         btn.disabled = false;
         btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
         return;
       }
 
-      // Kumpulkan pilihan RT hanya dari desa terpilih tersebut
+      // Pemetaan kode wilayah berdasarkan tingkatan role
+      const kdKab = (role === 'Admin Kab' || role === 'Admin Kec' || role === 'User Desa') 
+        ? (document.getElementById('user_kab')?.value || userAktif.kode_kab || null) 
+        : null;
+
+      const kdKec = (role === 'Admin Kec' || role === 'User Desa') 
+        ? (document.getElementById('user_kec')?.value || null) 
+        : null;
+
+      const kdDesa = (role === 'User Desa') 
+        ? (document.getElementById('user_desa')?.value || null) 
+        : null;
+
+      // Validasi khusus Role User Desa (Kader)
       let wilayahKaderJson = null;
       let allowedDusunRingkas = null;
 
       if (role === 'User Desa') {
-        const cbs = document.querySelectorAll('input[name="cb_user_rt"]:checked');
-        if (cbs.length === 0) {
-          Swal.fire('Peringatan', 'Kader wajib ditugaskan minimal pada 1 RT!', 'warning');
+        if (!kdDesa) {
+          Swal.fire('Peringatan', 'Kader pendata wajib terikat pada satu Desa / Kelurahan!', 'warning');
           btn.disabled = false;
           btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
           return;
         }
 
-        const mapWilayah = new Map();
-        cbs.forEach(cb => {
-          const kdDsn = cb.getAttribute('data-kodedusun');
-          const nmDsn = cb.getAttribute('data-namadusun');
-          const [_, noRt] = cb.value.split('_');
+        if (!penugasanWilayahKaderForm || penugasanWilayahKaderForm.length === 0) {
+          Swal.fire('Peringatan', 'Kader wajib ditugaskan minimal pada 1 Dusun dan 1 RT!', 'warning');
+          btn.disabled = false;
+          btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
+          return;
+        }
 
-          if (!mapWilayah.has(kdDsn)) {
-            mapWilayah.set(kdDsn, { kode_dusun: kdDsn, dusun: nmDsn, rt: [] });
-          }
-          mapWilayah.get(kdDsn).rt.push(noRt);
-        });
-
-        const listPenugasan = Array.from(mapWilayah.values());
-        wilayahKaderJson = JSON.stringify(listPenugasan);
-        allowedDusunRingkas = Array.from(mapWilayah.keys()).join(',');
+        // Serialisasi penugasan multi-dusun dan multi-RT
+        wilayahKaderJson = JSON.stringify(penugasanWilayahKaderForm);
+        allowedDusunRingkas = penugasanWilayahKaderForm.map(w => w.kode_dusun).join(',');
       }
 
+      // Susun Payload untuk tabel users di Supabase
       const payload = {
         username: username,
         nama_lengkap: nama || null,
@@ -6288,7 +6357,7 @@
         kode_prov: userAktif.kode_prov || '52',
         kode_kab: kdKab,
         kode_kec: kdKec,
-        kode_desa: kdDesa, // Terkunci di 1 Desa
+        kode_desa: kdDesa,
         allowed_dusun: allowedDusunRingkas,
         allowed_wilayah_rt: wilayahKaderJson
       };
@@ -6296,19 +6365,21 @@
       try {
         let res;
         if (userId) {
+          // Mode Update
           res = await supabaseClient.from('users').update(payload).eq('id', userId);
         } else {
+          // Mode Insert Baru
           res = await supabaseClient.from('users').insert([payload]);
         }
 
         if (res.error) throw res.error;
 
-        Swal.fire('Berhasil!', `Akun kader ${username} berhasil disimpan pada desa terpilih.`, 'success');
+        Swal.fire('Berhasil!', `Akun pengguna ${username} berhasil disimpan.`, 'success');
         resetFormUser();
         gantiTabUser('list');
 
       } catch (err) {
-        console.error(err);
+        console.error("Gagal simpan akun:", err);
         Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.', 'error');
       } finally {
         btn.disabled = false;
@@ -6500,10 +6571,18 @@
 
     function editAkunUser(id) {
       const u = dataAkunUserCache.find(x => String(x.id) === String(id));
-      if (!u) return;
+      if (!u) {
+        Swal.fire('Error', 'Data akun tidak ditemukan!', 'error');
+        return;
+      }
 
+      // Buka tab Form (false: jangan reset form)
       gantiTabUser('form', false);
 
+      // Reset penampung penugasan wilayah kader
+      penugasanWilayahKaderForm = [];
+
+      // Isi kolom form
       document.getElementById('user_id').value = u.id;
       document.getElementById('user_namalengkap').value = u.nama_lengkap || '';
       document.getElementById('user_username').value = u.username;
@@ -6511,34 +6590,47 @@
       document.getElementById('user_password').value = u.password_hash || '';
       document.getElementById('user_role').value = u.role;
 
+      // Picu perubahan tampilan form berdasarkan role
       saatRoleUserBerubah();
 
-      if (u.kode_kec) {
-        document.getElementById('user_kec').value = String(u.kode_kec).padStart(2, '0');
-        saatUserKecBerubah();
-      }
-      if (u.kode_desa) {
-        document.getElementById('user_desa').value = String(u.kode_desa).padStart(4, '0');
-        saatUserDesaBerubah();
-
-        // Restore centang multi-dusun dan multi-RT
-        if (u.allowed_wilayah_rt) {
-          try {
-            const listWilayah = JSON.parse(u.allowed_wilayah_rt);
-            listWilayah.forEach(item => {
-              const kdDsn = String(item.kode_dusun).padStart(4, '0');
-              (item.rt || []).forEach(r => {
-                const targetVal = `${kdDsn}_${String(r).padStart(3, '0')}`;
-                const cb = document.querySelector(`input[name="cb_user_rt"][value="${targetVal}"]`);
-                if (cb) cb.checked = true;
-              });
-            });
-          } catch (e) {
-            console.warn("Gagal mem-parsing allowed_wilayah_rt:", e);
-          }
+      // Set wilayah Kabupaten
+      if (u.kode_kab) {
+        const elKab = document.getElementById('user_kab');
+        if (elKab) {
+          elKab.value = String(u.kode_kab).padStart(2, '0');
+          saatUserKabBerubah();
         }
       }
 
+      // Set wilayah Kecamatan
+      if (u.kode_kec) {
+        const elKec = document.getElementById('user_kec');
+        if (elKec) {
+          elKec.value = String(u.kode_kec).padStart(2, '0');
+          saatUserKecBerubah();
+        }
+      }
+
+      // Set wilayah Desa & Muat kembali penugasan Dusun/RT
+      if (u.kode_desa) {
+        const elDesa = document.getElementById('user_desa');
+        if (elDesa) {
+          elDesa.value = String(u.kode_desa).padStart(4, '0');
+          saatUserDesaBerubah();
+
+          // Restore penugasan multi-dusun dan multi-RT
+          if (u.allowed_wilayah_rt) {
+            try {
+              penugasanWilayahKaderForm = JSON.parse(u.allowed_wilayah_rt);
+            } catch (e) {
+              penugasanWilayahKaderForm = [];
+            }
+          }
+          renderDaftarWilayahTerpilih();
+        }
+      }
+
+      // Ubah teks tombol menjadi pembaruan
       document.getElementById('btnSimpanAkun').innerText = '💾 PERBARUI AKUN';
     }
 
