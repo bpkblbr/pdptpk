@@ -7695,20 +7695,20 @@
     }
 
     function updateFormDusun() {
-      const rawKab = document.getElementById('kode_kab').value || document.getElementById('kabupaten').value;
-      const rawKec = document.getElementById('kode_kec').value || document.getElementById('kecamatan').value;
-      const rawDesa = document.getElementById('desa').value;
+      const rawKab = document.getElementById('kode_kab')?.value || document.getElementById('kabupaten')?.value;
+      const rawKec = document.getElementById('kode_kec')?.value || document.getElementById('kecamatan')?.value;
+      const rawDesa = document.getElementById('desa')?.value;
 
       const kdKab = rawKab ? String(rawKab).padStart(2, '0') : '';
       const kdKec = rawKec ? String(rawKec).padStart(2, '0') : '';
       const kdDesa = rawDesa ? String(rawDesa).padStart(4, '0') : '';
-      document.getElementById('kode_desa').value = kdDesa;
+      if (document.getElementById('kode_desa')) document.getElementById('kode_desa').value = kdDesa;
 
       const elDusun = document.getElementById('dusun');
       if (!elDusun) return;
 
       elDusun.innerHTML = '<option value="">-- PILIH RW/DUSUN --</option>';
-      document.getElementById('kode_dusun').value = '';
+      if (document.getElementById('kode_dusun')) document.getElementById('kode_dusun').value = '';
       resetFormDropdowns(['rt']);
 
       const dsnKey = kdKab + "_" + kdKec + "_" + kdDesa;
@@ -7716,8 +7716,49 @@
         elDusun.disabled = true;
         return;
       }
-      
-      // Urutkan kode dusun (0100, 0200, dst)
+
+      // ------------------------------------------------------------------
+      // LOGIKA PENGUNCIAN KHUSUS KADER PENDATA (USER_DESA)
+      // ------------------------------------------------------------------
+      if (userAktif && userAktif.role === 'USER_DESA' && userAktif.allowed_wilayah_rt) {
+        try {
+          const listTugas = JSON.parse(userAktif.allowed_wilayah_rt);
+
+          if (Array.isArray(listTugas) && listTugas.length > 0) {
+            // Tampilkan HANYA dusun yang tercantum dalam penugasan kader
+            listTugas.forEach(t => {
+              const cleanKd = String(t.kode_dusun).padStart(4, '0');
+              const itemMaster = dataDusun[dsnKey][cleanKd];
+              const namaDsn = (t.dusun || itemMaster?.nama || cleanKd).toUpperCase();
+
+              const opt = new Option(`${cleanKd} - ${namaDsn}`, cleanKd);
+              opt.setAttribute('data-rt-allowed', JSON.stringify(t.rt || []));
+              opt.setAttribute('data-rt', t.rt?.length || 1);
+              elDusun.add(opt);
+            });
+
+            // Jika kader hanya ditugaskan di 1 Dusun: Otomatis pilih dan Kunci (Lock)
+            if (listTugas.length === 1) {
+              elDusun.selectedIndex = 1;
+              elDusun.disabled = true;
+              elDusun.classList.add('bg-slate-100', 'cursor-not-allowed');
+              if (document.getElementById('kode_dusun')) {
+                document.getElementById('kode_dusun').value = elDusun.value;
+              }
+              updateFormRT();
+            } else {
+              // Jika bertugas di > 1 dusun: Buka pilihan tapi hanya dusun tugasnya
+              elDusun.disabled = false;
+              elDusun.classList.remove('bg-slate-100', 'cursor-not-allowed');
+            }
+            return;
+          }
+        } catch (e) {
+          console.warn("Gagal membaca penugasan dusun kader:", e);
+        }
+      }
+
+      // UNTUK ROLE ADMIN (Tampilkan seluruh dusun di desa tersebut seperti biasa)
       const listKodeDsn = Object.keys(dataDusun[dsnKey]).sort((a, b) => 
         a.localeCompare(b, undefined, { numeric: true })
       );
@@ -7730,26 +7771,63 @@
       });
 
       elDusun.disabled = false;
+      elDusun.classList.remove('bg-slate-100', 'cursor-not-allowed');
     }
 
     function updateFormRT() {
-      const kdDusun = document.getElementById('dusun').value;
-      document.getElementById('kode_dusun').value = kdDusun;
+      const elDusun = document.getElementById('dusun');
+      const kdDusun = elDusun?.value;
+      if (document.getElementById('kode_dusun')) {
+        document.getElementById('kode_dusun').value = kdDusun || '';
+      }
 
       const elRt = document.getElementById('rt');
+      if (!elRt) return;
+
       elRt.innerHTML = '<option value="">-- PILIH RT --</option>';
 
-      if (!kdDusun) { elRt.disabled = true; return; }
+      if (!kdDusun) { 
+        elRt.disabled = true; 
+        return; 
+      }
 
-      const selectedOpt = document.getElementById('dusun').selectedOptions[0];
+      const selectedOpt = elDusun.selectedOptions[0];
+
+      // JIKA ROLE KADER: Ambil daftar RT spesifik penugasan dari atribut data-rt-allowed
+      const rawRtAllowed = selectedOpt?.getAttribute('data-rt-allowed');
+      if (userAktif && userAktif.role === 'USER_DESA' && rawRtAllowed) {
+        try {
+          const arrRt = JSON.parse(rawRtAllowed);
+          if (Array.isArray(arrRt) && arrRt.length > 0) {
+            arrRt.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).forEach(r => {
+              const strRt = String(r).padStart(3, '0');
+              elRt.add(new Option(`RT ${strRt} - ${strRt}`, strRt));
+            });
+
+            // Jika hanya ditugaskan di 1 RT saja pada dusun ini, kunci RT tersebut
+            if (arrRt.length === 1) {
+              elRt.selectedIndex = 1;
+              elRt.disabled = true;
+              elRt.classList.add('bg-slate-100', 'cursor-not-allowed');
+            } else {
+              elRt.disabled = false;
+              elRt.classList.remove('bg-slate-100', 'cursor-not-allowed');
+            }
+            return;
+          }
+        } catch (e) {
+          console.warn("Gagal parse RT allowed:", e);
+        }
+      }
+
+      // DEFAULT UNTUK ADMIN: Munculkan 001 s/d jumlah RT dusun
       const jumlahRt = parseInt(selectedOpt?.getAttribute('data-rt'), 10) || 1;
-
-      // RT dihasilkan urut secara numerik: 001, 002, 003...
       for (let i = 1; i <= jumlahRt; i++) {
         const strRt = String(i).padStart(3, '0');
         elRt.add(new Option(`${strRt} - ${strRt}`, strRt));
       }
       elRt.disabled = false;
+      elRt.classList.remove('bg-slate-100', 'cursor-not-allowed');
     }
 
     function sinkronkanLabelWilayah() {
