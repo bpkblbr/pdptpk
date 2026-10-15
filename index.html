@@ -6394,12 +6394,16 @@
     // Muat data akun di bawah provinsi akun login
     async function muatDaftarAkunUser() {
       const tbody = document.getElementById('tbodyDaftarUser');
-      tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Memuat data akun dari database...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data akun dari database...</td></tr>`;
 
       try {
+        // Pastikan master wilayah sudah termuat agar nama wilayah tidak jadi kode
+        if (!window.rawWilayahList || window.rawWilayahList.length === 0) {
+          await loadMasterWilayahFromDB();
+        }
+
         let query = supabaseClient.from('users').select('*').order('username', { ascending: true });
 
-        // Batasi berdasarkan hirarki
         if (userAktif.role === 'ADMIN_KECAMATAN') {
           query = query.eq('kode_kec', userAktif.kode_kec).eq('role', 'User Desa');
         } else if (userAktif.role === 'ADMIN_KABUPATEN') {
@@ -6416,7 +6420,7 @@
         renderTabelUser();
 
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-500 font-semibold">Gagal memuat: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-500 font-semibold">Gagal memuat: ${err.message}</td></tr>`;
       }
     }
 
@@ -6491,21 +6495,66 @@
     }
 
     function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
-      if (!window.rawWilayahList || rawWilayahList.length === 0) {
-        return { kab: kdKab || '', kec: kdKec || '', desa: kdDesa || '' };
+      const cKab = kdKab ? String(kdKab).padStart(2, '0') : '';
+      const cKec = kdKec ? String(kdKec).padStart(2, '0') : '';
+      const cDesa = kdDesa ? String(kdDesa).padStart(4, '0') : '';
+
+      let namaKab = '';
+      let namaKec = '';
+      let namaDesa = '';
+
+      // 1. Coba cari dari master list rawWilayahList
+      if (Array.isArray(window.rawWilayahList) && window.rawWilayahList.length > 0) {
+        // Cari Desa
+        if (cDesa) {
+          const itemDesa = window.rawWilayahList.find(w => 
+            String(w.kode_desa).padStart(4, '0') === cDesa &&
+            (!cKec || String(w.kode_kec).padStart(2, '0') === cKec)
+          );
+          if (itemDesa) {
+            namaDesa = itemDesa.desa || '';
+            namaKec = itemDesa.kecamatan || '';
+            namaKab = itemDesa.kabupaten || '';
+          }
+        }
+
+        // Cari Kecamatan jika belum ketemu
+        if (!namaKec && cKec) {
+          const itemKec = window.rawWilayahList.find(w => 
+            String(w.kode_kec).padStart(2, '0') === cKec &&
+            (!cKab || String(w.kode_kab).padStart(2, '0') === cKab)
+          );
+          if (itemKec) {
+            namaKec = itemKec.kecamatan || '';
+            if (!namaKab) namaKab = itemKec.kabupaten || '';
+          }
+        }
+
+        // Cari Kabupaten jika belum ketemu
+        if (!namaKab && cKab) {
+          const itemKab = window.rawWilayahList.find(w => 
+            String(w.kode_kab).padStart(2, '0') === cKab
+          );
+          if (itemKab) namaKab = itemKab.kabupaten || '';
+        }
       }
-      const item = rawWilayahList.find(w => {
-        let match = true;
-        if (kdKab && String(w.kode_kab).padStart(2, '0') !== String(kdKab).padStart(2, '0')) match = false;
-        if (kdKec && String(w.kode_kec).padStart(2, '0') !== String(kdKec).padStart(2, '0')) match = false;
-        if (kdDesa && String(w.kode_desa).padStart(4, '0') !== String(kdDesa).padStart(4, '0')) match = false;
-        return match;
-      });
+
+      // 2. Fallback menggunakan objek kamus dataKabupaten, dataKecamatan, dataDesa jika belum terisi
+      if (!namaKab && cKab) {
+        namaKab = (window.dataKabupaten?.['52']?.[cKab]) || (cKab === '01' ? 'LOMBOK BARAT' : cKab);
+      }
+      if (!namaKec && cKec) {
+        namaKec = (window.dataKecamatan?.[cKab]?.[cKec]) || (window.dataKecamatan?.['01']?.[cKec]) || cKec;
+      }
+      if (!namaDesa && cDesa) {
+        const desaKey = `${cKab || '01'}_${cKec}`;
+        namaDesa = (window.dataDesa?.[desaKey]?.[cDesa]) || cDesa;
+      }
 
       return {
-        kab: item ? item.kabupaten : (kdKab || '-'),
-        kec: item ? item.kecamatan : (kdKec || '-'),
-        desa: item ? item.desa : (kdDesa || '-')
+        kab: (namaKab || '-').toUpperCase(),
+        kec: (namaKec || '-').toUpperCase(),
+        desa: (namaDesa || '-').toUpperCase()
       };
     }
 
@@ -6541,17 +6590,17 @@
         // 1. Ambil Nama Wilayah Asli
         const namaWil = getNamaWilayahByKode(u.kode_kab, u.kode_kec, u.kode_desa);
 
-        // 2. Susun Teks Kolom Wilayah Administratif
+        // 2. Susun Teks Kolom Wilayah Administratif Murni NAMA
         let teksWilayahAdmin = '-';
-        if (u.role === 'Super Admin') {
+        if (u.role === 'Super Admin' || u.role === 'SUPER_ADMIN') {
           teksWilayahAdmin = '<span class="font-bold text-slate-700">SEMUA WILAYAH (PROVINSI)</span>';
-        } else if (u.role === 'Admin Kab') {
+        } else if (u.role === 'Admin Kab' || u.role === 'ADMIN_KABUPATEN') {
           teksWilayahAdmin = `<span class="font-bold text-slate-800 uppercase">KAB. ${namaWil.kab}</span>`;
-        } else if (u.role === 'Admin Kec') {
+        } else if (u.role === 'Admin Kec' || u.role === 'ADMIN_KECAMATAN') {
           teksWilayahAdmin = `
             <div>
               <p class="font-bold text-slate-800 uppercase">KEC. ${namaWil.kec}</p>
-              <p class="text-[10px] text-slate-500 font-semibold uppercase">Kab. ${namaWil.kab}</p>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase">KAB. ${namaWil.kab}</p>
             </div>
           `;
         } else {
@@ -6559,7 +6608,7 @@
           teksWilayahAdmin = `
             <div>
               <p class="font-black text-slate-900 uppercase">DESA ${namaWil.desa}</p>
-              <p class="text-[10px] text-slate-500 font-semibold uppercase">Kec. ${namaWil.kec}, Kab. ${namaWil.kab}</p>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase">KEC. ${namaWil.kec}, KAB. ${namaWil.kab}</p>
             </div>
           `;
         }
