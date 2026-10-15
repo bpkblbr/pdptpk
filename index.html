@@ -1710,17 +1710,21 @@
         <!-- Tabel Daftar Akun -->
         <div class="overflow-x-auto border rounded-2xl max-h-80 overflow-y-auto">
           <table class="w-full text-left border-collapse text-[11px]">
-            <thead class="bg-slate-100 text-slate-600 uppercase font-bold sticky top-0 border-b">
+            
+            <!-- THEAD BARU (6 KOLOM TERPISAH): -->
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-700 text-xs uppercase font-bold sticky top-0">
               <tr>
-                <th class="p-2.5 text-center">NO</th>
-                <th class="p-2.5">NAMA & USERNAME</th>
-                <th class="p-2.5 text-center">ROLE</th>
-                <th class="p-2.5">WILAYAH OTORITAS</th>
-                <th class="p-2.5 text-center">AKSI</th>
+                <th class="p-2.5 text-center w-12">No</th>
+                <th class="p-2.5 text-left">Nama & Username</th>
+                <th class="p-2.5 text-center">Peran (Role)</th>
+                <th class="p-2.5 text-left">Wilayah Administratif</th>
+                <th class="p-2.5 text-left">Wilayah Tugas (RT)</th>
+                <th class="p-2.5 text-center w-28">Aksi</th>
               </tr>
             </thead>
+            
             <tbody id="tbodyDaftarUser" class="divide-y divide-slate-100">
-              <tr><td colspan="5" class="p-4 text-center text-slate-400">Memuat data akun...</td></tr>
+              <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data akun...</td></tr>
             </tbody>
           </table>
         </div>
@@ -6486,15 +6490,34 @@
       renderTabelUser();
     }
 
+    function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
+      if (!window.rawWilayahList || rawWilayahList.length === 0) {
+        return { kab: kdKab || '', kec: kdKec || '', desa: kdDesa || '' };
+      }
+      const item = rawWilayahList.find(w => {
+        let match = true;
+        if (kdKab && String(w.kode_kab).padStart(2, '0') !== String(kdKab).padStart(2, '0')) match = false;
+        if (kdKec && String(w.kode_kec).padStart(2, '0') !== String(kdKec).padStart(2, '0')) match = false;
+        if (kdDesa && String(w.kode_desa).padStart(4, '0') !== String(kdDesa).padStart(4, '0')) match = false;
+        return match;
+      });
+
+      return {
+        kab: item ? item.kabupaten : (kdKab || '-'),
+        kec: item ? item.kecamatan : (kdKec || '-'),
+        desa: item ? item.desa : (kdDesa || '-')
+      };
+    }
+
     function renderTabelUser() {
       const tbody = document.getElementById('tbodyDaftarUser');
-      const roleFilter = document.getElementById('filterAkunRole').value;
-      const kabFilter = document.getElementById('filterAkunKab').value;
-      const kecFilter = document.getElementById('filterAkunKec').value;
-      const desaFilter = document.getElementById('filterAkunDesa').value;
-      const keyword = (document.getElementById('cariAkunKeyword').value || '').toLowerCase().trim();
+      const roleFilter = document.getElementById('filterAkunRole')?.value;
+      const kabFilter = document.getElementById('filterAkunKab')?.value;
+      const kecFilter = document.getElementById('filterAkunKec')?.value;
+      const desaFilter = document.getElementById('filterAkunDesa')?.value;
+      const keyword = (document.getElementById('cariAkunKeyword')?.value || '').toLowerCase().trim();
 
-      let data = dataAkunUserCache;
+      let data = dataAkunUserCache || [];
 
       if (roleFilter) data = data.filter(u => u.role === roleFilter);
       if (kabFilter) data = data.filter(u => String(u.kode_kab || '').padStart(2, '0') === kabFilter);
@@ -6509,56 +6532,109 @@
       }
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-medium uppercase">Tidak ada akun yang sesuai kriteria.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-medium uppercase text-xs">Tidak ada akun yang sesuai kriteria.</td></tr>`;
         return;
       }
 
       let html = '';
       data.forEach((u, idx) => {
-        let wilText = '-';
-        if (u.role === 'Admin Kab') {
-          wilText = `Kab. Kode ${u.kode_kab || '-'}`;
+        // 1. Ambil Nama Wilayah Asli
+        const namaWil = getNamaWilayahByKode(u.kode_kab, u.kode_kec, u.kode_desa);
+
+        // 2. Susun Teks Kolom Wilayah Administratif
+        let teksWilayahAdmin = '-';
+        if (u.role === 'Super Admin') {
+          teksWilayahAdmin = '<span class="font-bold text-slate-700">SEMUA WILAYAH (PROVINSI)</span>';
+        } else if (u.role === 'Admin Kab') {
+          teksWilayahAdmin = `<span class="font-bold text-slate-800 uppercase">KAB. ${namaWil.kab}</span>`;
         } else if (u.role === 'Admin Kec') {
-          wilText = `Kec. ${u.kode_kec || '-'}`;
+          teksWilayahAdmin = `
+            <div>
+              <p class="font-bold text-slate-800 uppercase">KEC. ${namaWil.kec}</p>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase">Kab. ${namaWil.kab}</p>
+            </div>
+          `;
         } else {
-          let ringkasanRt = '';
-          if (u.allowed_wilayah_rt) {
-            try {
-              const arr = JSON.parse(u.allowed_wilayah_rt);
-              ringkasanRt = arr.map(w => `${w.dusun || w.kode_dusun}: RT ${w.rt.join(', ')}`).join(' | ');
-            } catch(e) {}
-          }
-          wilText = `Desa ${u.kode_desa || '-'} <br><span class="text-[10px] text-amber-700 font-bold">${ringkasanRt || '(Semua RT)'}</span>`;
-        }        
-        if (u.role === 'Admin Kab') {
-          wilText = `Kab. Kode ${u.kode_kab || '-'}`;
-        } else if (u.role === 'Admin Kec') {
-          wilText = `Kab. ${u.kode_kab || '-'} / Kec. ${u.kode_kec || '-'}`;
-        } else {
-          wilText = `Kec. ${u.kode_kec || '-'} / Desa ${u.kode_desa || '-'} ${u.allowed_dusun ? `(Dsn: ${u.allowed_dusun})` : '(Semua Dusun)'}`;
+          // User Desa / Kader
+          teksWilayahAdmin = `
+            <div>
+              <p class="font-black text-slate-900 uppercase">DESA ${namaWil.desa}</p>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase">Kec. ${namaWil.kec}, Kab. ${namaWil.kab}</p>
+            </div>
+          `;
         }
 
+        // 3. Susun Teks Kolom Wilayah Tugas (RT)
+        let teksWilayahTugas = '<span class="text-slate-400 italic text-xs">-</span>';
+        if (u.role === 'User Desa') {
+          if (u.allowed_wilayah_rt) {
+            try {
+              const listWil = JSON.parse(u.allowed_wilayah_rt);
+              if (Array.isArray(listWil) && listWil.length > 0) {
+                teksWilayahTugas = listWil.map(w => {
+                  const namaDusun = (w.dusun || `DUSUN ${w.kode_dusun}`).toUpperCase();
+                  const badgeRt = (w.rt || []).map(r => 
+                    `<span class="bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded font-mono font-bold text-[10px]">RT ${r}</span>`
+                  ).join(' ');
+
+                  return `
+                    <div class="mb-1.5 last:mb-0">
+                      <span class="font-bold text-slate-800 text-[11px] block uppercase">📍 ${namaDusun}</span>
+                      <div class="flex flex-wrap gap-1 mt-0.5">${badgeRt}</div>
+                    </div>
+                  `;
+                }).join('');
+              } else {
+                teksWilayahTugas = '<span class="text-emerald-700 font-bold text-xs">Semua Dusun & RT</span>';
+              }
+            } catch (e) {
+              teksWilayahTugas = `<span class="text-amber-700 font-semibold text-xs">${u.allowed_dusun || 'Semua Dusun'}</span>`;
+            }
+          } else {
+            teksWilayahTugas = '<span class="text-emerald-700 font-bold text-xs">Semua Dusun & RT</span>';
+          }
+        } else {
+          teksWilayahTugas = '<span class="text-slate-400 text-xs italic">Tingkat Manajerial</span>';
+        }
+
+        // 4. Render Baris Tabel
         html += `
-          <tr class="hover:bg-slate-50 transition border-b">
+          <tr class="hover:bg-slate-50 transition border-b text-xs">
+            <!-- 1. NO -->
             <td class="p-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+
+            <!-- 2. NAMA & USERNAME -->
             <td class="p-2.5">
-              <p class="font-bold text-slate-800">${u.nama_lengkap || '-'}</p>
-              <p class="font-mono text-xs text-slate-500">${u.username}</p>
+              <p class="font-bold text-slate-900 uppercase">${u.nama_lengkap || '-'}</p>
+              <p class="font-mono text-[11px] text-slate-500">${u.username}</p>
             </td>
+
+            <!-- 3. PERAN -->
             <td class="p-2.5 text-center">
-              <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${u.role === 'Admin Kab' ? 'bg-rose-100 text-rose-800' : (u.role === 'Admin Kec' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800')}">
+              <span class="px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wide ${
+                u.role === 'Admin Kab' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
+                (u.role === 'Admin Kec' ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                (u.role === 'User Desa' ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-purple-100 text-purple-800 border border-purple-200'))
+              }">
                 ${u.role}
               </span>
             </td>
-            <td class="p-2.5 text-slate-600 font-medium">${wilText}</td>
+
+            <!-- 4. WILAYAH ADMINISTRATIF (NAMA ASLI) -->
+            <td class="p-2.5">${teksWilayahAdmin}</td>
+
+            <!-- 5. WILAYAH TUGAS (NAMA DUSUN & DAFTAR RT) -->
+            <td class="p-2.5 max-w-xs">${teksWilayahTugas}</td>
+
+            <!-- 6. AKSI -->
             <td class="p-2.5 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <button type="button" onclick="editAkunUser('${u.id}')" 
-                        class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold text-[10px] transition">
+              <div class="flex items-center justify-center gap-1.5">
+                <button type="button" onclick="editAkunUser('${u.id}')" title="Edit Akun" 
+                        class="px-2 py-1 bg-amber-50 text-amber-700 hover:bg-amber-600 hover:text-white border border-amber-200 rounded-lg font-bold text-[10.5px] transition shadow-sm active:scale-95">
                   ✏️ Edit
                 </button>
-                <button type="button" onclick="hapusAkunUser('${u.id}', '${u.username}')" 
-                        class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold text-[10px] transition">
+                <button type="button" onclick="hapusAkunUser('${u.id}', '${u.username}')" title="Hapus Akun" 
+                        class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white border border-rose-200 rounded-lg font-bold text-[10.5px] transition shadow-sm active:scale-95">
                   🗑️ Hapus
                 </button>
               </div>
@@ -6566,6 +6642,7 @@
           </tr>
         `;
       });
+
       tbody.innerHTML = html;
     }
 
