@@ -6571,11 +6571,11 @@
       let namaDesa = '';
 
       if (Array.isArray(listWil) && listWil.length > 0) {
-        // Cari Desa
+        // 1. CARI DESA (Jika ada kode desa, langsung ambil desa + kec + kab miliknya)
         if (strDesa) {
           const itemD = listWil.find(w => {
             const kdD = String(w.kode_desa || '').trim();
-            return kdD === strDesa || parseInt(kdD, 10) === intDesa;
+            return kdD === strDesa || (!isNaN(intDesa) && parseInt(kdD, 10) === intDesa);
           });
           if (itemD) {
             namaDesa = itemD.desa || itemD.nama_desa || itemD.kelurahan || '';
@@ -6584,11 +6584,11 @@
           }
         }
 
-        // Cari Kecamatan
+        // 2. CARI KECAMATAN (Jika belum ditemukan)
         if (!namaKec && strKec) {
           const itemK = listWil.find(w => {
             const kdK = String(w.kode_kec || w.kode_kecamatan || '').trim();
-            return kdK === strKec || parseInt(kdK, 10) === intKec;
+            return kdK === strKec || (!isNaN(intKec) && parseInt(kdK, 10) === intKec);
           });
           if (itemK) {
             namaKec = itemK.kecamatan || itemK.nama_kecamatan || '';
@@ -6596,11 +6596,11 @@
           }
         }
 
-        // Cari Kabupaten
+        // 3. CARI KABUPATEN (Jika belum ditemukan)
         if (!namaKab && strKab) {
           const itemB = listWil.find(w => {
             const kdB = String(w.kode_kab || w.kode_kabupaten || '').trim();
-            return kdB === strKab || parseInt(kdB, 10) === intKab;
+            return kdB === strKab || (!isNaN(intKab) && parseInt(kdB, 10) === intKab);
           });
           if (itemB) {
             namaKab = itemB.kabupaten || itemB.nama_kabupaten || '';
@@ -6608,8 +6608,20 @@
         }
       }
 
-      // Fallback default jika masih kosong
+      // Fallback Kamus Lokal jika master wilayah belum ada
       if (!namaKab && (strKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
+      
+      const padKab = !isNaN(intKab) ? String(intKab).padStart(2, '0') : '';
+      const padKec = !isNaN(intKec) ? String(intKec).padStart(2, '0') : '';
+      const padDesa = !isNaN(intDesa) ? String(intDesa).padStart(4, '0') : '';
+
+      if (!namaKec && padKec) {
+        namaKec = (window.dataKecamatan?.[padKab]?.[padKec]) || (window.dataKecamatan?.['01']?.[padKec]) || '';
+      }
+      if (!namaDesa && padDesa) {
+        const keyDesa = `${padKab || '01'}_${padKec}`;
+        namaDesa = (window.dataDesa?.[keyDesa]?.[padDesa]) || '';
+      }
 
       return {
         kab: (namaKab || strKab || '-').toUpperCase(),
@@ -12201,7 +12213,11 @@
     async function inisialisasiLayarKader() {
       tampilkanLayar('tampilan_kader_app');
       perbaruiIndikatorSinyalKader();
-      navigasiKaderTab('home');
+
+      // PASTIKAN MASTER WILAYAH SUDAH TERMUAT KE MEMORI
+      if (!window.rawWilayahList || window.rawWilayahList.length === 0) {
+        await loadMasterWilayahFromDB();
+      }
 
       // 1. Nama Lengkap & Username Kader
       const namaUser = userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA';
@@ -12209,10 +12225,16 @@
       const elUsername = document.getElementById('kaderHomeUsername');
       if (elUsername) elUsername.innerText = `@${userAktif.username.toLowerCase()}`;
 
-      // 2. Terjemahkan Kode ke Nama Asli Wilayah (Kecamatan & Desa)
+      // 2. Terjemahkan Kode ke Nama Asli Wilayah (Otomatis Lengkapi Kec & Kab jika belum ada di sesi)
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
-      const namaDesa = namaWil.desa || 'DESA ' + userAktif.kode_desa;
-      document.getElementById('kaderHomeDesa').innerText = namaDesa.toUpperCase();
+      
+      // Simpan nama wilayah ke objek sesi userAktif agar tab lain bisa langsung pakai
+      userAktif.nama_desa_asli = namaWil.desa;
+      userAktif.nama_kec_asli = namaWil.kec;
+      userAktif.nama_kab_asli = namaWil.kab;
+
+      // Pasang Nama Desa di Banner Home
+      document.getElementById('kaderHomeDesa').innerText = namaWil.desa;
 
       // 3. Hitung Jumlah RT yang Benar Sesuai Akun
       let totalRtTugas = 0;
@@ -12227,6 +12249,9 @@
         } catch(e) {}
       }
       document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas} RT`;
+
+      // Masuk ke Tab Home secara default
+      navigasiKaderTab('home');
 
       // 4. Muat Data & Kalkulasi Metrik
       await muatDataKeluargaKader();
@@ -12419,7 +12444,7 @@
       selDusun.innerHTML = '<option value="">Semua RW / Dusun</option>';
       selRt.innerHTML = '<option value="">Semua RT</option>';
 
-      // Tampilkan Nama Asli Wilayah (Bukan Kode)
+      // Ambil Nama Asli Wilayah
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
       
       const subHeader = document.getElementById('kaderRekapSubHeader');
@@ -12428,6 +12453,8 @@
       const elKab = document.getElementById('kaderRekapKab');
       const elKec = document.getElementById('kaderRekapKec');
       const elDesa = document.getElementById('kaderRekapDesa');
+      
+      // Pasang Nama Asli ke Layar Rekap
       if (elKab) elKab.innerText = namaWil.kab;
       if (elKec) elKec.innerText = namaWil.kec;
       if (elDesa) elDesa.innerText = namaWil.desa;
@@ -12503,6 +12530,7 @@
 
     // 9. Tab Profile Kader
     function muatProfilKader() {
+      // Ambil Nama Asli Wilayah
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
       const kdDesa = userAktif.kode_desa || '0000';
       
@@ -12512,6 +12540,8 @@
       document.getElementById('kaderProfId').innerText = `KDR-${kdDesa}-${userAktif.username.toUpperCase()}`;
       document.getElementById('kaderProfNama').innerText = (userAktif.nama_lengkap || userAktif.username).toUpperCase();
       document.getElementById('kaderProfUsername').innerText = `@${userAktif.username.toLowerCase()}`;
+      
+      // Pasang Nama Asli ke Kolom Kecamatan dan Kelurahan/Desa
       document.getElementById('kaderProfKec').innerText = namaWil.kec;
       document.getElementById('kaderProfDesa').innerText = namaWil.desa;
     }
