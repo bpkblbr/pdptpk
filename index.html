@@ -324,12 +324,11 @@
       
       <!-- ==================== SUB-HALAMAN 1: HOME ==================== -->
       <div id="kader_tab_home" class="kader-sub-halaman space-y-4">
-        <!-- Header Gradasi Hijau Tua ke Hijau Muda -->
-        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md relative text-white">
-          <div class="flex justify-between items-center mb-4">
+        <!-- Header Konsisten: Gradasi Hijau Tua ke Hijau Muda -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md relative text-white min-h-[160px] flex flex-col justify-between">
+          <div class="flex justify-between items-center">
             <h1 class="text-xl font-black tracking-wide drop-shadow-sm">Data Keluarga</h1>
             <div class="flex items-center gap-2">
-              <!-- Indikator Sinyal Interaktif -->
               <span id="kaderHomeKoneksiIcon" class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold shadow-sm transition">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span id="kaderHomeKoneksiText">Online</span>
@@ -453,13 +452,14 @@
       </div>
 
       <!-- ==================== SUB-HALAMAN 2: DATA ==================== -->
-      <div id="kader_tab_data" class="kader-sub-halaman hidden space-y-3">
-        <!-- Header Gradasi Hijau Data -->
-        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-6 rounded-b-[2rem] shadow-md text-center text-white">
-          <h2 class="text-base font-black tracking-wide uppercase">Daftar Keluarga</h2>
+      <div id="kader_tab_data" class="kader-sub-halaman hidden space-y-4">
+        <!-- Header Ukuran Sama Persis -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md text-center text-white min-h-[160px] flex flex-col justify-center items-center">
+          <h2 class="text-lg font-black tracking-wide uppercase drop-shadow-sm">Daftar Keluarga</h2>
+          <p class="text-xs text-emerald-100 mt-1">Data sasaran keluarga pada RT penugasan aktif</p>
         </div>
 
-        <div class="px-4 space-y-3">
+        <div class="px-4 space-y-3 -mt-4">
           <div class="relative">
             <input type="text" id="kaderCariInput" oninput="filterDataKeluargaKader()" 
                    placeholder="Cari keluarga, contoh: nama / nik"
@@ -475,20 +475,20 @@
 
           <!-- List Akordion Baris Keluarga -->
           <div id="kaderDaftarKkContainer" class="space-y-2 pt-1 pb-4">
-            <!-- Dirender oleh renderDaftarKeluargaKader() -->
+            <!-- Dirender dinamis oleh renderDaftarKeluargaKader() -->
           </div>
         </div>
       </div>
 
       <!-- ==================== SUB-HALAMAN 3: REKAP ==================== -->
       <div id="kader_tab_rekap" class="kader-sub-halaman hidden space-y-4">
-        <!-- Header Gradasi Hijau Rekap RT -->
-        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-7 rounded-b-[2.5rem] shadow-md text-center text-white">
-          <h2 class="text-base font-black tracking-wide uppercase">Rekap RT</h2>
-          <p id="kaderRekapSubHeader" class="text-xs font-bold text-emerald-100 mt-0.5 uppercase">-</p>
+        <!-- Header Ukuran Sama Persis -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md text-center text-white min-h-[160px] flex flex-col justify-center items-center">
+          <h2 class="text-lg font-black tracking-wide uppercase drop-shadow-sm">Rekap RT</h2>
+          <p id="kaderRekapSubHeader" class="text-xs font-bold text-emerald-100 mt-1 uppercase">-</p>
         </div>
 
-        <div class="px-5 space-y-4 text-xs text-slate-800">
+        <div class="px-5 space-y-4 text-xs text-slate-800 -mt-2">
           <div>
             <h3 class="text-sm font-black text-slate-900 mb-2.5">Wilayah Kerja</h3>
             <div class="grid grid-cols-2 gap-3 text-xs">
@@ -567,14 +567,14 @@
       </div>
 
       <!-- ==================== SUB-HALAMAN 4: PROFILE ==================== -->
-      <div id="kader_tab_profile" class="kader-sub-halaman hidden space-y-5">
-        <!-- Header Gradasi Hijau Profile -->
-        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-7 rounded-b-[2.5rem] shadow-md text-center text-white">
-          <h2 class="text-base font-black tracking-wide uppercase">Profile</h2>
-          <p id="kaderProfileSubHeader" class="text-xs font-bold text-emerald-100 mt-0.5 uppercase">-</p>
+      <div id="kader_tab_profile" class="kader-sub-halaman hidden space-y-4">
+        <!-- Header Ukuran Sama Persis -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md text-center text-white min-h-[160px] flex flex-col justify-center items-center">
+          <h2 class="text-lg font-black tracking-wide uppercase drop-shadow-sm">Profile</h2>
+          <p id="kaderProfileSubHeader" class="text-xs font-bold text-emerald-100 mt-1 uppercase">-</p>
         </div>
 
-        <div class="px-5 space-y-3.5 text-xs text-slate-800">
+        <div class="px-5 space-y-3.5 text-xs text-slate-800 -mt-2">
           <div class="grid grid-cols-12 items-baseline gap-1">
             <span class="col-span-4 font-semibold text-slate-500">ID Kader</span>
             <span class="col-span-8 font-black font-mono text-slate-900 break-all" id="kaderProfId">-</span>
@@ -610,11 +610,11 @@
         </div>
       </div>
 
-      <!-- ==================== BOTTOM NAVIGATION DENGAN LEKUKAN (CURVED NOTCH) ==================== -->
+      <!-- ==================== BOTTOM NAVIGATION DENGAN LEKUKAN ==================== -->
       <nav class="fixed bottom-0 left-0 right-0 z-40">
         <div class="max-w-md mx-auto relative select-none">
           
-          <!-- Background SVG Melengkung Persis Gambar Lampiran -->
+          <!-- Background SVG Melengkung -->
           <svg viewBox="0 0 400 68" class="w-full h-[68px] drop-shadow-[0_-4px_12px_rgba(0,0,0,0.08)] fill-white pointer-events-none">
             <path d="M 0,16 
                      L 155,16 
@@ -625,13 +625,12 @@
                      L 0,68 Z"></path>
           </svg>
 
-          <!-- Baris 4 Tombol Menu (Home, Data, Rekap, Profile) -->
+          <!-- Baris 4 Tombol Menu -->
           <div class="absolute inset-0 pt-4 flex items-center justify-between px-6">
             
             <!-- 1. HOME -->
             <button type="button" onclick="navigasiKaderTab('home')" id="kaderNavBtn_home" 
                     class="w-14 flex flex-col items-center gap-0.5 text-slate-900 font-bold transition">
-              <!-- Ikon Rumah Hitam Persis Lampiran -->
               <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
               </svg>
@@ -641,7 +640,6 @@
             <!-- 2. DATA -->
             <button type="button" onclick="navigasiKaderTab('data')" id="kaderNavBtn_data" 
                     class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition mr-6">
-              <!-- Ikon Checklist/List Persis Lampiran -->
               <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M4 6h2v2H4zm0 5h2v2H4zm0 5h2v2H4zm5-5h11v2H9zm0-5h11v2H9zm0 10h11v2H9z"/>
               </svg>
@@ -651,7 +649,6 @@
             <!-- 3. REKAP -->
             <button type="button" onclick="navigasiKaderTab('rekap')" id="kaderNavBtn_rekap" 
                     class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition ml-6">
-              <!-- Ikon Kotak Arsip/Tray Persis Lampiran -->
               <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5v-3h3.56c.69 1.19 1.97 2 3.44 2s2.75-.81 3.44-2H19v3zm0-5h-4c0 1.1-.9 2-2 2s-2-.9-2-2H5V5h14v9z"/>
               </svg>
@@ -661,7 +658,6 @@
             <!-- 4. PROFILE -->
             <button type="button" onclick="navigasiKaderTab('profile')" id="kaderNavBtn_profile" 
                     class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition">
-              <!-- Ikon Orang Persis Lampiran -->
               <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
@@ -670,11 +666,11 @@
 
           </div>
 
-          <!-- TOMBOL APUNG TENGAH (FAB): LINGKARAN BIRU DONKER TANPA BORDER, IKON PUTIH -->
-          <div class="absolute left-1/2 -top-1 -translate-x-1/2">
+          <!-- TOMBOL APUNG TENGAH (FAB): DINAikkan (-top-5) DENGAN JARAK RENGGANG DARI LEKUKAN DASAR -->
+          <div class="absolute left-1/2 -top-5 -translate-x-1/2">
             <button type="button" id="kaderFabTambah" onclick="bukaFormulirKeluargaDariKader()" title="Tambah Data Baru"
-                    class="w-14 h-14 rounded-full bg-[#0a192f] text-white flex items-center justify-center shadow-lg transition-all duration-200 active:scale-95">
-              <!-- Ikon Tambah Orang (+) Warna Putih -->
+                    class="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-xl transition-all duration-200 active:scale-95">
+              <!-- Ikon Tambah (+) Warna Putih Bersih -->
               <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24">
                 <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
@@ -12159,7 +12155,7 @@
     function navigasiKaderTab(namaTab) {
       kaderTabAktif = namaTab;
 
-      // 1. Sembunyikan / Tampilkan Sub-halaman
+      // 1. Sembunyikan / Tampilkan Sub-Halaman & Kelola Warna Menu Bawah
       ['home', 'data', 'rekap', 'profile'].forEach(t => {
         const page = document.getElementById(`kader_tab_${t}`);
         const btn = document.getElementById(`kaderNavBtn_${t}`);
@@ -12176,15 +12172,15 @@
         }
       });
 
-      // 2. Kontrol Tombol Tambah (FAB): HANYA AKTIF DI TAB "DATA"
+      // 2. Kontrol Tombol Tambah (FAB): HANYA AKTIF DI TAB "DATA" DENGAN WARNA HIJAU
       const fabBtn = document.getElementById('kaderFabTambah');
       if (fabBtn) {
         if (namaTab === 'data') {
-          // AKTIF: Biru Donker Tanpa Border
+          // AKTIF DI TAB DATA: Hijau Emerald Tanpa Border
           fabBtn.disabled = false;
-          fabBtn.className = "w-14 h-14 rounded-full bg-[#0a192f] text-white flex items-center justify-center shadow-lg transition-all duration-200 active:scale-95 cursor-pointer";
+          fabBtn.className = "w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shadow-xl transition-all duration-200 active:scale-95 cursor-pointer";
         } else {
-          // TERKUNCI (LOCK): Abu-abu & Tidak Dapat Diklik
+          // TERKUNCI DI TAB LAIN (HOME, REKAP, PROFILE): Abu-abu & Disabled
           fabBtn.disabled = true;
           fabBtn.className = "w-14 h-14 rounded-full bg-slate-300 text-slate-100 flex items-center justify-center shadow-none transition-all duration-200 cursor-not-allowed pointer-events-none";
         }
