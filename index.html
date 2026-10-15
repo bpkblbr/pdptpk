@@ -1573,8 +1573,11 @@
             <select id="user_role" required onchange="saatRoleUserBerubah()" 
                     class="w-full p-2.5 border rounded-xl bg-white outline-none font-bold text-slate-800">
               <option value="">-- PILIH ROLE --</option>
+              <option value="Admin Prov">Admin Provinsi</option>
+              <option value="Admin Kab">Admin Kabupaten</option>
               <option value="Admin Kec">Admin Kecamatan</option>
-              <option value="User Desa">User Desa (Kader)</option>
+              <option value="Admin Desa">Admin Desa / Kelurahan</option>
+              <option value="User Desa">Kader Pendata (Lapangan)</option>
             </select>
           </div>
 
@@ -1686,9 +1689,12 @@
         <div class="bg-slate-50 border rounded-2xl p-3 grid grid-cols-1 sm:grid-cols-4 gap-2">
           <select id="filterAkunRole" onchange="renderTabelUser()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
             <option value="">-- SEMUA ROLE --</option>
+            <option value="Super Admin">Super Admin</option>
+            <option value="Admin Prov">Admin Provinsi</option>
             <option value="Admin Kab">Admin Kabupaten</option>
             <option value="Admin Kec">Admin Kecamatan</option>
-            <option value="User Desa">User Desa</option>
+            <option value="Admin Desa">Admin Desa</option>
+            <option value="User Desa">Kader Pendata</option>
           </select>
           <select id="filterAkunKab" onchange="onFilterAkunKabChange()" class="p-2 border rounded-lg bg-white outline-none font-semibold">
             <option value="">-- SEMUA KABUPATEN --</option>
@@ -2559,8 +2565,10 @@
           // Normalisasi Role
           let roleBersih = dbUser.role;
           if (dbUser.role === 'User Desa' || dbUser.role === 'Kader') roleBersih = 'USER_DESA';
+          else if (dbUser.role === 'Admin Desa') roleBersih = 'ADMIN_DESA';
           else if (dbUser.role === 'Admin Kec') roleBersih = 'ADMIN_KECAMATAN';
           else if (dbUser.role === 'Admin Kab') roleBersih = 'ADMIN_KABUPATEN';
+          else if (dbUser.role === 'Admin Prov') roleBersih = 'ADMIN_PROVINSI';
           else if (dbUser.role === 'Super Admin') roleBersih = 'SUPER_ADMIN';
 
           userAktif = {
@@ -6043,7 +6051,7 @@
 
     function bukaModalKelolaUser() {
       if (userAktif.role === 'USER_DESA') {
-        Swal.fire('Akses Ditolak', 'Akun Desa tidak memiliki hak akses mengelola user!', 'error');
+        Swal.fire('Akses Ditolak', 'Kader pendata tidak memiliki wewenang mengelola akun pengguna!', 'error');
         return;
       }
 
@@ -6051,25 +6059,44 @@
       gantiTabUser('form', true);
 
       const selRole = document.getElementById('user_role');
-      if (userAktif.role === 'ADMIN_KECAMATAN') {
-        selRole.innerHTML = `<option value="User Desa" selected>User Desa (Kader)</option>`;
+      selRole.disabled = false;
+
+      if (userAktif.role === 'ADMIN_DESA') {
+        selRole.innerHTML = `
+          <option value="User Desa" selected>Kader Pendata</option>
+        `;
         selRole.disabled = true;
+      } else if (userAktif.role === 'ADMIN_KECAMATAN') {
+        selRole.innerHTML = `
+          <option value="">-- PILIH ROLE --</option>
+          <option value="Admin Desa">Admin Desa</option>
+          <option value="User Desa">Kader Pendata</option>
+        `;
       } else if (userAktif.role === 'ADMIN_KABUPATEN') {
         selRole.innerHTML = `
           <option value="">-- PILIH ROLE --</option>
           <option value="Admin Kec">Admin Kecamatan</option>
-          <option value="User Desa">User Desa (Kader)</option>
+          <option value="Admin Desa">Admin Desa</option>
+          <option value="User Desa">Kader Pendata</option>
         `;
-        selRole.disabled = false;
-      } else {
-        // SUPER_ADMIN atau ADMIN_PROVINSI (Dapat mengelola Admin Kab, Admin Kec, dan User Desa)
+      } else if (userAktif.role === 'ADMIN_PROVINSI') {
         selRole.innerHTML = `
           <option value="">-- PILIH ROLE --</option>
           <option value="Admin Kab">Admin Kabupaten</option>
           <option value="Admin Kec">Admin Kecamatan</option>
-          <option value="User Desa">User Desa (Kader)</option>
+          <option value="Admin Desa">Admin Desa</option>
+          <option value="User Desa">Kader Pendata</option>
         `;
-        selRole.disabled = false;
+      } else {
+        // SUPER_ADMIN
+        selRole.innerHTML = `
+          <option value="">-- PILIH ROLE --</option>
+          <option value="Admin Prov">Admin Provinsi</option>
+          <option value="Admin Kab">Admin Kabupaten</option>
+          <option value="Admin Kec">Admin Kecamatan</option>
+          <option value="Admin Desa">Admin Desa</option>
+          <option value="User Desa">Kader Pendata</option>
+        `;
       }
 
       saatRoleUserBerubah();
@@ -6107,25 +6134,26 @@
       const rowDusun = document.getElementById('userRowDusun');
       const selKab = document.getElementById('user_kab');
 
+      // Sembunyikan semua terlebih dahulu
       rowKab.classList.add('hidden');
       rowKec.classList.add('hidden');
       rowDesa.classList.add('hidden');
       rowDusun.classList.add('hidden');
 
-      if (!role) return;
+      if (!role || role === 'Super Admin' || role === 'Admin Prov') return;
 
+      // 1. Admin Kab: Butuh Kabupaten
       rowKab.classList.remove('hidden');
       selKab.innerHTML = '<option value="">-- PILIH KABUPATEN --</option>';
 
       const dataAkses = getWilayahTersaringSesuaiRole();
       const listKab = [...new Map(dataAkses.map(w => [String(w.kode_kab).padStart(2, '0'), w.kabupaten])).entries()];
-      
-      // Urutkan kode kabupaten
       listKab.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true })).forEach(([kd, nm]) => {
         selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
       });
 
-      if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN') {
+      // Kunci jika akun login di bawah provinsi
+      if (['ADMIN_KABUPATEN', 'ADMIN_KECAMATAN', 'ADMIN_DESA', 'USER_DESA'].includes(userAktif.role)) {
         selKab.value = String(userAktif.kode_kab || '').padStart(2, '0');
         selKab.disabled = true;
       } else {
@@ -6134,11 +6162,17 @@
 
       if (role === 'Admin Kab') return;
 
+      // 2. Admin Kec: Butuh Kecamatan
       rowKec.classList.remove('hidden');
       saatUserKabBerubah();
 
+      if (role === 'Admin Kec') return;
+
+      // 3. Admin Desa: Butuh Desa (Tanpa Dusun/RT)
+      rowDesa.classList.remove('hidden');
+
+      // 4. Kader Pendata (User Desa): Butuh Desa + Penugasan Dusun & RT
       if (role === 'User Desa') {
-        rowDesa.classList.remove('hidden');
         rowDusun.classList.remove('hidden');
       }
     }
@@ -6374,17 +6408,14 @@
       }
 
       // Pemetaan kode wilayah berdasarkan tingkatan role
-      const kdKab = (role === 'Admin Kab' || role === 'Admin Kec' || role === 'User Desa') 
-        ? (document.getElementById('user_kab')?.value || userAktif.kode_kab || null) 
-        : null;
+      const kdKab = (['Admin Kab', 'Admin Kec', 'Admin Desa', 'User Desa'].includes(role)) 
+        ? (document.getElementById('user_kab')?.value || userAktif.kode_kab || null) : null;
 
-      const kdKec = (role === 'Admin Kec' || role === 'User Desa') 
-        ? (document.getElementById('user_kec')?.value || null) 
-        : null;
+      const kdKec = (['Admin Kec', 'Admin Desa', 'User Desa'].includes(role)) 
+        ? (document.getElementById('user_kec')?.value || userAktif.kode_kec || null) : null;
 
-      const kdDesa = (role === 'User Desa') 
-        ? (document.getElementById('user_desa')?.value || null) 
-        : null;
+      const kdDesa = (['Admin Desa', 'User Desa'].includes(role)) 
+        ? (document.getElementById('user_desa')?.value || userAktif.kode_desa || null) : null;
 
       // Validasi khusus Role User Desa (Kader)
       let wilayahKaderJson = null;
@@ -6654,7 +6685,9 @@
         // 2. Susun Teks Kolom Wilayah Administratif Murni NAMA
         let teksWilayahAdmin = '-';
         if (u.role === 'Super Admin' || u.role === 'SUPER_ADMIN') {
-          teksWilayahAdmin = '<span class="font-bold text-slate-700">SEMUA WILAYAH (PROVINSI)</span>';
+          teksWilayahAdmin = '<span class="font-bold text-slate-700">SEMUA WILAYAH</span>';
+        } else if (u.role === 'Admin Prov' || u.role === 'ADMIN_PROVINSI') {
+          teksWilayahAdmin = '<span class="font-bold text-slate-800 uppercase">PROV. NUSA TENGGARA BARAT</span>';
         } else if (u.role === 'Admin Kab' || u.role === 'ADMIN_KABUPATEN') {
           teksWilayahAdmin = `<span class="font-bold text-slate-800 uppercase">KAB. ${namaWil.kab}</span>`;
         } else if (u.role === 'Admin Kec' || u.role === 'ADMIN_KECAMATAN') {
@@ -6664,8 +6697,15 @@
               <p class="text-[10px] text-slate-500 font-semibold uppercase">KAB. ${namaWil.kab}</p>
             </div>
           `;
-        } else {
-          // User Desa / Kader
+        } else if (u.role === 'Admin Desa' || u.role === 'ADMIN_DESA') {
+          teksWilayahAdmin = `
+            <div>
+              <p class="font-black text-emerald-800 uppercase">DESA ${namaWil.desa}</p>
+              <p class="text-[10px] text-slate-500 font-semibold uppercase">KEC. ${namaWil.kec}, KAB. ${namaWil.kab}</p>
+              <span class="text-[9px] bg-slate-100 px-1 rounded text-slate-600 font-bold">MONITORING DESA</span>
+            </div>
+          `;
+        } else {          
           teksWilayahAdmin = `
             <div>
               <p class="font-black text-slate-900 uppercase">DESA ${namaWil.desa}</p>
