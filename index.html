@@ -317,6 +317,371 @@
   </div>
 
   <!-- ========================================================
+       MODUL KHUSUS KADER PENDATA (MOBILE-FIRST UI)
+       ======================================================== -->
+  <div id="tampilan_kader_app" class="halaman-tampilan min-h-screen bg-slate-100 pb-24">
+    <!-- Kontainer sentral agar optimal di HP, Tablet, dan Desktop -->
+    <div class="max-w-md mx-auto min-h-screen bg-[#f8fafc] shadow-2xl relative flex flex-col justify-between">
+      
+      <!-- ==================== SUB-HALAMAN 1: HOME ==================== -->
+      <div id="kader_tab_home" class="kader-sub-halaman space-y-4">
+        <!-- Header Kuning Lengkung Home -->
+        <div class="bg-gradient-to-b from-[#fcd34d] via-[#fcd34d] to-[#fde047] p-5 pb-8 rounded-b-[2.5rem] shadow-sm relative text-slate-800">
+          <div class="flex justify-between items-center mb-4">
+            <h1 class="text-xl font-black tracking-wide">Data Keluarga</h1>
+            <div class="flex items-center gap-2">
+              <span id="kaderHomeKoneksiIcon" class="w-8 h-8 rounded-full bg-white/60 backdrop-blur-sm flex items-center justify-center text-sm shadow-sm">
+                📶
+              </span>
+              <button type="button" onclick="prosesLogout()" title="Keluar Akun" 
+                      class="w-8 h-8 rounded-full bg-white/60 backdrop-blur-sm hover:bg-white flex items-center justify-center text-sm shadow-sm transition active:scale-95">
+                🚪
+              </button>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-slate-700">Selamat Datang,</p>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <h2 id="kaderHomeNamaUser" class="text-base font-black uppercase text-slate-900 tracking-tight">KADER PENDATA</h2>
+              <span class="w-4 h-4 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-4 space-y-4 -mt-4">
+          <!-- 3 Kartu Info Atas: Wilayah Kerja, Sinkronisasi, Periode -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+              <p class="text-[10px] font-bold text-slate-600 mb-1">Wilayah Kerja</p>
+              <div class="flex items-center justify-center gap-1 text-[11px] font-black text-slate-800 bg-slate-50 py-1 rounded-lg border border-slate-100">
+                <span>🗺️</span>
+                <span id="kaderHomeJmlRt">0 RT</span>
+              </div>
+            </div>
+
+            <div class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+              <p class="text-[10px] font-bold text-slate-600 mb-1">Sinkronisasi</p>
+              <div onclick="picuSinkronisasiManual()" class="cursor-pointer flex items-center justify-center gap-1 text-[9.5px] font-bold text-slate-700 bg-slate-50 py-1 rounded-lg border border-slate-100 hover:bg-slate-100">
+                <span>🔄</span>
+                <span id="kaderHomeWaktuSync">Tersinkron</span>
+              </div>
+            </div>
+
+            <div class="bg-[#38bdf8] p-2.5 rounded-2xl shadow-sm text-center text-white flex flex-col justify-center">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-sky-100">Periode</p>
+              <p class="text-sm font-black">2026</p>
+            </div>
+          </div>
+
+          <!-- Banner Kelurahan/Desa -->
+          <div class="bg-white rounded-2xl border-2 border-amber-300/80 p-3.5 shadow-sm text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-blue-50/20 pointer-events-none"></div>
+            <p class="text-[10px] font-bold uppercase text-slate-400">Kelurahan/Desa</p>
+            <h3 id="kaderHomeDesa" class="text-base font-black text-slate-800 uppercase tracking-wide mt-0.5">KURIPAN SELATAN</h3>
+          </div>
+
+          <!-- Kartu Rekap Data Keluarga -->
+          <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-sm space-y-3">
+            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide">Data Keluarga</h4>
+            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+              <div class="bg-emerald-50 border border-emerald-100 p-2 rounded-xl">
+                <p id="kaderCountAda" class="text-base font-black text-emerald-800">0</p>
+                <span class="text-[10px] font-semibold text-emerald-700">Ada</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountPindah" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Pindah</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountMeninggal" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Meninggal</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountTidakDitemukan" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Tidak Ditemukan</span>
+              </div>
+              <div class="bg-rose-50 border border-rose-100 p-2 rounded-xl">
+                <p id="kaderCountDraft" class="text-base font-black text-rose-700">0</p>
+                <span class="text-[10px] font-semibold text-rose-600">Draft</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountBelumDiproses" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Belum Diproses</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kartu Status Pendataan -->
+          <div class="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-sm space-y-3">
+            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide">Status Pendataan</h4>
+            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+              <div class="bg-emerald-50 border border-emerald-100 p-2 rounded-xl">
+                <p id="kaderCountValid" class="text-base font-black text-emerald-800">0</p>
+                <span class="text-[10px] font-semibold text-emerald-700">Valid</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountNotValid" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Not Valid</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountReceived" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Received</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountAnomali" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Anomali</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountAnomaliKonfirmasi" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Anomali Konfirmasi</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl">
+                <p id="kaderCountKosong" class="text-base font-black text-slate-800">0</p>
+                <span class="text-[10px] font-semibold text-slate-600">Kosong</span>
+              </div>
+              <div class="col-span-2 bg-blue-50/60 border border-blue-100 p-2 rounded-xl">
+                <p id="kaderCountTersimpan" class="text-base font-black text-blue-800">0</p>
+                <span class="text-[10px] font-semibold text-blue-700">Tersimpan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bagian Layanan Grid Ikon Cepat -->
+          <div class="space-y-2 pt-1 pb-4">
+            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide">Layanan</h4>
+            <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold text-slate-700">
+              <button type="button" onclick="navigasiKaderTab('data')" class="flex flex-col items-center gap-1 group">
+                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📋</div>
+                <span>Data</span>
+              </button>
+              <button type="button" onclick="navigasiKaderTab('data')" class="flex flex-col items-center gap-1 group">
+                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📝</div>
+                <span>Draft</span>
+              </button>
+              <button type="button" onclick="navigasiKaderTab('profile')" class="flex flex-col items-center gap-1 group">
+                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">👤</div>
+                <span>Profile</span>
+              </button>
+              <button type="button" onclick="navigasiKaderTab('rekap')" class="flex flex-col items-center gap-1 group">
+                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📊</div>
+                <span>Rekap</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SUB-HALAMAN 2: DATA ==================== -->
+      <div id="kader_tab_data" class="kader-sub-halaman hidden space-y-3">
+        <!-- Header Kuning Data -->
+        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-6 rounded-b-[2rem] shadow-sm text-center">
+          <h2 class="text-base font-black text-slate-900 tracking-wide uppercase">Daftar Keluarga</h2>
+        </div>
+
+        <div class="px-4 space-y-3">
+          <!-- Kolom Pencarian Cepat Nama / NIK -->
+          <div class="relative">
+            <input type="text" id="kaderCariInput" oninput="filterDataKeluargaKader()" 
+                   placeholder="Cari keluarga, contoh: nama / nik"
+                   class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold outline-none focus:border-amber-500 shadow-sm" />
+          </div>
+
+          <!-- Bar Filter & Indikator Jumlah KK -->
+          <div class="flex items-center justify-between gap-2 text-xs">
+            <button type="button" onclick="bukaFilterWilayahKaderModal()" 
+                    class="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-700 flex items-center gap-1.5 shadow-sm">
+              <span>☰</span> Filter
+            </button>
+            <div class="px-3 py-1.5 bg-[#178582] text-white rounded-lg font-black flex items-center gap-1.5 text-[11px] shadow-sm">
+              <span>👥</span>
+              <span id="kaderTotalKkBadge">0 KK</span>
+            </div>
+          </div>
+
+          <!-- List Akordion Baris Keluarga -->
+          <div id="kaderDaftarKkContainer" class="space-y-2 pt-1 pb-4">
+            <!-- Item dirender dinamis oleh renderDaftarKeluargaKader() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SUB-HALAMAN 3: REKAP ==================== -->
+      <div id="kader_tab_rekap" class="kader-sub-halaman hidden space-y-4">
+        <!-- Header Kuning Rekap RT -->
+        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-7 rounded-b-[2.5rem] shadow-sm text-center text-slate-900">
+          <h2 class="text-base font-black tracking-wide uppercase">Rekap RT</h2>
+          <p id="kaderRekapSubHeader" class="text-xs font-bold text-slate-800 mt-0.5 uppercase">P KURIPAN SELATAN</p>
+        </div>
+
+        <div class="px-5 space-y-4 text-xs text-slate-800">
+          <div>
+            <h3 class="text-sm font-black text-slate-900 mb-2.5">Wilayah Kerja</h3>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <p class="text-slate-500 font-semibold text-[11px]">Provinsi</p>
+                <p class="font-black text-slate-900 text-xs">NUSA TENGGARA BARAT</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-semibold text-[11px]">Kabupaten</p>
+                <p id="kaderRekapKab" class="font-black text-slate-900 text-xs">LOMBOK BARAT</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-semibold text-[11px]">Kecamatan</p>
+                <p id="kaderRekapKec" class="font-black text-slate-900 text-xs">KURIPAN</p>
+              </div>
+              <div>
+                <p class="text-slate-500 font-semibold text-[11px]">Kelurahan</p>
+                <p id="kaderRekapDesa" class="font-black text-slate-900 text-xs">KURIPAN SELATAN</p>
+              </div>
+            </div>
+
+            <div class="pt-2">
+              <p class="text-slate-500 font-semibold text-[11px]">Klasifikasi Desa/Kelurahan</p>
+              <p class="font-black text-slate-900 text-xs">PERKOTAAN</p>
+            </div>
+          </div>
+
+          <!-- Pilihan RW/Dusun & RT untuk Rekap Real-time -->
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label class="block font-bold text-slate-700 text-[11px] mb-1">RW / Dusun</label>
+              <select id="kaderRekapSelectDusun" onchange="saatKaderRekapDusunBerubah()" class="w-full p-2 border border-slate-300 rounded-xl bg-white font-semibold outline-none text-xs">
+                <option value="">Semua RW</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 text-[11px] mb-1">RT</label>
+              <select id="kaderRekapSelectRt" onchange="hitungRekapRtKader()" class="w-full p-2 border border-slate-300 rounded-xl bg-white font-semibold outline-none text-xs">
+                <option value="">Semua RT</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 7 Poin Agregat Real-Time -->
+          <div class="border-t pt-3 space-y-2.5 font-semibold text-slate-800 text-xs">
+            <div class="flex justify-between items-center">
+              <span>1. Jumlah keluarga yang ada</span>
+              <span class="font-black" id="kaderRekap_1">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>2. Jumlah keluarga yang didata</span>
+              <span class="font-black" id="kaderRekap_2">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>3. Jumlah keluarga ditemukan</span>
+              <span class="font-black" id="kaderRekap_3">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>4. Jumlah keluarga baru</span>
+              <span class="font-black" id="kaderRekap_4">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>5. Jumlah keluarga pindah</span>
+              <span class="font-black" id="kaderRekap_5">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>6. Jumlah keluarga meninggal dunia</span>
+              <span class="font-black" id="kaderRekap_6">: 0</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span>7. Jumlah keluarga yang tidak ditemukan</span>
+              <span class="font-black" id="kaderRekap_7">: 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SUB-HALAMAN 4: PROFILE ==================== -->
+      <div id="kader_tab_profile" class="kader-sub-halaman hidden space-y-5">
+        <!-- Header Kuning Profile -->
+        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-7 rounded-b-[2.5rem] shadow-sm text-center text-slate-900">
+          <h2 class="text-base font-black tracking-wide uppercase">Profile</h2>
+          <p id="kaderProfileSubHeader" class="text-xs font-bold text-slate-800 mt-0.5 uppercase">P KURIPAN SELATAN</p>
+        </div>
+
+        <div class="px-5 space-y-3.5 text-xs text-slate-800">
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">ID Kader</span>
+            <span class="col-span-8 font-black font-mono text-slate-900 break-all" id="kaderProfId">-</span>
+          </div>
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">Nama</span>
+            <span class="col-span-8 font-black uppercase text-slate-900" id="kaderProfNama">-</span>
+          </div>
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">NIK</span>
+            <span class="col-span-8 font-black font-mono text-slate-900" id="kaderProfNik">-</span>
+          </div>
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">Alamat</span>
+            <span class="col-span-8 font-bold text-slate-800 uppercase" id="kaderProfAlamat">-</span>
+          </div>
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">No. Telepon</span>
+            <span class="col-span-8 font-bold font-mono text-slate-800" id="kaderProfNoHp">-</span>
+          </div>
+          <div class="grid grid-cols-12 items-baseline gap-1">
+            <span class="col-span-4 font-semibold text-slate-500">Group</span>
+            <span class="col-span-8 font-black text-slate-900">petugas</span>
+          </div>
+
+          <div class="pt-6">
+            <button type="button" onclick="bukaModalGantiPasswordKader()" 
+                    class="px-5 py-2.5 bg-[#fcd34d] hover:bg-[#fbbf24] active:scale-95 text-slate-900 font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 uppercase text-xs">
+              <span>Ubah kata sandi</span>
+              <span>👤🔒</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BOTTOM NAVIGATION BAR & FAB ==================== -->
+      <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200">
+        <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between relative">
+          
+          <!-- Tombol Navigasi 1: Home -->
+          <button type="button" onclick="navigasiKaderTab('home')" id="kaderNavBtn_home" 
+                  class="flex-1 flex flex-col items-center gap-0.5 text-amber-600 font-black text-[10px] transition">
+            <span class="text-xl leading-none">⊞</span>
+            <span>Home</span>
+          </button>
+
+          <!-- Tombol Navigasi 2: Data -->
+          <button type="button" onclick="navigasiKaderTab('data')" id="kaderNavBtn_data" 
+                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition mr-6">
+            <span class="text-xl leading-none">📋</span>
+            <span>Data</span>
+          </button>
+
+          <!-- TOMBOL APUNG TENGAH (FAB): TAMBAH KELUARGA BARU (+) -->
+          <div class="absolute left-1/2 -top-5 -translate-x-1/2">
+            <button type="button" onclick="bukaFormulirKeluargaDariKader()" title="Tambah Keluarga Baru" 
+                    class="w-13 h-13 sm:w-14 sm:h-14 w-12 h-12 rounded-full bg-[#1e3a8a] hover:bg-[#172554] active:scale-95 text-white flex items-center justify-center shadow-xl border-4 border-slate-100 transition">
+              <span class="text-xl sm:text-2xl font-bold leading-none">👤⁺</span>
+            </button>
+          </div>
+
+          <!-- Tombol Navigasi 3: Rekap -->
+          <button type="button" onclick="navigasiKaderTab('rekap')" id="kaderNavBtn_rekap" 
+                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition ml-6">
+            <span class="text-xl leading-none">📊</span>
+            <span>Rekap</span>
+          </button>
+
+          <!-- Tombol Navigasi 4: Profile -->
+          <button type="button" onclick="navigasiKaderTab('profile')" id="kaderNavBtn_profile" 
+                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition">
+            <span class="text-xl leading-none">👤</span>
+            <span>Profile</span>
+          </button>
+
+        </div>
+      </nav>
+
+    </div>
+  </div>
+
+  <!-- ========================================================
        5. HALAMAN CARI & EDIT DATA (MASTER-DETAIL)
        ======================================================== -->
   <div id="tampilan_cari_edit" class="halaman-tampilan max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
@@ -1236,12 +1601,17 @@
             </select>
           </div>
 
-          <div id="userRowDusun" class="hidden space-y-1.5">
-            <label class="block font-bold text-slate-700 uppercase">Hak Akses Dusun Spesifik</label>
-            <div id="userDusunContainer" class="max-h-28 overflow-y-auto border border-slate-200 rounded-xl p-2.5 bg-slate-50 space-y-1.5">
+          <div id="userRowDusun" class="hidden space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block font-bold text-slate-700 uppercase text-xs">Penugasan Dusun & RT Kader *</label>
+              <button type="button" onclick="pilihSemuaRtKader(true)" class="text-[10px] text-amber-700 font-bold hover:underline">Pilih Semua</button>
+            </div>
+            
+            <!-- Kontainer Akordion/Daftar Dusun & Checkbox RT -->
+            <div id="userDusunContainer" class="max-h-56 overflow-y-auto border border-slate-200 rounded-xl p-2.5 bg-slate-50 space-y-2.5 text-xs">
               <span class="text-slate-400 italic">Pilih Desa terlebih dahulu...</span>
             </div>
-            <p class="text-[10px] text-slate-500">*Kosongkan centang jika akun diizinkan mengelola SEMUA dusun di desa tersebut.</p>
+            <p class="text-[10px] text-slate-500 italic">*Centang RT yang menjadi wilayah kerja kader ini. Bisa memilih beberapa RT dari dusun yang berbeda.</p>
           </div>
 
           <!-- Tombol Aksi Form -->
@@ -2066,7 +2436,7 @@
     }
 
     function tampilkanLayar(layarId) {      
-      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_cari_edit', 'tampilan_rekapitulasi', 'tampilan_bnba_laporan'];
+      const layarList = ['tampilan_login', 'tampilan_dashboard', 'tampilan_formulir', 'tampilan_kelola_wilayah', 'tampilan_cari_edit', 'tampilan_rekapitulasi', 'tampilan_bnba_laporan', 'tampilan_kader_app'];
       layarList.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('aktif');
@@ -2079,98 +2449,66 @@
     function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
-
       const user = userEl ? userEl.value.trim() : '';
       const pass = passEl ? passEl.value.trim() : '';
 
       if (!user || !pass) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Perhatian',
-          text: 'Silakan masukkan username dan password terlebih dahulu!',
-          confirmButtonColor: '#059669'
-        });
+        Swal.fire('Perhatian', 'Silakan masukkan username dan password terlebih dahulu!', 'warning');
         return;
       }
 
       const uLow = user.toLowerCase();
 
-      // PEMETAAN AKUN SESUAI TINGKATAN OTORITAS
+      // PEMETAAN AKUN
       if (uLow.includes('superadmin')) {
-        // SUPER ADMIN: Bebas memilih semua wilayah & provinsi
         userAktif = {
           username: 'SUPER ADMINISTRATOR',
           role: 'SUPER_ADMIN',
-          provinsi: '',
-          kode_prov: '',
-          kabupaten: '',
-          kode_kab: '',
-          kecamatan: '',
-          kode_kec: '',
-          desa: '',
-          kode_desa: ''
-        };
-      } else if (uLow.includes('prov')) {
-        // ADMIN PROVINSI: Terkunci di Provinsi NTB (Kode: 52), membawahi seluruh Kabupaten/Kota
-        userAktif = {
-          username: 'ADMIN PROVINSI NTB',
-          role: 'ADMIN_PROVINSI',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: '',
-          kode_kab: '',
-          kecamatan: '',
-          kode_kec: '',
-          desa: '',
-          kode_desa: ''
+          provinsi: '', kode_prov: '', kabupaten: '', kode_kab: '', kecamatan: '', kode_kec: '', desa: '', kode_desa: ''
         };
       } else if (uLow.includes('kab')) {
-        // ADMIN KABUPATEN: Terkunci di NTB & Lombok Barat (Kode: 52, 01)
         userAktif = {
           username: 'ADMIN KABUPATEN LOMBOK BARAT',
           role: 'ADMIN_KABUPATEN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: '',
-          kode_kec: '',
-          desa: '',
-          kode_desa: ''
+          provinsi: 'NUSA TENGGARA BARAT', kode_prov: '52', kabupaten: 'LOMBOK BARAT', kode_kab: '01'
         };
       } else if (uLow.includes('kec')) {
-        // ADMIN KECAMATAN: Terkunci sampai Kecamatan Lembar (Kode: 52, 01, 08)
         userAktif = {
-          username: 'ADMIN KECAMATAN LEMBAR',
+          username: 'ADMIN KECAMATAN KURIPAN',
           role: 'ADMIN_KECAMATAN',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: 'LEMBAR',
-          kode_kec: '08',
-          desa: '',
-          kode_desa: ''
+          provinsi: 'NUSA TENGGARA BARAT', kode_prov: '52', kabupaten: 'LOMBOK BARAT', kode_kab: '01', kecamatan: 'KURIPAN', kode_kec: '15'
         };
-      } else {
-        // KADER DESA: Terkunci penuh sampai Desa Lembar
+      } else {        
         userAktif = {
-          username: 'KADER DESA LEMBAR',
+          username: user.toUpperCase(),
+          nama_lengkap: 'P KURIPAN SELATAN',
           role: 'USER_DESA',
           provinsi: 'NUSA TENGGARA BARAT',
           kode_prov: '52',
           kabupaten: 'LOMBOK BARAT',
           kode_kab: '01',
-          kecamatan: 'LEMBAR',
-          kode_kec: '08',
-          desa: 'LEMBAR',
-          kode_desa: '2001'
+          kecamatan: 'KURIPAN',
+          kode_kec: '15',
+          desa: 'KURIPAN SELATAN',
+          kode_desa: '2004',
+          // Simulasi wilayah penugasan multi-dusun dan multi-RT
+          allowed_wilayah_rt: JSON.stringify([
+            { kode_dusun: "0100", dusun: "KURIPAN SELATAN I", rt: ["001", "002"] },
+            { kode_dusun: "0200", dusun: "KURIPAN SELATAN II", rt: ["001", "003", "005"] }
+          ])
         };
       }
 
       localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
-      terapkanDataSesiUser();
-      tampilkanLayar('tampilan_dashboard');
+
+      // PERCABANGAN TAMPILAN SESUAI PERAN AKUN
+      if (userAktif.role === 'USER_DESA') {
+        inisialisasiLayarKader();
+      } else {
+        terapkanDataSesiUser();
+        tampilkanLayar('tampilan_dashboard');
+      }
+
       loadMasterWilayahFromDB();
     }
 
@@ -5786,20 +6124,58 @@
         return;
       }
 
-      // Urutkan kode dusun
+      // Urutkan kode dusun secara numerik
       listDsn.sort((a, b) => String(a.kode_dusun).localeCompare(String(b.kode_dusun), undefined, { numeric: true }));
 
       let html = '';
       listDsn.forEach(d => {
-        const cleanKd = String(d.kode_dusun).padStart(4, '0');
+        const cleanKdDsn = String(d.kode_dusun).padStart(4, '0');
+        const jmlRt = parseInt(d.jumlah_rt, 10) || 1;
+
         html += `
-          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
-            <input type="checkbox" name="cb_user_dusun" value="${cleanKd}" class="rounded text-amber-600 focus:ring-0" />
-            <span>[${cleanKd}] ${d.dusun}</span>
-          </label>
+          <div class="border border-slate-200 bg-white rounded-xl p-2.5 space-y-1.5 shadow-sm">
+            <div class="flex items-center justify-between border-b pb-1">
+              <span class="font-bold text-slate-800 uppercase text-[11px]">[${cleanKdDsn}] Dusun ${d.dusun}</span>
+              <button type="button" onclick="togglePilihRtPerDusun('${cleanKdDsn}')" class="text-[10px] text-indigo-600 hover:underline font-semibold">Toggle RT</button>
+            </div>
+            
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5 pt-1">
+        `;
+
+        for (let i = 1; i <= jmlRt; i++) {
+          const strRt = String(i).padStart(3, '0');
+          html += `
+            <label class="flex items-center gap-1.5 p-1 rounded bg-slate-50 border border-slate-100 hover:bg-slate-100 cursor-pointer text-[11px] font-mono">
+              <input type="checkbox" name="cb_user_rt" 
+                     data-kodedusun="${cleanKdDsn}" 
+                     data-namadusun="${d.dusun}" 
+                     value="${cleanKdDsn}_${strRt}" 
+                     class="rounded text-amber-600 focus:ring-0 cb-dsn-${cleanKdDsn}" />
+              <span>RT ${strRt}</span>
+            </label>
+          `;
+        }
+
+        html += `
+            </div>
+          </div>
         `;
       });
+
       container.innerHTML = html;
+    }
+
+    // Toggle pilih semua RT dalam satu dusun
+    function togglePilihRtPerDusun(kodeDusun) {
+      const cbs = document.querySelectorAll(`.cb-dsn-${kodeDusun}`);
+      const adaYangBelum = Array.from(cbs).some(c => !c.checked);
+      cbs.forEach(c => c.checked = adaYangBelum);
+    }
+
+    // Toggle pilih semua RT di seluruh dusun
+    function pilihSemuaRtKader(pilihSemua) {
+      const cbs = document.querySelectorAll('input[name="cb_user_rt"]');
+      cbs.forEach(c => c.checked = pilihSemua);
     }
 
     function resetFormUser() {
@@ -5834,9 +6210,43 @@
         ? (document.getElementById('user_desa').value || null) 
         : null;
 
-      const cbs = document.querySelectorAll('input[name="cb_user_dusun"]:checked');
-      const selectedDusun = Array.from(cbs).map(c => c.value);
-      const allowedDusun = (role === 'User Desa' && selectedDusun.length > 0) ? selectedDusun.join(',') : null;
+      // VALIDASI KADER: WAJIB PILIH 1 DESA
+      if (role === 'User Desa' && !kdDesa) {
+        Swal.fire('Peringatan', 'Kader pendata wajib terdaftar pada satu desa/kelurahan!', 'warning');
+        btn.disabled = false;
+        btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
+        return;
+      }
+
+      // Kumpulkan pilihan RT hanya dari desa terpilih tersebut
+      let wilayahKaderJson = null;
+      let allowedDusunRingkas = null;
+
+      if (role === 'User Desa') {
+        const cbs = document.querySelectorAll('input[name="cb_user_rt"]:checked');
+        if (cbs.length === 0) {
+          Swal.fire('Peringatan', 'Kader wajib ditugaskan minimal pada 1 RT!', 'warning');
+          btn.disabled = false;
+          btn.innerText = userId ? '💾 PERBARUI AKUN' : '💾 SIMPAN AKUN';
+          return;
+        }
+
+        const mapWilayah = new Map();
+        cbs.forEach(cb => {
+          const kdDsn = cb.getAttribute('data-kodedusun');
+          const nmDsn = cb.getAttribute('data-namadusun');
+          const [_, noRt] = cb.value.split('_');
+
+          if (!mapWilayah.has(kdDsn)) {
+            mapWilayah.set(kdDsn, { kode_dusun: kdDsn, dusun: nmDsn, rt: [] });
+          }
+          mapWilayah.get(kdDsn).rt.push(noRt);
+        });
+
+        const listPenugasan = Array.from(mapWilayah.values());
+        wilayahKaderJson = JSON.stringify(listPenugasan);
+        allowedDusunRingkas = Array.from(mapWilayah.keys()).join(',');
+      }
 
       const payload = {
         username: username,
@@ -5846,8 +6256,9 @@
         kode_prov: userAktif.kode_prov || '52',
         kode_kab: kdKab,
         kode_kec: kdKec,
-        kode_desa: kdDesa,
-        allowed_dusun: allowedDusun
+        kode_desa: kdDesa, // Terkunci di 1 Desa
+        allowed_dusun: allowedDusunRingkas,
+        allowed_wilayah_rt: wilayahKaderJson
       };
 
       try {
@@ -5860,7 +6271,7 @@
 
         if (res.error) throw res.error;
 
-        Swal.fire('Berhasil!', `Akun ${username} berhasil disimpan.`, 'success');
+        Swal.fire('Berhasil!', `Akun kader ${username} berhasil disimpan pada desa terpilih.`, 'success');
         resetFormUser();
         gantiTabUser('list');
 
@@ -6005,6 +6416,20 @@
         if (u.role === 'Admin Kab') {
           wilText = `Kab. Kode ${u.kode_kab || '-'}`;
         } else if (u.role === 'Admin Kec') {
+          wilText = `Kec. ${u.kode_kec || '-'}`;
+        } else {
+          let ringkasanRt = '';
+          if (u.allowed_wilayah_rt) {
+            try {
+              const arr = JSON.parse(u.allowed_wilayah_rt);
+              ringkasanRt = arr.map(w => `${w.dusun || w.kode_dusun}: RT ${w.rt.join(', ')}`).join(' | ');
+            } catch(e) {}
+          }
+          wilText = `Desa ${u.kode_desa || '-'} <br><span class="text-[10px] text-amber-700 font-bold">${ringkasanRt || '(Semua RT)'}</span>`;
+        }        
+        if (u.role === 'Admin Kab') {
+          wilText = `Kab. Kode ${u.kode_kab || '-'}`;
+        } else if (u.role === 'Admin Kec') {
           wilText = `Kab. ${u.kode_kab || '-'} / Kec. ${u.kode_kec || '-'}`;
         } else {
           wilText = `Kec. ${u.kode_kec || '-'} / Desa ${u.kode_desa || '-'} ${u.allowed_dusun ? `(Dsn: ${u.allowed_dusun})` : '(Semua Dusun)'}`;
@@ -6064,11 +6489,21 @@
         document.getElementById('user_desa').value = String(u.kode_desa).padStart(4, '0');
         saatUserDesaBerubah();
 
-        if (u.allowed_dusun) {
-          const listDsn = u.allowed_dusun.split(',').map(s => s.trim().padStart(4, '0'));
-          document.querySelectorAll('input[name="cb_user_dusun"]').forEach(cb => {
-            cb.checked = listDsn.includes(cb.value);
-          });
+        // Restore centang multi-dusun dan multi-RT
+        if (u.allowed_wilayah_rt) {
+          try {
+            const listWilayah = JSON.parse(u.allowed_wilayah_rt);
+            listWilayah.forEach(item => {
+              const kdDsn = String(item.kode_dusun).padStart(4, '0');
+              (item.rt || []).forEach(r => {
+                const targetVal = `${kdDsn}_${String(r).padStart(3, '0')}`;
+                const cb = document.querySelector(`input[name="cb_user_rt"][value="${targetVal}"]`);
+                if (cb) cb.checked = true;
+              });
+            });
+          } catch (e) {
+            console.warn("Gagal mem-parsing allowed_wilayah_rt:", e);
+          }
         }
       }
 
@@ -11400,6 +11835,360 @@
       }
     });
 
+    // ========================================================
+    // LOGIKA ANTARMUKA KHUSUS KADER (MOBILE-FIRST)
+    // ========================================================
+    let dataKeluargaKaderCache = [];
+    let kaderTabAktif = 'home';
+
+    // 1. Perpindahan Tab Kader (Home, Data, Rekap, Profile)
+    function navigasiKaderTab(namaTab) {
+      kaderTabAktif = namaTab;
+
+      ['home', 'data', 'rekap', 'profile'].forEach(t => {
+        const page = document.getElementById(`kader_tab_${t}`);
+        const btn = document.getElementById(`kaderNavBtn_${t}`);
+        if (page) page.classList.toggle('hidden', t !== namaTab);
+
+        if (btn) {
+          if (t === namaTab) {
+            btn.className = "flex-1 flex flex-col items-center gap-0.5 text-amber-600 font-black text-[10px] transition " + (t === 'data' ? 'mr-6' : (t === 'rekap' ? 'ml-6' : ''));
+          } else {
+            btn.className = "flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition " + (t === 'data' ? 'mr-6' : (t === 'rekap' ? 'ml-6' : ''));
+          }
+        }
+      });
+
+      window.scrollTo(0, 0);
+
+      if (namaTab === 'data') {
+        muatDataKeluargaKader();
+      } else if (namaTab === 'rekap') {
+        initDropdownRekapKader();
+      } else if (namaTab === 'profile') {
+        muatProfilKader();
+      }
+    }
+
+    // 2. Inisialisasi Tampilan Dashboard Kader Setelah Login
+    async function inisialisasiLayarKader() {
+      tampilkanLayar('tampilan_kader_app');
+      navigasiKaderTab('home');
+
+      const namaUser = userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA';
+      document.getElementById('kaderHomeNamaUser').innerText = namaUser.toUpperCase();
+
+      // Cari Nama Desa dari rawWilayahList
+      const wilDesa = (rawWilayahList || []).find(w => String(w.kode_desa).padStart(4, '0') === String(userAktif.kode_desa || '').padStart(4, '0'));
+      const namaDesa = wilDesa?.desa || userAktif.desa || 'KURIPAN SELATAN';
+      document.getElementById('kaderHomeDesa').innerText = namaDesa.toUpperCase();
+
+      // Hitung Total RT yang ditugaskan kepada kader ini
+      let totalRtTugas = 0;
+      if (userAktif.allowed_wilayah_rt) {
+        try {
+          const list = JSON.parse(userAktif.allowed_wilayah_rt);
+          list.forEach(item => {
+            totalRtTugas += (item.rt || []).length;
+          });
+        } catch(e) {}
+      }
+      document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas || 0} RT`;
+
+      // Muat Data & Hitung Metrik Ringkasan
+      await muatDataKeluargaKader();
+      hitungMetrikRingkasanKader();
+    }
+
+    // 3. Ambil Data Supabase Terkunci Berdasarkan RT Tugas Kader
+    async function muatDataKeluargaKader() {
+      if (!userAktif || !userAktif.kode_desa) return;
+
+      try {
+        let query = supabaseClient
+          .from('keluarga')
+          .select(`*, anggota_keluarga (*)`)
+          .eq('kode_desa', String(userAktif.kode_desa).padStart(4, '0'))
+          .order('kode_keluarga', { ascending: true });
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        let dataMentah = data || [];
+
+        // Filter ketat: Hanya ambil keluarga yang RT-nya termasuk dalam penugasan kader
+        if (userAktif.allowed_wilayah_rt) {
+          try {
+            const allowed = JSON.parse(userAktif.allowed_wilayah_rt);
+            const setDsnRt = new Set();
+            allowed.forEach(w => {
+              const dsn = String(w.kode_dusun).padStart(4, '0');
+              (w.rt || []).forEach(r => setDsnRt.add(`${dsn}_${String(r).padStart(3, '0')}`));
+            });
+
+            dataMentah = dataMentah.filter(k => {
+              const key = `${String(k.kode_dusun).padStart(4, '0')}_${String(k.rt).padStart(3, '0')}`;
+              return setDsnRt.has(key);
+            });
+          } catch(e) {
+            console.warn("Gagal filter RT penugasan kader:", e);
+          }
+        }
+
+        dataKeluargaKaderCache = dataMentah;
+        document.getElementById('kaderTotalKkBadge').innerText = `${dataKeluargaKaderCache.length} KK`;
+
+        renderDaftarKeluargaKader(dataKeluargaKaderCache);
+        hitungMetrikRingkasanKader();
+
+      } catch (err) {
+        console.error("Gagal memuat data kader:", err);
+      }
+    }
+
+    // 4. Render Daftar Keluarga (Data.jpg) dengan Tombol Edit & Hapus
+    function renderDaftarKeluargaKader(dataList) {
+      const container = document.getElementById('kaderDaftarKkContainer');
+      if (!container) return;
+
+      if (!dataList || dataList.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 text-center text-slate-400 font-semibold border text-xs">
+            Tidak ada data keluarga terdata pada RT penugasan Anda.
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      dataList.forEach((k, idx) => {
+        const kodeKel = k.kode_keluarga || k.nomor_kk;
+        const namaKK = (k.nama_kk || 'TANPA NAMA').toUpperCase();
+
+        html += `
+          <div class="bg-amber-50/70 border border-amber-200/90 rounded-2xl p-3 flex items-center justify-between shadow-sm hover:bg-amber-100/60 transition">
+            <div class="flex items-center gap-2.5 overflow-hidden pr-2">
+              <span class="text-slate-400 font-bold text-xs shrink-0">&gt;</span>
+              <span class="font-black text-slate-500 text-xs shrink-0">${idx + 1}</span>
+              <div class="truncate">
+                <p class="font-black text-slate-900 text-xs truncate">${namaKK}</p>
+                <p class="text-[10px] text-slate-500 font-mono font-semibold">KK: ${k.nomor_kk || '-'}</p>
+              </div>
+            </div>
+
+            <!-- Tombol Aksi Kanan: Edit (Hijau) & Hapus (Merah) -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="editFormulirKeluargaLengkap('${kodeKel}')" title="Edit Data Lengkap"
+                      class="w-8 h-8 rounded-xl bg-emerald-100 hover:bg-emerald-600 text-emerald-800 hover:text-white flex items-center justify-center text-sm font-bold shadow-sm transition active:scale-95">
+                📝
+              </button>
+              <button type="button" onclick="hapusKeluargaDariKader('${kodeKel}', '${namaKK}')" title="Hapus Keluarga"
+                      class="w-8 h-8 rounded-xl bg-rose-100 hover:bg-rose-600 text-rose-700 hover:text-white flex items-center justify-center text-sm font-bold shadow-sm transition active:scale-95">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Filter Pencarian Teks Nama / NIK pada Tab Data Kader
+    function filterDataKeluargaKader() {
+      const keyword = (document.getElementById('kaderCariInput')?.value || '').toLowerCase().trim();
+      if (!keyword) {
+        renderDaftarKeluargaKader(dataKeluargaKaderCache);
+        return;
+      }
+
+      const hasil = dataKeluargaKaderCache.filter(k => 
+        (k.nama_kk || '').toLowerCase().includes(keyword) || 
+        (k.nik_kk || '').includes(keyword) || 
+        (k.nomor_kk || '').includes(keyword)
+      );
+
+      renderDaftarKeluargaKader(hasil);
+    }
+
+    // 5. Hapus Keluarga Langsung dari Menu Kader
+    async function hapusKeluargaDariKader(kodeKeluarga, namaKK) {
+      Swal.fire({
+        title: 'Hapus Keluarga?',
+        html: `Apakah Anda yakin ingin menghapus data keluarga <b>${namaKK}</b>?<br><span class="text-xs text-slate-500">Seluruh rincian anggota keluarga ini akan dihapus permanen.</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus Data',
+        cancelButtonText: 'Batal'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+          try {
+            await supabaseClient.from('anggota_keluarga').delete().or(`kode_keluarga.eq.${kodeKeluarga},nomor_kk.eq.${kodeKeluarga}`);
+            const { error } = await supabaseClient.from('keluarga').delete().or(`kode_keluarga.eq.${kodeKeluarga},nomor_kk.eq.${kodeKeluarga}`);
+            if (error) throw error;
+
+            Swal.fire('Terhapus!', 'Data keluarga berhasil dihapus.', 'success');
+            await muatDataKeluargaKader();
+          } catch (err) {
+            Swal.fire('Gagal Menghapus', err.message || 'Terjadi kesalahan sistem.', 'error');
+          }
+        }
+      });
+    }
+
+    // 6. Hitung Metrik Ringkasan untuk Kartu Home
+    function hitungMetrikRingkasanKader() {
+      let cAda = 0, cPindah = 0, cMeninggal = 0, cTidakDitemukan = 0;
+      let cValid = 0, cAnomali = 0, cAnomaliKonf = 0;
+
+      dataKeluargaKaderCache.forEach(k => {
+        const st = String(k.status_keluarga || '1');
+        if (st === '1' || st === '6') cAda++;
+        else if (st === '2') cPindah++;
+        else if (st === '3') cMeninggal++;
+        else if (st === '4') cTidakDitemukan++;
+
+        if (k.anomali_status === 'TERKONFIRMASI') {
+          cAnomaliKonf++;
+          cValid++;
+        } else {
+          const listAnomali = periksaSeluruhAnomaliKeluarga(k.anggota_keluarga || []);
+          if (listAnomali.length > 0) cAnomali++;
+          else cValid++;
+        }
+      });
+
+      document.getElementById('kaderCountAda').innerText = cAda;
+      document.getElementById('kaderCountPindah').innerText = cPindah;
+      document.getElementById('kaderCountMeninggal').innerText = cMeninggal;
+      document.getElementById('kaderCountTidakDitemukan').innerText = cTidakDitemukan;
+      document.getElementById('kaderCountTersimpan').innerText = dataKeluargaKaderCache.length;
+
+      document.getElementById('kaderCountValid').innerText = cValid;
+      document.getElementById('kaderCountAnomali').innerText = cAnomali;
+      document.getElementById('kaderCountAnomaliKonfirmasi').innerText = cAnomaliKonf;
+    }
+
+    // 7. Tombol FAB (+) Tambah Keluarga dari Kader
+    function bukaFormulirKeluargaDariKader() {
+      bukaFormulirPendataan();
+    }
+
+    // 8. Logika Tab Rekap RT
+    function initDropdownRekapKader() {
+      const selDusun = document.getElementById('kaderRekapSelectDusun');
+      const selRt = document.getElementById('kaderRekapSelectRt');
+      if (!selDusun || !selRt) return;
+
+      selDusun.innerHTML = '<option value="">Semua RW / Dusun</option>';
+      selRt.innerHTML = '<option value="">Semua RT</option>';
+
+      if (userAktif.allowed_wilayah_rt) {
+        try {
+          const allowed = JSON.parse(userAktif.allowed_wilayah_rt);
+          allowed.forEach(w => {
+            selDusun.add(new Option(w.dusun || `Dusun ${w.kode_dusun}`, w.kode_dusun));
+          });
+        } catch(e) {}
+      }
+
+      hitungRekapRtKader();
+    }
+
+    function saatKaderRekapDusunBerubah() {
+      const kdDusun = document.getElementById('kaderRekapSelectDusun')?.value;
+      const selRt = document.getElementById('kaderRekapSelectRt');
+      selRt.innerHTML = '<option value="">Semua RT</option>';
+
+      if (!kdDusun || !userAktif.allowed_wilayah_rt) {
+        hitungRekapRtKader();
+        return;
+      }
+
+      try {
+        const allowed = JSON.parse(userAktif.allowed_wilayah_rt);
+        const item = allowed.find(w => String(w.kode_dusun).padStart(4, '0') === String(kdDusun).padStart(4, '0'));
+        if (item) {
+          (item.rt || []).forEach(r => {
+            const strRt = String(r).padStart(3, '0');
+            selRt.add(new Option(`RT ${strRt}`, strRt));
+          });
+        }
+      } catch(e) {}
+
+      hitungRekapRtKader();
+    }
+
+    function hitungRekapRtKader() {
+      const kdDusun = document.getElementById('kaderRekapSelectDusun')?.value;
+      const noRt = document.getElementById('kaderRekapSelectRt')?.value;
+
+      let filtered = dataKeluargaKaderCache;
+      if (kdDusun) filtered = filtered.filter(k => String(k.kode_dusun).padStart(4, '0') === String(kdDusun).padStart(4, '0'));
+      if (noRt) filtered = filtered.filter(k => String(k.rt).padStart(3, '0') === String(noRt).padStart(3, '0'));
+
+      let jmlAda = 0, jmlDidata = filtered.length, jmlBaru = 0, jmlPindah = 0, jmlMeninggal = 0, jmlTidakDitemukan = 0;
+
+      filtered.forEach(k => {
+        const st = String(k.status_keluarga || '1');
+        if (st === '1') jmlAda++;
+        else if (st === '6') jmlBaru++;
+        else if (st === '2') jmlPindah++;
+        else if (st === '3') jmlMeninggal++;
+        else if (st === '4') jmlTidakDitemukan++;
+      });
+
+      document.getElementById('kaderRekap_1').innerText = `: ${jmlAda}`;
+      document.getElementById('kaderRekap_2').innerText = `: ${jmlDidata}`;
+      document.getElementById('kaderRekap_3').innerText = `: ${jmlAda + jmlBaru}`;
+      document.getElementById('kaderRekap_4').innerText = `: ${jmlBaru}`;
+      document.getElementById('kaderRekap_5').innerText = `: ${jmlPindah}`;
+      document.getElementById('kaderRekap_6').innerText = `: ${jmlMeninggal}`;
+      document.getElementById('kaderRekap_7').innerText = `: ${jmlTidakDitemukan}`;
+    }
+
+    // 9. Tab Profile Kader
+    function muatProfilKader() {
+      document.getElementById('kaderProfId').innerText = `p520115${userAktif.kode_desa || '2004'}${userAktif.username.toUpperCase()}`;
+      document.getElementById('kaderProfNama').innerText = (userAktif.nama_lengkap || userAktif.username || '-').toUpperCase();
+      document.getElementById('kaderProfNik').innerText = userAktif.nik || '18257251426813';
+      document.getElementById('kaderProfAlamat').innerText = `JL. ${userAktif.desa || 'KURIPAN SELATAN'}`;
+      document.getElementById('kaderProfNoHp').innerText = userAktif.no_hp || '-';
+    }
+
+    function bukaModalGantiPasswordKader() {
+      Swal.fire({
+        title: 'Ubah Kata Sandi',
+        html: `
+          <input type="password" id="swal_pass_baru" placeholder="Masukkan password baru..." class="w-full p-2.5 border rounded-xl text-xs font-mono outline-none" />
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Simpan Password',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#f59e0b',
+        preConfirm: () => {
+          const pass = document.getElementById('swal_pass_baru')?.value.trim();
+          if (!pass || pass.length < 4) {
+            Swal.showValidationMessage('Password minimal 4 karakter!');
+            return false;
+          }
+          return pass;
+        }
+      }).then(async (res) => {
+        if (res.isConfirmed && res.value) {
+          try {
+            await supabaseClient.from('users').update({ password_hash: res.value }).eq('username', userAktif.username);
+            Swal.fire('Berhasil!', 'Kata sandi berhasil diperbarui.', 'success');
+          } catch(e) {
+            Swal.fire('Gagal', e.message, 'error');
+          }
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {      
       perbaruiIndikatorStatusKoneksi();
 
@@ -11407,10 +12196,15 @@
       if (sesiTersimpan) {
         try {
           userAktif = JSON.parse(sesiTersimpan);
-          terapkanDataSesiUser();
-          tampilkanLayar('tampilan_dashboard');
           
-          // Sinkronkan antrean offline yang tersisa jika saat ini sedang online
+          // PERCABANGAN SESI SETELAH REFRESH:
+          if (userAktif.role === 'USER_DESA') {
+            inisialisasiLayarKader();
+          } else {
+            terapkanDataSesiUser();
+            tampilkanLayar('tampilan_dashboard');
+          }
+          
           if (navigator.onLine) {
             sinkronkanDataOffline();
           }
