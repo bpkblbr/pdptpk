@@ -319,40 +319,41 @@
   <!-- ========================================================
        MODUL KHUSUS KADER PENDATA (MOBILE-FIRST UI)
        ======================================================== -->
-  <div id="tampilan_kader_app" class="halaman-tampilan min-h-screen bg-slate-100 pb-24">
-    <!-- Kontainer sentral agar optimal di HP, Tablet, dan Desktop -->
+  <div id="tampilan_kader_app" class="halaman-tampilan min-h-screen bg-slate-100 pb-28">
     <div class="max-w-md mx-auto min-h-screen bg-[#f8fafc] shadow-2xl relative flex flex-col justify-between">
       
       <!-- ==================== SUB-HALAMAN 1: HOME ==================== -->
       <div id="kader_tab_home" class="kader-sub-halaman space-y-4">
-        <!-- Header Kuning Lengkung Home -->
-        <div class="bg-gradient-to-b from-[#fcd34d] via-[#fcd34d] to-[#fde047] p-5 pb-8 rounded-b-[2.5rem] shadow-sm relative text-slate-800">
+        <!-- Header Gradasi Hijau Tua ke Hijau Muda -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-8 rounded-b-[2.5rem] shadow-md relative text-white">
           <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-black tracking-wide">Data Keluarga</h1>
+            <h1 class="text-xl font-black tracking-wide drop-shadow-sm">Data Keluarga</h1>
             <div class="flex items-center gap-2">
-              <span id="kaderHomeKoneksiIcon" class="w-8 h-8 rounded-full bg-white/60 backdrop-blur-sm flex items-center justify-center text-sm shadow-sm">
-                📶
+              <!-- Indikator Sinyal Interaktif -->
+              <span id="kaderHomeKoneksiIcon" class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold shadow-sm transition">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span id="kaderHomeKoneksiText">Online</span>
               </span>
               <button type="button" onclick="prosesLogout()" title="Keluar Akun" 
-                      class="w-8 h-8 rounded-full bg-white/60 backdrop-blur-sm hover:bg-white flex items-center justify-center text-sm shadow-sm transition active:scale-95">
+                      class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md flex items-center justify-center text-sm shadow-sm transition active:scale-95">
                 🚪
               </button>
             </div>
           </div>
           <div>
-            <p class="text-xs font-semibold text-slate-700">Selamat Datang,</p>
+            <p class="text-xs font-semibold text-emerald-100">Selamat Datang,</p>
             <div class="mt-0.5">
               <div class="flex items-center gap-1.5">
-                <h2 id="kaderHomeNamaUser" class="text-base font-black uppercase text-slate-900 tracking-tight">-</h2>
-                <span class="w-4 h-4 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                <h2 id="kaderHomeNamaUser" class="text-base font-black uppercase text-white tracking-tight drop-shadow-sm">-</h2>
+                <span class="w-4 h-4 rounded-full bg-sky-400 text-slate-900 flex items-center justify-center text-[10px] font-black">✓</span>
               </div>
-              <p id="kaderHomeUsername" class="text-xs font-mono font-bold text-slate-700 lowercase mt-0.5">@username</p>
+              <p id="kaderHomeUsername" class="text-xs font-mono font-bold text-emerald-200 lowercase mt-0.5">@username</p>
             </div>
           </div>
         </div>
 
         <div class="px-4 space-y-4 -mt-4">
-          <!-- 3 Kartu Info Atas: Wilayah Kerja, Sinkronisasi, Periode -->
+          <!-- 3 Kartu Info Atas -->
           <div class="grid grid-cols-3 gap-2.5">
             <div class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-sm text-center">
               <p class="text-[10px] font-bold text-slate-600 mb-1">Wilayah Kerja</p>
@@ -364,23 +365,23 @@
 
             <div class="bg-white p-2.5 rounded-2xl border border-slate-200/80 shadow-sm text-center">
               <p class="text-[10px] font-bold text-slate-600 mb-1">Sinkronisasi</p>
-              <div onclick="picuSinkronisasiManual()" class="cursor-pointer flex items-center justify-center gap-1 text-[9.5px] font-bold text-slate-700 bg-slate-50 py-1 rounded-lg border border-slate-100 hover:bg-slate-100">
+              <div onclick="picuSinkronisasiManual()" class="cursor-pointer flex items-center justify-center gap-1 text-[9.5px] font-bold text-slate-700 bg-slate-50 py-1 rounded-lg border border-slate-100 hover:bg-slate-100 transition">
                 <span>🔄</span>
                 <span id="kaderHomeWaktuSync">Tersinkron</span>
               </div>
             </div>
 
-            <div class="bg-[#38bdf8] p-2.5 rounded-2xl shadow-sm text-center text-white flex flex-col justify-center">
-              <p class="text-[10px] font-bold uppercase tracking-wider text-sky-100">Periode</p>
+            <div class="bg-emerald-600 p-2.5 rounded-2xl shadow-sm text-center text-white flex flex-col justify-center">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-100">Periode</p>
               <p class="text-sm font-black">2026</p>
             </div>
           </div>
 
           <!-- Banner Kelurahan/Desa -->
-          <div class="bg-white rounded-2xl border-2 border-amber-300/80 p-3.5 shadow-sm text-center relative overflow-hidden">
-            <div class="absolute inset-0 bg-blue-50/20 pointer-events-none"></div>
-            <p class="text-[10px] font-bold uppercase text-slate-400">Kelurahan/Desa</p>
-            <h3 id="kaderHomeDesa" class="text-base font-black text-slate-800 uppercase tracking-wide mt-0.5">KURIPAN SELATAN</h3>
+          <div class="bg-white rounded-2xl border-2 border-emerald-400/80 p-3.5 shadow-sm text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-emerald-50/20 pointer-events-none"></div>
+            <p class="text-[10px] font-bold uppercase text-slate-400">Kelurahan / Desa</p>
+            <h3 id="kaderHomeDesa" class="text-base font-black text-slate-800 uppercase tracking-wide mt-0.5">-</h3>
           </div>
 
           <!-- Kartu Rekap Data Keluarga -->
@@ -448,53 +449,24 @@
               </div>
             </div>
           </div>
-
-          <!-- Bagian Layanan Grid Ikon Cepat -->
-          <div class="space-y-2 pt-1 pb-4">
-            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide">Layanan</h4>
-            <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold text-slate-700">
-              <button type="button" onclick="navigasiKaderTab('data')" class="flex flex-col items-center gap-1 group">
-                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📋</div>
-                <span>Data</span>
-              </button>
-              <button type="button" onclick="navigasiKaderTab('data')" class="flex flex-col items-center gap-1 group">
-                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📝</div>
-                <span>Draft</span>
-              </button>
-              <button type="button" onclick="navigasiKaderTab('profile')" class="flex flex-col items-center gap-1 group">
-                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">👤</div>
-                <span>Profile</span>
-              </button>
-              <button type="button" onclick="navigasiKaderTab('rekap')" class="flex flex-col items-center gap-1 group">
-                <div class="w-12 h-12 rounded-2xl bg-[#1e4e79] text-white flex items-center justify-center text-xl shadow-md group-hover:scale-105 transition">📊</div>
-                <span>Rekap</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- ==================== SUB-HALAMAN 2: DATA ==================== -->
       <div id="kader_tab_data" class="kader-sub-halaman hidden space-y-3">
-        <!-- Header Kuning Data -->
-        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-6 rounded-b-[2rem] shadow-sm text-center">
-          <h2 class="text-base font-black text-slate-900 tracking-wide uppercase">Daftar Keluarga</h2>
+        <!-- Header Gradasi Hijau Data -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-6 rounded-b-[2rem] shadow-md text-center text-white">
+          <h2 class="text-base font-black tracking-wide uppercase">Daftar Keluarga</h2>
         </div>
 
         <div class="px-4 space-y-3">
-          <!-- Kolom Pencarian Cepat Nama / NIK -->
           <div class="relative">
             <input type="text" id="kaderCariInput" oninput="filterDataKeluargaKader()" 
                    placeholder="Cari keluarga, contoh: nama / nik"
-                   class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold outline-none focus:border-amber-500 shadow-sm" />
+                   class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold outline-none focus:border-emerald-600 shadow-sm" />
           </div>
 
-          <!-- Bar Filter & Indikator Jumlah KK -->
           <div class="flex items-center justify-between gap-2 text-xs">
-            <button type="button" onclick="bukaFilterWilayahKaderModal()" 
-                    class="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-700 flex items-center gap-1.5 shadow-sm">
-              <span>☰</span> Filter
-            </button>
             <div class="px-3 py-1.5 bg-[#178582] text-white rounded-lg font-black flex items-center gap-1.5 text-[11px] shadow-sm">
               <span>👥</span>
               <span id="kaderTotalKkBadge">0 KK</span>
@@ -503,17 +475,17 @@
 
           <!-- List Akordion Baris Keluarga -->
           <div id="kaderDaftarKkContainer" class="space-y-2 pt-1 pb-4">
-            <!-- Item dirender dinamis oleh renderDaftarKeluargaKader() -->
+            <!-- Dirender oleh renderDaftarKeluargaKader() -->
           </div>
         </div>
       </div>
 
       <!-- ==================== SUB-HALAMAN 3: REKAP ==================== -->
       <div id="kader_tab_rekap" class="kader-sub-halaman hidden space-y-4">
-        <!-- Header Kuning Rekap RT -->
-        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-7 rounded-b-[2.5rem] shadow-sm text-center text-slate-900">
+        <!-- Header Gradasi Hijau Rekap RT -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-7 rounded-b-[2.5rem] shadow-md text-center text-white">
           <h2 class="text-base font-black tracking-wide uppercase">Rekap RT</h2>
-          <p id="kaderRekapSubHeader" class="text-xs font-bold text-slate-800 mt-0.5 uppercase">P KURIPAN SELATAN</p>
+          <p id="kaderRekapSubHeader" class="text-xs font-bold text-emerald-100 mt-0.5 uppercase">-</p>
         </div>
 
         <div class="px-5 space-y-4 text-xs text-slate-800">
@@ -526,15 +498,15 @@
               </div>
               <div>
                 <p class="text-slate-500 font-semibold text-[11px]">Kabupaten</p>
-                <p id="kaderRekapKab" class="font-black text-slate-900 text-xs">LOMBOK BARAT</p>
+                <p id="kaderRekapKab" class="font-black text-slate-900 text-xs">-</p>
               </div>
               <div>
                 <p class="text-slate-500 font-semibold text-[11px]">Kecamatan</p>
-                <p id="kaderRekapKec" class="font-black text-slate-900 text-xs">KURIPAN</p>
+                <p id="kaderRekapKec" class="font-black text-slate-900 text-xs">-</p>
               </div>
               <div>
-                <p class="text-slate-500 font-semibold text-[11px]">Kelurahan</p>
-                <p id="kaderRekapDesa" class="font-black text-slate-900 text-xs">KURIPAN SELATAN</p>
+                <p class="text-slate-500 font-semibold text-[11px]">Kelurahan / Desa</p>
+                <p id="kaderRekapDesa" class="font-black text-slate-900 text-xs">-</p>
               </div>
             </div>
 
@@ -549,7 +521,7 @@
             <div>
               <label class="block font-bold text-slate-700 text-[11px] mb-1">RW / Dusun</label>
               <select id="kaderRekapSelectDusun" onchange="saatKaderRekapDusunBerubah()" class="w-full p-2 border border-slate-300 rounded-xl bg-white font-semibold outline-none text-xs">
-                <option value="">Semua RW</option>
+                <option value="">Semua RW / Dusun</option>
               </select>
             </div>
             <div>
@@ -596,10 +568,10 @@
 
       <!-- ==================== SUB-HALAMAN 4: PROFILE ==================== -->
       <div id="kader_tab_profile" class="kader-sub-halaman hidden space-y-5">
-        <!-- Header Kuning Profile -->
-        <div class="bg-gradient-to-b from-[#fcd34d] to-[#fde047] p-5 pb-7 rounded-b-[2.5rem] shadow-sm text-center text-slate-900">
+        <!-- Header Gradasi Hijau Profile -->
+        <div class="bg-gradient-to-b from-emerald-900 via-emerald-800 to-teal-600 p-5 pb-7 rounded-b-[2.5rem] shadow-md text-center text-white">
           <h2 class="text-base font-black tracking-wide uppercase">Profile</h2>
-          <p id="kaderProfileSubHeader" class="text-xs font-bold text-slate-800 mt-0.5 uppercase">P KURIPAN SELATAN</p>
+          <p id="kaderProfileSubHeader" class="text-xs font-bold text-emerald-100 mt-0.5 uppercase">-</p>
         </div>
 
         <div class="px-5 space-y-3.5 text-xs text-slate-800">
@@ -612,71 +584,102 @@
             <span class="col-span-8 font-black uppercase text-slate-900" id="kaderProfNama">-</span>
           </div>
           <div class="grid grid-cols-12 items-baseline gap-1">
-            <span class="col-span-4 font-semibold text-slate-500">NIK</span>
-            <span class="col-span-8 font-black font-mono text-slate-900" id="kaderProfNik">-</span>
+            <span class="col-span-4 font-semibold text-slate-500">Username</span>
+            <span class="col-span-8 font-black font-mono text-slate-900" id="kaderProfUsername">-</span>
           </div>
           <div class="grid grid-cols-12 items-baseline gap-1">
-            <span class="col-span-4 font-semibold text-slate-500">Alamat</span>
-            <span class="col-span-8 font-bold text-slate-800 uppercase" id="kaderProfAlamat">-</span>
+            <span class="col-span-4 font-semibold text-slate-500">Kecamatan</span>
+            <span class="col-span-8 font-bold uppercase text-slate-900" id="kaderProfKec">-</span>
           </div>
           <div class="grid grid-cols-12 items-baseline gap-1">
-            <span class="col-span-4 font-semibold text-slate-500">No. Telepon</span>
-            <span class="col-span-8 font-bold font-mono text-slate-800" id="kaderProfNoHp">-</span>
+            <span class="col-span-4 font-semibold text-slate-500">Kelurahan/Desa</span>
+            <span class="col-span-8 font-bold uppercase text-slate-900" id="kaderProfDesa">-</span>
           </div>
           <div class="grid grid-cols-12 items-baseline gap-1">
             <span class="col-span-4 font-semibold text-slate-500">Group</span>
-            <span class="col-span-8 font-black text-slate-900">petugas</span>
+            <span class="col-span-8 font-black text-slate-900">Petugas Pendata</span>
           </div>
 
           <div class="pt-6">
             <button type="button" onclick="bukaModalGantiPasswordKader()" 
-                    class="px-5 py-2.5 bg-[#fcd34d] hover:bg-[#fbbf24] active:scale-95 text-slate-900 font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 uppercase text-xs">
+                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 uppercase text-xs">
               <span>Ubah kata sandi</span>
-              <span>👤🔒</span>
+              <span>🔒</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- ==================== BOTTOM NAVIGATION BAR & FAB ==================== -->
-      <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200">
-        <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between relative">
+      <!-- ==================== BOTTOM NAVIGATION DENGAN LEKUKAN (CURVED NOTCH) ==================== -->
+      <nav class="fixed bottom-0 left-0 right-0 z-40">
+        <div class="max-w-md mx-auto relative select-none">
           
-          <!-- Tombol Navigasi 1: Home -->
-          <button type="button" onclick="navigasiKaderTab('home')" id="kaderNavBtn_home" 
-                  class="flex-1 flex flex-col items-center gap-0.5 text-amber-600 font-black text-[10px] transition">
-            <span class="text-xl leading-none">⊞</span>
-            <span>Home</span>
-          </button>
+          <!-- Background SVG Melengkung Persis Gambar Lampiran -->
+          <svg viewBox="0 0 400 68" class="w-full h-[68px] drop-shadow-[0_-4px_12px_rgba(0,0,0,0.08)] fill-white pointer-events-none">
+            <path d="M 0,16 
+                     L 155,16 
+                     C 168,16 174,48 200,48 
+                     C 226,48 232,16 245,16 
+                     L 400,16 
+                     L 400,68 
+                     L 0,68 Z"></path>
+          </svg>
 
-          <!-- Tombol Navigasi 2: Data -->
-          <button type="button" onclick="navigasiKaderTab('data')" id="kaderNavBtn_data" 
-                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition mr-6">
-            <span class="text-xl leading-none">📋</span>
-            <span>Data</span>
-          </button>
-
-          <!-- TOMBOL APUNG TENGAH (FAB): TAMBAH KELUARGA BARU (+) -->
-          <div class="absolute left-1/2 -top-5 -translate-x-1/2">
-            <button type="button" onclick="bukaFormulirKeluargaDariKader()" title="Tambah Keluarga Baru" 
-                    class="w-13 h-13 sm:w-14 sm:h-14 w-12 h-12 rounded-full bg-[#1e3a8a] hover:bg-[#172554] active:scale-95 text-white flex items-center justify-center shadow-xl border-4 border-slate-100 transition">
-              <span class="text-xl sm:text-2xl font-bold leading-none">👤⁺</span>
+          <!-- Baris 4 Tombol Menu (Home, Data, Rekap, Profile) -->
+          <div class="absolute inset-0 pt-4 flex items-center justify-between px-6">
+            
+            <!-- 1. HOME -->
+            <button type="button" onclick="navigasiKaderTab('home')" id="kaderNavBtn_home" 
+                    class="w-14 flex flex-col items-center gap-0.5 text-slate-900 font-bold transition">
+              <!-- Ikon Rumah Hitam Persis Lampiran -->
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+              <span class="text-[11px] font-semibold leading-tight">Home</span>
             </button>
+
+            <!-- 2. DATA -->
+            <button type="button" onclick="navigasiKaderTab('data')" id="kaderNavBtn_data" 
+                    class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition mr-6">
+              <!-- Ikon Checklist/List Persis Lampiran -->
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M4 6h2v2H4zm0 5h2v2H4zm0 5h2v2H4zm5-5h11v2H9zm0-5h11v2H9zm0 10h11v2H9z"/>
+              </svg>
+              <span class="text-[11px] font-semibold leading-tight">Data</span>
+            </button>
+
+            <!-- 3. REKAP -->
+            <button type="button" onclick="navigasiKaderTab('rekap')" id="kaderNavBtn_rekap" 
+                    class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition ml-6">
+              <!-- Ikon Kotak Arsip/Tray Persis Lampiran -->
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5v-3h3.56c.69 1.19 1.97 2 3.44 2s2.75-.81 3.44-2H19v3zm0-5h-4c0 1.1-.9 2-2 2s-2-.9-2-2H5V5h14v9z"/>
+              </svg>
+              <span class="text-[11px] font-semibold leading-tight">Rekap</span>
+            </button>
+
+            <!-- 4. PROFILE -->
+            <button type="button" onclick="navigasiKaderTab('profile')" id="kaderNavBtn_profile" 
+                    class="w-14 flex flex-col items-center gap-0.5 text-slate-400 font-semibold transition">
+              <!-- Ikon Orang Persis Lampiran -->
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              <span class="text-[11px] font-semibold leading-tight">Profile</span>
+            </button>
+
           </div>
 
-          <!-- Tombol Navigasi 3: Rekap -->
-          <button type="button" onclick="navigasiKaderTab('rekap')" id="kaderNavBtn_rekap" 
-                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition ml-6">
-            <span class="text-xl leading-none">📊</span>
-            <span>Rekap</span>
-          </button>
-
-          <!-- Tombol Navigasi 4: Profile -->
-          <button type="button" onclick="navigasiKaderTab('profile')" id="kaderNavBtn_profile" 
-                  class="flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition">
-            <span class="text-xl leading-none">👤</span>
-            <span>Profile</span>
-          </button>
+          <!-- TOMBOL APUNG TENGAH (FAB): LINGKARAN BIRU DONKER TANPA BORDER, IKON PUTIH -->
+          <div class="absolute left-1/2 -top-1 -translate-x-1/2">
+            <button type="button" id="kaderFabTambah" onclick="bukaFormulirKeluargaDariKader()" title="Tambah Data Baru"
+                    class="w-14 h-14 rounded-full bg-[#0a192f] text-white flex items-center justify-center shadow-lg transition-all duration-200 active:scale-95">
+              <!-- Ikon Tambah Orang (+) Warna Putih -->
+              <svg class="w-7 h-7 fill-white" viewBox="0 0 24 24">
+                <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </button>
+          </div>
 
         </div>
       </nav>
@@ -2199,6 +2202,33 @@
         badge.innerText = "🔴 Offline";
       }
     }
+
+    // Perbarui icon dan teks sinyal di header kader
+    function perbaruiIndikatorSinyalKader() {
+      const iconWrap = document.getElementById('kaderHomeKoneksiIcon');
+      const textSinyal = document.getElementById('kaderHomeKoneksiText');
+      if (!iconWrap || !textSinyal) return;
+
+      if (navigator.onLine) {
+        iconWrap.className = "px-2.5 py-1 rounded-full bg-emerald-500/30 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold text-white shadow-sm transition";
+        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span><span>Online</span>`;
+      } else {
+        iconWrap.className = "px-2.5 py-1 rounded-full bg-rose-500/40 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold text-rose-100 shadow-sm transition";
+        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span><span>Offline</span>`;
+      }
+    }
+
+    // Sambungkan ke event browser online & offline
+    window.addEventListener('online', () => {
+      perbaruiIndikatorStatusKoneksi();
+      perbaruiIndikatorSinyalKader();
+      sinkronkanDataOffline();
+    });
+
+    window.addEventListener('offline', () => {
+      perbaruiIndikatorStatusKoneksi();
+      perbaruiIndikatorSinyalKader();
+    });
 
     async function picuSinkronisasiManual() {
       if (!navigator.onLine) {
@@ -12129,6 +12159,7 @@
     function navigasiKaderTab(namaTab) {
       kaderTabAktif = namaTab;
 
+      // 1. Sembunyikan / Tampilkan Sub-halaman
       ['home', 'data', 'rekap', 'profile'].forEach(t => {
         const page = document.getElementById(`kader_tab_${t}`);
         const btn = document.getElementById(`kaderNavBtn_${t}`);
@@ -12136,12 +12167,28 @@
 
         if (btn) {
           if (t === namaTab) {
-            btn.className = "flex-1 flex flex-col items-center gap-0.5 text-amber-600 font-black text-[10px] transition " + (t === 'data' ? 'mr-6' : (t === 'rekap' ? 'ml-6' : ''));
+            btn.classList.add('text-slate-900', 'font-bold');
+            btn.classList.remove('text-slate-400', 'font-semibold');
           } else {
-            btn.className = "flex-1 flex flex-col items-center gap-0.5 text-slate-400 font-semibold text-[10px] transition " + (t === 'data' ? 'mr-6' : (t === 'rekap' ? 'ml-6' : ''));
+            btn.classList.remove('text-slate-900', 'font-bold');
+            btn.classList.add('text-slate-400', 'font-semibold');
           }
         }
       });
+
+      // 2. Kontrol Tombol Tambah (FAB): HANYA AKTIF DI TAB "DATA"
+      const fabBtn = document.getElementById('kaderFabTambah');
+      if (fabBtn) {
+        if (namaTab === 'data') {
+          // AKTIF: Biru Donker Tanpa Border
+          fabBtn.disabled = false;
+          fabBtn.className = "w-14 h-14 rounded-full bg-[#0a192f] text-white flex items-center justify-center shadow-lg transition-all duration-200 active:scale-95 cursor-pointer";
+        } else {
+          // TERKUNCI (LOCK): Abu-abu & Tidak Dapat Diklik
+          fabBtn.disabled = true;
+          fabBtn.className = "w-14 h-14 rounded-full bg-slate-300 text-slate-100 flex items-center justify-center shadow-none transition-all duration-200 cursor-not-allowed pointer-events-none";
+        }
+      }
 
       window.scrollTo(0, 0);
 
@@ -12157,24 +12204,19 @@
     // 2. Inisialisasi Tampilan Dashboard Kader Setelah Login
     async function inisialisasiLayarKader() {
       tampilkanLayar('tampilan_kader_app');
+      perbaruiIndikatorSinyalKader();
       navigasiKaderTab('home');
 
-      // 1. Nama Lengkap & Username
+      // 1. Nama Lengkap & Username Kader
       const namaUser = userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA';
       document.getElementById('kaderHomeNamaUser').innerText = namaUser.toUpperCase();
       const elUsername = document.getElementById('kaderHomeUsername');
       if (elUsername) elUsername.innerText = `@${userAktif.username.toLowerCase()}`;
 
-      // 2. Terjemahkan Nama Desa & Kecamatan dari Master Wilayah
+      // 2. Terjemahkan Kode ke Nama Asli Wilayah (Kecamatan & Desa)
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
       const namaDesa = namaWil.desa || 'DESA ' + userAktif.kode_desa;
       document.getElementById('kaderHomeDesa').innerText = namaDesa.toUpperCase();
-
-      // Subheader Rekap & Profil
-      const subHeader = document.getElementById('kaderRekapSubHeader');
-      if (subHeader) subHeader.innerText = `${namaUser.toUpperCase()} (${namaDesa.toUpperCase()})`;
-      const profSubHeader = document.getElementById('kaderProfileSubHeader');
-      if (profSubHeader) profSubHeader.innerText = `${namaUser.toUpperCase()} (${namaDesa.toUpperCase()})`;
 
       // 3. Hitung Jumlah RT yang Benar Sesuai Akun
       let totalRtTugas = 0;
@@ -12186,9 +12228,7 @@
               totalRtTugas += (item.rt || []).length;
             });
           }
-        } catch(e) {
-          console.warn("Gagal parse allowed_wilayah_rt:", e);
-        }
+        } catch(e) {}
       }
       document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas} RT`;
 
@@ -12383,8 +12423,12 @@
       selDusun.innerHTML = '<option value="">Semua RW / Dusun</option>';
       selRt.innerHTML = '<option value="">Semua RT</option>';
 
-      // Update Info Wilayah Administratif Rekap
+      // Tampilkan Nama Asli Wilayah (Bukan Kode)
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
+      
+      const subHeader = document.getElementById('kaderRekapSubHeader');
+      if (subHeader) subHeader.innerText = `${(userAktif.nama_lengkap || userAktif.username).toUpperCase()} - ${namaWil.desa}`;
+
       const elKab = document.getElementById('kaderRekapKab');
       const elKec = document.getElementById('kaderRekapKec');
       const elDesa = document.getElementById('kaderRekapDesa');
@@ -12392,7 +12436,7 @@
       if (elKec) elKec.innerText = namaWil.kec;
       if (elDesa) elDesa.innerText = namaWil.desa;
 
-      // Isi Dropdown Dusun HANYA dari allowed_wilayah_rt akun yang login
+      // Dropdown Dusun dari penugasan kader
       if (userAktif.allowed_wilayah_rt) {
         try {
           const allowed = JSON.parse(userAktif.allowed_wilayah_rt);
@@ -12403,9 +12447,7 @@
               selDusun.add(opt);
             });
           }
-        } catch(e) {
-          console.warn(e);
-        }
+        } catch(e) {}
       }
 
       hitungRekapRtKader();
@@ -12468,11 +12510,14 @@
       const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
       const kdDesa = userAktif.kode_desa || '0000';
       
+      const subHeader = document.getElementById('kaderProfileSubHeader');
+      if (subHeader) subHeader.innerText = `${(userAktif.nama_lengkap || userAktif.username).toUpperCase()} - ${namaWil.desa}`;
+
       document.getElementById('kaderProfId').innerText = `KDR-${kdDesa}-${userAktif.username.toUpperCase()}`;
       document.getElementById('kaderProfNama').innerText = (userAktif.nama_lengkap || userAktif.username).toUpperCase();
-      document.getElementById('kaderProfNik').innerText = userAktif.nik || '-';
-      document.getElementById('kaderProfAlamat').innerText = `DESA ${namaWil.desa}, KEC. ${namaWil.kec}`;
-      document.getElementById('kaderProfNoHp').innerText = userAktif.no_hp || '-';
+      document.getElementById('kaderProfUsername').innerText = `@${userAktif.username.toLowerCase()}`;
+      document.getElementById('kaderProfKec').innerText = namaWil.kec;
+      document.getElementById('kaderProfDesa').innerText = namaWil.desa;
     }
 
     function bukaModalGantiPasswordKader() {
