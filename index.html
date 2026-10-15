@@ -6557,7 +6557,7 @@
     }
 
     function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
-      const listWil = window.rawWilayahList || [];
+      const listWil = window.rawWilayahList || rawWilayahList || [];
 
       const strKab = kdKab !== null && kdKab !== undefined ? String(kdKab).trim() : '';
       const strKec = kdKec !== null && kdKec !== undefined ? String(kdKec).trim() : '';
@@ -6572,7 +6572,7 @@
       let namaDesa = '';
 
       if (Array.isArray(listWil) && listWil.length > 0) {
-        // 1. CARI BERDASARKAN KODE DESA
+        // 1. CARI NAMA DESA (Prioritas utama)
         if (strDesa) {
           const itemD = listWil.find(w => {
             const d = String(w.kode_desa || '').trim();
@@ -6585,7 +6585,7 @@
           }
         }
 
-        // 2. CARI BERDASARKAN KODE KECAMATAN
+        // 2. CARI NAMA KECAMATAN (Jika belum ketemu dari baris desa)
         if (!namaKec && strKec) {
           const itemK = listWil.find(w => {
             const k = String(w.kode_kec || w.kode_kecamatan || '').trim();
@@ -6597,7 +6597,7 @@
           }
         }
 
-        // 3. CARI BERDASARKAN KODE KABUPATEN
+        // 3. CARI NAMA KABUPATEN
         if (!namaKab && strKab) {
           const itemB = listWil.find(w => {
             const b = String(w.kode_kab || w.kode_kabupaten || '').trim();
@@ -6609,18 +6609,8 @@
         }
       }
 
-      // Fallback Kamus Object Lokal
-      const padKab = !isNaN(intKab) ? String(intKab).padStart(2, '0') : '';
-      const padKec = !isNaN(intKec) ? String(intKec).padStart(2, '0') : '';
-      const padDesa = !isNaN(intDesa) ? String(intDesa).padStart(4, '0') : '';
-
-      if (!namaKab && (padKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
-      if (!namaKec && padKec) {
-        namaKec = window.dataKecamatan?.[padKab]?.[padKec] || window.dataKecamatan?.['01']?.[padKec] || '';
-      }
-      if (!namaDesa && padDesa) {
-        namaDesa = window.dataDesa?.[`${padKab || '01'}_${padKec}`]?.[padDesa] || '';
-      }
+      // Fallback nama Kabupaten Lombok Barat jika masih kosong
+      if (!namaKab && (strKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
 
       return {
         kab: (namaKab || strKab || '-').toUpperCase(),
@@ -7449,7 +7439,9 @@
           throw error;
         }
 
+        // SIMPAN KE KEDUA REFERENSI AGAR TIDAK HILANG
         rawWilayahList = data || [];
+        window.rawWilayahList = rawWilayahList;
 
         // Reset objek hierarki
         dataProvinsi = {};
@@ -12662,17 +12654,22 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {      
+    window.addEventListener('DOMContentLoaded', async () => {      
       perbaruiIndikatorStatusKoneksi();
+      perbaruiIndikatorSinyalKader();
 
+      // 1. WAJIB AMBIL MASTER WILAYAH TERLEBIH DAHULU SAMPAI SELESAI
+      await loadMasterWilayahFromDB();
+
+      // 2. BACA SESI PENGGUNA
       const sesiTersimpan = localStorage.getItem('pus_app_session');
       if (sesiTersimpan) {
         try {
           userAktif = JSON.parse(sesiTersimpan);
           
-          // PERCABANGAN SESI SETELAH REFRESH:
+          // PERCABANGAN SESI SETELAH DATA WILAYAH SIAP:
           if (userAktif.role === 'USER_DESA') {
-            inisialisasiLayarKader();
+            await inisialisasiLayarKader();
           } else {
             terapkanDataSesiUser();
             tampilkanLayar('tampilan_dashboard');
@@ -12690,7 +12687,6 @@
         tampilkanLayar('tampilan_login');
       }
 
-      loadMasterWilayahFromDB();
       evaluasiStatusKeluarga();      
     });
   </script>
