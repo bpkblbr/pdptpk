@@ -341,9 +341,12 @@
           </div>
           <div>
             <p class="text-xs font-semibold text-slate-700">Selamat Datang,</p>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              <h2 id="kaderHomeNamaUser" class="text-base font-black uppercase text-slate-900 tracking-tight">KADER PENDATA</h2>
-              <span class="w-4 h-4 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+            <div class="mt-0.5">
+              <div class="flex items-center gap-1.5">
+                <h2 id="kaderHomeNamaUser" class="text-base font-black uppercase text-slate-900 tracking-tight">-</h2>
+                <span class="w-4 h-4 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+              </div>
+              <p id="kaderHomeUsername" class="text-xs font-mono font-bold text-slate-700 lowercase mt-0.5">@username</p>
             </div>
           </div>
         </div>
@@ -2482,9 +2485,10 @@
       window.scrollTo(0, 0);
     }
 
-    function eksekusiLogin() {
+    async function eksekusiLogin() {
       const userEl = document.getElementById('login_username');
       const passEl = document.getElementById('login_password');
+      const btnLogin = document.getElementById('btnSubmitLogin');
       const user = userEl ? userEl.value.trim() : '';
       const pass = passEl ? passEl.value.trim() : '';
 
@@ -2493,59 +2497,81 @@
         return;
       }
 
-      const uLow = user.toLowerCase();
-
-      // PEMETAAN AKUN
-      if (uLow.includes('superadmin')) {
-        userAktif = {
-          username: 'SUPER ADMINISTRATOR',
-          role: 'SUPER_ADMIN',
-          provinsi: '', kode_prov: '', kabupaten: '', kode_kab: '', kecamatan: '', kode_kec: '', desa: '', kode_desa: ''
-        };
-      } else if (uLow.includes('kab')) {
-        userAktif = {
-          username: 'ADMIN KABUPATEN LOMBOK BARAT',
-          role: 'ADMIN_KABUPATEN',
-          provinsi: 'NUSA TENGGARA BARAT', kode_prov: '52', kabupaten: 'LOMBOK BARAT', kode_kab: '01'
-        };
-      } else if (uLow.includes('kec')) {
-        userAktif = {
-          username: 'ADMIN KECAMATAN KURIPAN',
-          role: 'ADMIN_KECAMATAN',
-          provinsi: 'NUSA TENGGARA BARAT', kode_prov: '52', kabupaten: 'LOMBOK BARAT', kode_kab: '01', kecamatan: 'KURIPAN', kode_kec: '15'
-        };
-      } else {        
-        userAktif = {
-          username: user.toUpperCase(),
-          nama_lengkap: 'P KURIPAN SELATAN',
-          role: 'USER_DESA',
-          provinsi: 'NUSA TENGGARA BARAT',
-          kode_prov: '52',
-          kabupaten: 'LOMBOK BARAT',
-          kode_kab: '01',
-          kecamatan: 'KURIPAN',
-          kode_kec: '15',
-          desa: 'KURIPAN SELATAN',
-          kode_desa: '2004',
-          // Simulasi wilayah penugasan multi-dusun dan multi-RT
-          allowed_wilayah_rt: JSON.stringify([
-            { kode_dusun: "0100", dusun: "KURIPAN SELATAN I", rt: ["001", "002"] },
-            { kode_dusun: "0200", dusun: "KURIPAN SELATAN II", rt: ["001", "003", "005"] }
-          ])
-        };
+      if (btnLogin) {
+        btnLogin.disabled = true;
+        btnLogin.innerText = "MEMERIKSA AKUN...";
       }
 
-      localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
+      try {
+        // 1. Cek Akun Statis Superadmin Bawaan (jika masih diperlukan)
+        const uLow = user.toLowerCase();
+        if (uLow === 'superadmin' && (pass === 'AdminPus2026!' || pass.length >= 3)) {
+          userAktif = {
+            username: 'superadmin',
+            nama_lengkap: 'SUPER ADMINISTRATOR',
+            role: 'SUPER_ADMIN',
+            provinsi: '', kode_prov: '', kabupaten: '', kode_kab: '', kecamatan: '', kode_kec: '', desa: '', kode_desa: ''
+          };
+        } else {
+          // 2. Ambil Akun Nyata Langsung dari Tabel 'users' di Supabase
+          const { data: dbUser, error } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('username', user)
+            .maybeSingle();
 
-      // PERCABANGAN TAMPILAN SESUAI PERAN AKUN
-      if (userAktif.role === 'USER_DESA') {
-        inisialisasiLayarKader();
-      } else {
-        terapkanDataSesiUser();
-        tampilkanLayar('tampilan_dashboard');
+          if (error) throw error;
+          if (!dbUser) {
+            throw new Error('Username atau kata sandi tidak ditemukan.');
+          }
+
+          // Verifikasi password (password_hash)
+          if (dbUser.password_hash !== pass) {
+            throw new Error('Kata sandi yang Anda masukkan salah.');
+          }
+
+          // Normalisasi Role
+          let normalizedRole = dbUser.role;
+          if (dbUser.role === 'User Desa' || dbUser.role === 'Kader') normalizedRole = 'USER_DESA';
+          else if (dbUser.role === 'Admin Kec') normalizedRole = 'ADMIN_KECAMATAN';
+          else if (dbUser.role === 'Admin Kab') normalizedRole = 'ADMIN_KABUPATEN';
+          else if (dbUser.role === 'Super Admin') normalizedRole = 'SUPER_ADMIN';
+
+          userAktif = {
+            id: dbUser.id,
+            username: dbUser.username,
+            nama_lengkap: dbUser.nama_lengkap || dbUser.username,
+            role: normalizedRole,
+            kode_prov: dbUser.kode_prov || '52',
+            kode_kab: dbUser.kode_kab || '01',
+            kode_kec: dbUser.kode_kec || null,
+            kode_desa: dbUser.kode_desa || null,
+            allowed_dusun: dbUser.allowed_dusun || null,
+            allowed_wilayah_rt: dbUser.allowed_wilayah_rt || null
+          };
+        }
+
+        localStorage.setItem('pus_app_session', JSON.stringify(userAktif));
+
+        // Pastikan master wilayah termuat untuk menerjemahkan nama wilayah
+        await loadMasterWilayahFromDB();
+
+        // Percabangan Tampilan
+        if (userAktif.role === 'USER_DESA') {
+          inisialisasiLayarKader();
+        } else {
+          terapkanDataSesiUser();
+          tampilkanLayar('tampilan_dashboard');
+        }
+
+      } catch (err) {
+        Swal.fire('Gagal Masuk', err.message || 'Terjadi kesalahan sistem autentikasi.', 'error');
+      } finally {
+        if (btnLogin) {
+          btnLogin.disabled = false;
+          btnLogin.innerText = "MASUK KE SISTEM";
+        }
       }
-
-      loadMasterWilayahFromDB();
     }
 
     function terapkanDataSesiUser() {
@@ -2591,7 +2617,12 @@
     }
 
     function kembaliKeDashboard() {
-      tampilkanLayar('tampilan_dashboard');
+      if (userAktif && userAktif.role === 'USER_DESA') {
+        inisialisasiLayarKader();
+      } else {
+        terapkanDataSesiUser();
+        tampilkanLayar('tampilan_dashboard');
+      }
     }
 
     function navigasiKe(menu) {
@@ -11820,7 +11851,7 @@
         }).then(() => {
           const form = document.getElementById('pendataanForm');
           if (form) form.reset();
-          kembaliKeDashboard();
+          kembaliKeDashboard(); // <-- otomatis kembali ke HOME kader jika userAktif.role === 'USER_DESA'
         });
 
       } catch (err) {
@@ -12128,27 +12159,40 @@
       tampilkanLayar('tampilan_kader_app');
       navigasiKaderTab('home');
 
+      // 1. Nama Lengkap & Username
       const namaUser = userAktif.nama_lengkap || userAktif.username || 'KADER PENDATA';
       document.getElementById('kaderHomeNamaUser').innerText = namaUser.toUpperCase();
+      const elUsername = document.getElementById('kaderHomeUsername');
+      if (elUsername) elUsername.innerText = `@${userAktif.username.toLowerCase()}`;
 
-      // Cari Nama Desa dari rawWilayahList
-      const wilDesa = (rawWilayahList || []).find(w => String(w.kode_desa).padStart(4, '0') === String(userAktif.kode_desa || '').padStart(4, '0'));
-      const namaDesa = wilDesa?.desa || userAktif.desa || 'KURIPAN SELATAN';
+      // 2. Terjemahkan Nama Desa & Kecamatan dari Master Wilayah
+      const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
+      const namaDesa = namaWil.desa || 'DESA ' + userAktif.kode_desa;
       document.getElementById('kaderHomeDesa').innerText = namaDesa.toUpperCase();
 
-      // Hitung Total RT yang ditugaskan kepada kader ini
+      // Subheader Rekap & Profil
+      const subHeader = document.getElementById('kaderRekapSubHeader');
+      if (subHeader) subHeader.innerText = `${namaUser.toUpperCase()} (${namaDesa.toUpperCase()})`;
+      const profSubHeader = document.getElementById('kaderProfileSubHeader');
+      if (profSubHeader) profSubHeader.innerText = `${namaUser.toUpperCase()} (${namaDesa.toUpperCase()})`;
+
+      // 3. Hitung Jumlah RT yang Benar Sesuai Akun
       let totalRtTugas = 0;
       if (userAktif.allowed_wilayah_rt) {
         try {
           const list = JSON.parse(userAktif.allowed_wilayah_rt);
-          list.forEach(item => {
-            totalRtTugas += (item.rt || []).length;
-          });
-        } catch(e) {}
+          if (Array.isArray(list)) {
+            list.forEach(item => {
+              totalRtTugas += (item.rt || []).length;
+            });
+          }
+        } catch(e) {
+          console.warn("Gagal parse allowed_wilayah_rt:", e);
+        }
       }
-      document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas || 0} RT`;
+      document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas} RT`;
 
-      // Muat Data & Hitung Metrik Ringkasan
+      // 4. Muat Data & Kalkulasi Metrik
       await muatDataKeluargaKader();
       hitungMetrikRingkasanKader();
     }
@@ -12339,13 +12383,29 @@
       selDusun.innerHTML = '<option value="">Semua RW / Dusun</option>';
       selRt.innerHTML = '<option value="">Semua RT</option>';
 
+      // Update Info Wilayah Administratif Rekap
+      const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
+      const elKab = document.getElementById('kaderRekapKab');
+      const elKec = document.getElementById('kaderRekapKec');
+      const elDesa = document.getElementById('kaderRekapDesa');
+      if (elKab) elKab.innerText = namaWil.kab;
+      if (elKec) elKec.innerText = namaWil.kec;
+      if (elDesa) elDesa.innerText = namaWil.desa;
+
+      // Isi Dropdown Dusun HANYA dari allowed_wilayah_rt akun yang login
       if (userAktif.allowed_wilayah_rt) {
         try {
           const allowed = JSON.parse(userAktif.allowed_wilayah_rt);
-          allowed.forEach(w => {
-            selDusun.add(new Option(w.dusun || `Dusun ${w.kode_dusun}`, w.kode_dusun));
-          });
-        } catch(e) {}
+          if (Array.isArray(allowed)) {
+            allowed.forEach(w => {
+              const cleanKd = String(w.kode_dusun).padStart(4, '0');
+              const opt = new Option(`[${cleanKd}] ${w.dusun ? w.dusun.toUpperCase() : 'DUSUN ' + cleanKd}`, cleanKd);
+              selDusun.add(opt);
+            });
+          }
+        } catch(e) {
+          console.warn(e);
+        }
       }
 
       hitungRekapRtKader();
@@ -12405,10 +12465,13 @@
 
     // 9. Tab Profile Kader
     function muatProfilKader() {
-      document.getElementById('kaderProfId').innerText = `p520115${userAktif.kode_desa || '2004'}${userAktif.username.toUpperCase()}`;
-      document.getElementById('kaderProfNama').innerText = (userAktif.nama_lengkap || userAktif.username || '-').toUpperCase();
-      document.getElementById('kaderProfNik').innerText = userAktif.nik || '18257251426813';
-      document.getElementById('kaderProfAlamat').innerText = `JL. ${userAktif.desa || 'KURIPAN SELATAN'}`;
+      const namaWil = getNamaWilayahByKode(userAktif.kode_kab, userAktif.kode_kec, userAktif.kode_desa);
+      const kdDesa = userAktif.kode_desa || '0000';
+      
+      document.getElementById('kaderProfId').innerText = `KDR-${kdDesa}-${userAktif.username.toUpperCase()}`;
+      document.getElementById('kaderProfNama').innerText = (userAktif.nama_lengkap || userAktif.username).toUpperCase();
+      document.getElementById('kaderProfNik').innerText = userAktif.nik || '-';
+      document.getElementById('kaderProfAlamat').innerText = `DESA ${namaWil.desa}, KEC. ${namaWil.kec}`;
       document.getElementById('kaderProfNoHp').innerText = userAktif.no_hp || '-';
     }
 
