@@ -2272,22 +2272,22 @@
       modeEditKeluargaLuar = false;
       tampilkanLayar('tampilan_formulir');
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
-      inisialisasiWilayahSesuaiRole();
+      inisialisasiWilayahSesuaiRole()
       
       const selStatus = document.getElementById('status_keluarga');
       if (selStatus) {
-        selStatus.value = String(kel.status_keluarga || '1');
-        selStatus.disabled = false;
-        selStatus.classList.remove('bg-slate-100', 'cursor-not-allowed');
+        selStatus.value = '6';
+        selStatus.disabled = true;
+        selStatus.classList.add('bg-slate-100', 'cursor-not-allowed');
       }
 
-      indexStepKB = 0;
-      riwayatStepKB = [];
-      indexStepPK = 0;
-      riwayatStepPK = [];
-      tampilkanStepKB();
-      tampilkanStepPK();
-      evaluasiStatusKeluarga();
+      indexStepKB = 0
+      riwayatStepKB = []
+      indexStepPK = 0
+      riwayatStepPK = []
+      tampilkanStepKB()
+      tampilkanStepPK()
+      evaluasiStatusKeluarga()
     }
 
     function isiDataUjiCobaOtomatis() {
@@ -4068,9 +4068,15 @@
         document.getElementById('kode_kec').value = kdKec;
         document.getElementById('kode_desa').value = kdDesa;
         document.getElementById('kode_dusun').value = kdDsn;
-
         document.getElementById('nomor_kk').value = kel.nomor_kk || '';
-        document.getElementById('status_keluarga').value = String(kel.status_keluarga || '1');
+
+        const selStatus = document.getElementById('status_keluarga');
+        if (selStatus) {
+          selStatus.value = String(kel.status_keluarga || '1');
+          selStatus.disabled = false;
+          selStatus.classList.remove('bg-slate-100', 'cursor-not-allowed');
+        }
+        
         document.getElementById('kode_rumah').value = kel.kode_rumah || '001';
         document.getElementById('no_urut_keluarga').value = kel.no_urut_keluarga || '001';
         document.getElementById('no_hp').value = kel.no_hp || '';
