@@ -4026,78 +4026,318 @@
         return;
       }
 
-      // Ambil urutan nomor anggota berikutnya
+      // Ambil daftar anggota terkini untuk penomoran urut dan referensi Ibu Kandung
       const { data: listAng } = await supabaseClient
         .from('anggota_keluarga')
-        .select('nomor_anggota_keluarga')
-        .eq('kode_keluarga', kodeKeluargaTarget);
+        .select('*')
+        .eq('kode_keluarga', kodeKeluargaTarget)
+        .order('nomor_anggota_keluarga', { ascending: true });
 
       const noBaru = (listAng && listAng.length > 0) 
         ? Math.max(...listAng.map(a => parseInt(a.nomor_anggota_keluarga, 10) || 0)) + 1 
         : 1;
 
+      // Cari nomor dan nama istri untuk opsi Kode Ibu Kandung
+      const istri = (listAng || []).find(a => String(a.hubungan_dengan_kk) === '2');
+      const nomorIstri = istri ? String(istri.nomor_anggota_keluarga || 2).padStart(2, '0') : null;
+      const namaIstri = istri ? (istri.nama_lengkap || 'ISTRI').toUpperCase() : '';
+
       Swal.fire({
-        title: '<div class="text-sm font-black text-slate-800 uppercase">➕ Tambah Anggota Keluarga Baru</div>',
+        title: `
+          <div class="text-sm sm:text-base font-black text-slate-800 uppercase tracking-tight">
+            ➕ Tambah Anggota Keluarga Baru
+          </div>
+        `,
         html: `
-          <div class="text-left space-y-2.5 pt-2 text-xs max-h-[70vh] overflow-y-auto px-1 form-uppercase">
+          <div class="text-left space-y-3 pt-2 text-xs max-h-[75vh] overflow-y-auto px-1 form-uppercase">
+            <!-- (2) NAMA LENGKAP -->
             <div>
               <label class="block font-bold text-slate-700 uppercase mb-1">Nama Lengkap *</label>
-              <input type="text" id="tb_nama_lengkap" class="w-full p-2 border rounded-lg uppercase font-semibold" placeholder="Nama Anggota Baru" />
+              <input type="text" id="tb_nama_lengkap" 
+                     class="w-full p-2.5 border rounded-xl outline-none font-semibold text-slate-800 uppercase focus:ring-1 focus:ring-emerald-500" 
+                     placeholder="Masukkan Nama Lengkap" />
             </div>
+
+            <!-- (2) NIK -->
             <div>
-              <label class="block font-bold text-slate-700 uppercase mb-1">NIK (16 Digit) *</label>
-              <input type="text" id="tb_nik" maxlength="16" class="w-full p-2 border rounded-lg font-mono font-bold" placeholder="16 Digit NIK" />
+              <label class="block font-bold text-slate-700 uppercase mb-1">NIK *</label>
+              <input type="text" id="tb_nik" maxlength="16" 
+                     class="w-full p-2.5 border rounded-xl font-mono font-bold text-slate-800 outline-none focus:ring-1 focus:ring-emerald-500" 
+                     placeholder="Masukkan 16 Digit NIK" />
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Kelamin *</label>
-                <select id="tb_jenis_kelamin" class="w-full p-2 border rounded-lg bg-white">
-                  <option value="1">1. Laki-laki</option>
-                  <option value="2">2. Perempuan</option>
-                </select>
-              </div>
+
+            <!-- (3) JENIS KELAMIN -->
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Kelamin *</label>
+              <select id="tb_jenis_kelamin" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                <option value="">-- PILIH JENIS KELAMIN --</option>
+                <option value="1">1. Laki-laki</option>
+                <option value="2">2. Perempuan</option>
+              </select>
+            </div>
+
+            <!-- (4) TANGGAL LAHIR & USIA -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Tanggal Lahir *</label>
-                <input type="date" id="tb_tanggal_lahir" class="w-full p-2 border rounded-lg" />
+                <input type="date" id="tb_tanggal_lahir" onchange="saatTbTglLahirBerubah()" 
+                       class="w-full p-2.5 border rounded-xl font-semibold text-slate-800 outline-none focus:ring-1 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Usia (Tahun)</label>
+                <input type="text" id="tb_display_usia" readonly placeholder="0" 
+                       class="w-full p-2.5 border rounded-xl bg-slate-100 font-bold text-slate-700 outline-none cursor-not-allowed text-center" />
               </div>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block font-bold text-slate-700 uppercase mb-1">Status Hubungan *</label>
-                <select id="tb_hubungan" class="w-full p-2 border rounded-lg bg-white font-semibold">
-                  <option value="3" selected>3. Anak</option>
-                  <option value="2">2. Istri</option>
-                  <option value="4">4. Lainnya</option>
-                </select>
-              </div>
+
+            <!-- (5) STATUS PERKAWINAN & (6) USIA KAWIN PERTAMA -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <div>
                 <label class="block font-bold text-slate-700 uppercase mb-1">Status Perkawinan *</label>
-                <select id="tb_status_kawin" class="w-full p-2 border rounded-lg bg-white">
-                  <option value="1" selected>1. Belum Kawin</option>
+                <select id="tb_status_perkawinan" onchange="saatTbPerkawinanBerubah()" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH STATUS --</option>
+                  <option value="1">1. Belum Kawin</option>
                   <option value="2">2. Kawin Tercatat</option>
                   <option value="3">3. Kawin Tidak Tercatat</option>
-                  <option value="4">4. Cerai Hidup</option>
+                  <option value="4">4. Cerai Hidup Tercatat</option>
+                  <option value="5">5. Cerai Hidup Tidak Tercatat</option>
                   <option value="6">6. Cerai Mati</option>
                 </select>
               </div>
+              <div id="wrapper_tb_usia_kawin" class="opacity-40 pointer-events-none">
+                <label class="block font-bold text-slate-700 uppercase mb-1">Usia Kawin Pertama *</label>
+                <input type="number" id="tb_usia_kawin_pertama" min="10" max="70" placeholder="Contoh: 21" 
+                       class="w-full p-2.5 border rounded-xl font-semibold text-slate-800 outline-none focus:ring-1 focus:ring-emerald-500" />
+              </div>
+            </div>
+
+            <!-- (7) MEMILIKI AKTA LAHIR & (8) HUBUNGAN DENGAN KK -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Memiliki Akta Lahir *</label>
+                <select id="tb_memiliki_akta_lahir" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH --</option>
+                  <option value="1">1. Ya</option>
+                  <option value="2">2. Tidak</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Hubungan Dengan KK *</label>
+                <select id="tb_hubungan" onchange="saatTbHubunganBerubah()" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH HUBUNGAN --</option>
+                  <option value="2">2. Istri</option>
+                  <option value="3" selected>3. Anak</option>
+                  <option value="4">4. Lainnya</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- (9) KODE IBU KANDUNG & (10) AGAMA -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Kode Ibu Kandung</label>
+                <select id="tb_kode_ibu" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="00">00 - LAINNYA</option>
+                  ${nomorIstri ? `<option value="${nomorIstri}" selected>${nomorIstri} -${namaIstri}</option>` : ''}
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Agama *</label>
+                <select id="tb_agama" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH AGAMA --</option>
+                  <option value="1">1. Islam</option>
+                  <option value="2">2. Kristen</option>
+                  <option value="3">3. Katolik</option>
+                  <option value="4">4. Hindu</option>
+                  <option value="5">5. Budha</option>
+                  <option value="6">6. Khonghucu</option>
+                  <option value="7">7. Penghayat Kepercayaan</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- (11) JENIS PEKERJAAN & (13) PENDIDIKAN -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Jenis Pekerjaan *</label>
+                <select id="tb_jenis_pekerjaan" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH PEKERJAAN --</option>
+                  <option value="1">1. Tidak/Belum Bekerja</option>
+                  <option value="2">2. Petani</option>
+                  <option value="3">3. Nelayan</option>
+                  <option value="4">4. Pedagang</option>
+                  <option value="5">5. Pejabat Negara</option>
+                  <option value="6">6. PNS/TNI/POLRI</option>
+                  <option value="7">7. Pegawai Swasta</option>
+                  <option value="8">8. Wiraswasta</option>
+                  <option value="9">9. Pensiunan</option>
+                  <option value="10">10. Pekerja Lepas</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Pendidikan *</label>
+                <select id="tb_pendidikan" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH PENDIDIKAN --</option>
+                  <option value="1">1. Tidak/Belum Sekolah</option>
+                  <option value="2">2. Tidak Tamat SD/Sederajat</option>
+                  <option value="3">3. Masih SD/Sederajat</option>
+                  <option value="4">4. Tamat SD/Sederajat</option>
+                  <option value="5">5. Masih SLTP/Sederajat</option>
+                  <option value="6">6. Tamat SLTP/Sederajat</option>
+                  <option value="7">7. Masih SLTA/Sederajat</option>
+                  <option value="8">8. Tamat SLTA/Sederajat</option>
+                  <option value="9">9. Masih PT/Akademi</option>
+                  <option value="10">10. Tamat PT/Akademi</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- (14) KEPESERTAAN JKN & (15) KESULITAN FUNGSIONAL -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Kepesertaan JKN *</label>
+                <select id="tb_kepesertaan_jkn" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH JKN --</option>
+                  <option value="1">1. PBI</option>
+                  <option value="2">2. Bukan PBI</option>
+                  <option value="3">3. Swasta</option>
+                  <option value="4">4. Tidak Memiliki</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Kesulitan Fungsional *</label>
+                <select id="tb_gangguan_fungsional" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH --</option>
+                  <option value="1">1. Fisik</option>
+                  <option value="2">2. Sensorik</option>
+                  <option value="3">3. Mental</option>
+                  <option value="4">4. Intelektual</option>
+                  <option value="5" selected>5. Tidak</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- (16) MENGURUS DIRI SENDIRI & (17) BEKERJA DI LUAR NEGERI -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Mengurus Diri Sendiri *</label>
+                <select id="tb_kemampuan_mengurus_diri" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH --</option>
+                  <option value="1">1. Tidak Dapat Mengurus</option>
+                  <option value="2">2. Banyak Kesulitan</option>
+                  <option value="3">3. Sedikit Kesulitan</option>
+                  <option value="4" selected>4. Tidak Mengalami Kesulitan</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 uppercase mb-1">Bekerja di Luar Negeri *</label>
+                <select id="tb_bekerja_luar_negeri" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                  <option value="">-- PILIH --</option>
+                  <option value="1">1. Pernah</option>
+                  <option value="2">2. Sedang</option>
+                  <option value="3">3. Akan (dlm 3 thn)</option>
+                  <option value="4" selected>4. Tidak</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- (18) MUTASI ANGGOTA -->
+            <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">Mutasi Anggota *</label>
+              <select id="tb_mutasi_anggota" class="w-full p-2.5 border rounded-xl bg-white font-semibold text-slate-800 outline-none">
+                <option value="0" selected>0. Tidak Ada Mutasi / Tetap</option>
+                <option value="1">1. Anggota pindah keluar</option>
+                <option value="2">2. Meninggal dunia</option>
+                <option value="3">3. Anggota baru lahir</option>
+                <option value="4">4. Anggota baru pindah datang</option>
+              </select>
             </div>
           </div>
         `,
+        customClass: {
+          popup: 'rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border border-slate-100'
+        },
         showCancelButton: true,
-        confirmButtonText: '💾 Tambahkan',
+        confirmButtonText: '💾 Tambahkan Anggota',
         cancelButtonText: 'Batal',
         confirmButtonColor: '#059669',
+        cancelButtonColor: '#64748b',
+        focusConfirm: false,
+        didOpen: () => {
+          window.saatTbTglLahirBerubah = () => {
+            const valTgl = document.getElementById('tb_tanggal_lahir').value;
+            const inpUsia = document.getElementById('tb_display_usia');
+            if (valTgl && inpUsia) {
+              inpUsia.value = hitungUsiaTahun(valTgl);
+            } else if (inpUsia) {
+              inpUsia.value = '';
+            }
+          };
+
+          window.saatTbPerkawinanBerubah = () => {
+            const val = document.getElementById('tb_status_perkawinan').value;
+            const wrap = document.getElementById('wrapper_tb_usia_kawin');
+            const inp = document.getElementById('tb_usia_kawin_pertama');
+            if (!val || val === '1') {
+              wrap.classList.add('opacity-40', 'pointer-events-none');
+              if (inp) inp.value = '';
+            } else {
+              wrap.classList.remove('opacity-40', 'pointer-events-none');
+            }
+          };
+
+          window.saatTbHubunganBerubah = () => {
+            const hub = document.getElementById('tb_hubungan').value;
+            const selIbu = document.getElementById('tb_kode_ibu');
+            if (hub === '1' || hub === '2') {
+              selIbu.value = '00';
+              selIbu.disabled = true;
+              selIbu.classList.add('bg-slate-100', 'cursor-not-allowed');
+            } else {
+              selIbu.disabled = false;
+              selIbu.classList.remove('bg-slate-100', 'cursor-not-allowed');
+            }
+          };
+        },
         preConfirm: () => {
           const nama = document.getElementById('tb_nama_lengkap')?.value.trim().toUpperCase();
           const nik = document.getElementById('tb_nik')?.value.trim();
+          const jk = document.getElementById('tb_jenis_kelamin')?.value;
           const tgl = document.getElementById('tb_tanggal_lahir')?.value;
+          const statusKawin = document.getElementById('tb_status_perkawinan')?.value;
+          const usiaKawin = document.getElementById('tb_usia_kawin_pertama')?.value;
+          const akta = document.getElementById('tb_memiliki_akta_lahir')?.value;
+          const hub = document.getElementById('tb_hubungan')?.value;
+          const kodeIbu = document.getElementById('tb_kode_ibu')?.value;
+          const agama = document.getElementById('tb_agama')?.value;
+          const kerja = document.getElementById('tb_jenis_pekerjaan')?.value;
+          const didik = document.getElementById('tb_pendidikan')?.value;
+          const jkn = document.getElementById('tb_kepesertaan_jkn')?.value;
+          const dis = document.getElementById('tb_gangguan_fungsional')?.value;
+          const urus = document.getElementById('tb_kemampuan_mengurus_diri')?.value;
+          const ln = document.getElementById('tb_bekerja_luar_negeri')?.value;
+          const mutasi = document.getElementById('tb_mutasi_anggota')?.value;
 
-          if (!nama || !nik || !tgl) {
-            Swal.showValidationMessage('Nama, NIK, dan Tanggal Lahir wajib diisi!');
-            return false;
-          }
-          if (nik.length !== 16) {
-            Swal.showValidationMessage('NIK harus 16 digit angka!');
+          const errorList = [];
+          if (!nama) errorList.push('Nama Lengkap belum diisi');
+          if (!nik || nik.length !== 16) errorList.push('NIK harus 16 digit angka');
+          if (!jk) errorList.push('Jenis Kelamin belum dipilih');
+          if (!tgl) errorList.push('Tanggal Lahir belum diisi');
+          if (!statusKawin) errorList.push('Status Perkawinan belum dipilih');
+          if (['2', '3', '4', '5', '6'].includes(statusKawin) && !usiaKawin) errorList.push('Usia Kawin Pertama wajib diisi');
+          if (!akta) errorList.push('Memiliki Akta Lahir belum dipilih');
+          if (!hub) errorList.push('Hubungan Dengan KK belum dipilih');
+          if (!agama) errorList.push('Agama belum dipilih');
+          if (!kerja) errorList.push('Jenis Pekerjaan belum dipilih');
+          if (!didik) errorList.push('Pendidikan belum dipilih');
+          if (!jkn) errorList.push('Kepesertaan JKN belum dipilih');
+          if (!dis) errorList.push('Kesulitan Fungsional belum dipilih');
+          if (!urus) errorList.push('Mengurus Diri Sendiri belum dipilih');
+          if (!ln) errorList.push('Bekerja di Luar Negeri belum dipilih');
+          if (mutasi === '') errorList.push('Mutasi Anggota belum dipilih');
+
+          if (errorList.length > 0) {
+            Swal.showValidationMessage(errorList[0]);
             return false;
           }
 
@@ -4107,30 +4347,52 @@
             nomor_anggota_keluarga: noBaru,
             nama_lengkap: nama,
             nik: nik,
-            jenis_kelamin: document.getElementById('tb_jenis_kelamin').value,
+            jenis_kelamin: jk,
             tanggal_lahir: tgl,
-            hubungan_dengan_kk: document.getElementById('tb_hubungan').value,
-            status_perkawinan: document.getElementById('tb_status_kawin').value,
-            memiliki_akta_lahir: '1',
-            kode_ibu_kandung: '00',
-            agama: '1',
-            jenis_pekerjaan: '1',
-            pendidikan: '1',
-            kesertaan_jkn: '1',
-            gangguan_fungsional: '5',
-            kemampuan_mengurus_diri: '4',
-            bekerja_luar_negeri: '4',
-            mutasi_anggota: '0'
+            status_perkawinan: statusKawin,
+            usia_kawin_pertama: statusKawin !== '1' ? (parseInt(usiaKawin, 10) || null) : null,
+            memiliki_akta_lahir: akta,
+            hubungan_dengan_kk: hub,
+            kode_ibu_kandung: kodeIbu || '00',
+            agama: agama,
+            jenis_pekerjaan: kerja,
+            pendidikan: didik,
+            kesertaan_jkn: jkn,
+            gangguan_fungsional: dis || '5',
+            kemampuan_mengurus_diri: urus || '4',
+            bekerja_luar_negeri: ln || '4',
+            mutasi_anggota: mutasi || '0'
           };
         }
       }).then(async (res) => {
         if (res.isConfirmed && res.value) {
           Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
           try {
+            // Validasi proteksi NIK Istri Ganda jika anggota baru adalah Istri
+            if (res.value.hubungan_dengan_kk === '2' && res.value.nik !== '9999999999999999') {
+              const { data: cekIstriLain, error: errCek } = await supabaseClient
+                .from('anggota_keluarga')
+                .select('nomor_kk, nama_lengkap')
+                .eq('nik', res.value.nik)
+                .eq('hubungan_dengan_kk', '2');
+
+              if (errCek) throw errCek;
+
+              if (cekIstriLain && cekIstriLain.length > 0) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'NIK Istri Ganda!',
+                  text: `NIK (${res.value.nik}) sudah digunakan oleh Istri keluarga lain: ${cekIstriLain[0].nama_lengkap} (KK: ${cekIstriLain[0].nomor_kk})!`,
+                  confirmButtonColor: '#e11d48'
+                });
+                return;
+              }
+            }
+
             const { error: insErr } = await supabaseClient.from('anggota_keluarga').insert([res.value]);
             if (insErr) throw insErr;
 
-            Swal.fire('Berhasil!', `Anggota ${res.value.nama_lengkap} berhasil ditambahkan ke KK.`, 'success');
+            Swal.fire('Berhasil!', `Anggota ${res.value.nama_lengkap} berhasil ditambahkan ke keluarga.`, 'success');
             await muatDataCariEditKeluarga();
             bukaDetailKeluargaCariEdit(kodeKeluargaTarget);
           } catch(e) {
