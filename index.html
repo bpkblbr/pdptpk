@@ -12869,8 +12869,8 @@
       document.getElementById('kaderHomeJmlRt').innerText = `${totalRtTugas} RT`;
 
       navigasiKaderTab('home');
-      await muatDataKeluargaKader();
-      hitungMetrikRingkasanKader();
+      await muatDataKeluargaKader();      
+      await hitungMetrikRingkasanKader();
     }
 
     // 3. Ambil Data Supabase Terkunci Berdasarkan RT Tugas Kader
@@ -12917,6 +12917,8 @@
       } catch (err) {
         console.error("Gagal memuat data kader:", err);
       }
+
+      await hitungMetrikRingkasanKader();
     }
 
     // 4. Render Daftar Keluarga (Data.jpg) dengan Tombol Edit & Hapus
@@ -13013,10 +13015,11 @@
     }
 
     // 6. Hitung Metrik Ringkasan untuk Kartu Home
-    function hitungMetrikRingkasanKader() {
+    async function hitungMetrikRingkasanKader() {
       let cAda = 0, cPindah = 0, cMeninggal = 0, cTidakDitemukan = 0;
       let cValid = 0, cAnomali = 0, cAnomaliKonf = 0;
 
+      // 1. Hitung metrik data keluarga di cache kader seperti biasa
       dataKeluargaKaderCache.forEach(k => {
         const st = String(k.status_keluarga || '1');
         if (st === '1' || st === '6') cAda++;
@@ -13038,7 +13041,21 @@
       document.getElementById('kaderCountPindah').innerText = cPindah;
       document.getElementById('kaderCountMeninggal').innerText = cMeninggal;
       document.getElementById('kaderCountTidakDitemukan').innerText = cTidakDitemukan;
-      document.getElementById('kaderCountTersimpan').innerText = dataKeluargaKaderCache.length;
+
+      // 2. AMBIL JUMLAH DATA PADA ANTREAN OFFLINE (YANG BELUM DISINKRONKAN)
+      let jumlahBelumSync = 0;
+      try {
+        const antreanLokal = await ambilSemuaAntreanOffline();
+        jumlahBelumSync = antreanLokal ? antreanLokal.length : 0;
+      } catch (e) {
+        console.warn("Gagal membaca antrean offline untuk rekap:", e);
+      }
+
+      // Tampilkan jumlah data yang belum disinkronkan pada badge "Tersimpan"
+      const elTersimpan = document.getElementById('kaderCountTersimpan');
+      if (elTersimpan) {
+        elTersimpan.innerText = jumlahBelumSync;
+      }
 
       document.getElementById('kaderCountValid').innerText = cValid;
       document.getElementById('kaderCountAnomali').innerText = cAnomali;
