@@ -6528,8 +6528,8 @@
 
       const dataAkses = getWilayahTersaringSesuaiRole();
       const listKab = [...new Map(dataAkses.map(w => [w.kode_kab, w.kabupaten])).entries()];
-      listKab.sort((a,b) => a[1].localeCompare(b[1])).forEach(([kd, nm]) => {
-        selKab.add(new Option(nm.toUpperCase(), kd));
+      listKab.sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true })).forEach(([kd, nm]) => {
+        selKab.add(new Option(`${kd} - ${nm.toUpperCase()}`, kd));
       });
 
       if (userAktif.role === 'ADMIN_KABUPATEN' || userAktif.role === 'ADMIN_KECAMATAN') {
@@ -8278,21 +8278,21 @@
             <label class="block text-slate-700 font-medium mb-1">Kepesertaan JKN *</label>
             <select name="kepesertaan_jkn" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 font-medium focus:border-blue-500">
               <option value="" selected>-- PILIH JKN --</option>
-              <option value="1">PBI</option>
-              <option value="2">Bukan PBI</option>
-              <option value="3">Swasta</option>
-              <option value="4">Tidak Memiliki</option>
+              <option value="1">1. PBI</option>
+              <option value="2">2. Bukan PBI</option>
+              <option value="3">3. Swasta</option>
+              <option value="4">4. Tidak Memiliki</option>
             </select>
           </div>
           <div>
             <label class="block text-slate-700 font-medium mb-1">Kesulitan Fungsional *</label>
             <select name="gangguan_fungsional" required class="w-full px-2.5 py-2.5 bg-white border border-slate-300 rounded-lg outline-none text-xs sm:text-sm text-slate-800 focus:border-blue-500">
               <option value="" selected>-- PILIH --</option>
-              <option value="5">5. Tidak</option>
               <option value="1">1. Fisik</option>
               <option value="2">2. Sensorik</option>
               <option value="3">3. Mental</option>
               <option value="4">4. Intelektual</option>
+              <option value="5">5. Tidak</option>
             </select>
           </div>
         </div>
