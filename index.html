@@ -2096,6 +2096,10 @@
       console.warn("Inisialisasi Supabase:", e);
     }
 
+    let modeEditKeluargaLuar = false;
+    let daftarUrutanAnomali = [];
+    let indexAnomaliAktif = 0;
+
     // Inisialisasi IndexedDB Lokal
     function bukaDatabaseOffline() {
       return new Promise((resolve, reject) => {
@@ -2265,15 +2269,25 @@
     });
 
     function bukaFormulirPendataan() {
+      modeEditKeluargaLuar = false;
       tampilkanLayar('tampilan_formulir');
       pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
       inisialisasiWilayahSesuaiRole();
+      
+      const selStatus = document.getElementById('status_keluarga');
+      if (selStatus) {
+        selStatus.value = String(kel.status_keluarga || '1');
+        selStatus.disabled = false;
+        selStatus.classList.remove('bg-slate-100', 'cursor-not-allowed');
+      }
+
       indexStepKB = 0;
       riwayatStepKB = [];
       indexStepPK = 0;
       riwayatStepPK = [];
       tampilkanStepKB();
       tampilkanStepPK();
+      evaluasiStatusKeluarga();
     }
 
     function isiDataUjiCobaOtomatis() {
@@ -4000,37 +4014,34 @@
     // EDIT FORMULIR KELUARGA LENGKAP DARI TABEL CARI & EDIT
     // ========================================================
     async function editFormulirKeluargaLengkap(kodeKelTarget) {
-      let kel = (dataCariEditCache || []).find(k => (k.kode_keluarga || k.nomor_kk) === kodeKelTarget);
+      modeEditKeluargaLuar = true; // AKTIFKAN MODE EDIT LUAR
 
       Swal.fire({
         title: 'Memuat Formulir Lengkap...',
-        html: 'Menyiapkan lembar isian dan data anggota keluarga...',
+        html: 'Menyiapkan data wilayah, KB, dan pembangunan keluarga...',
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading()
       });
 
       try {
-        const { data: dataKelDb, error: errKel } = await supabaseClient
+        // Ambil data lengkap keluarga dari Supabase
+        const { data: kel, error: errKel } = await supabaseClient
           .from('keluarga')
           .select(`*, anggota_keluarga (*)`)
           .or(`kode_keluarga.eq.${kodeKelTarget},nomor_kk.eq.${kodeKelTarget}`)
           .maybeSingle();
 
-        if (!errKel && dataKelDb) {
-          kel = dataKelDb;
-        }
-
-        if (!kel) {
+        if (errKel || !kel) {
           throw new Error('Data keluarga tidak ditemukan di database.');
         }
 
-        // 1. Pindah ke Halaman Formulir Utama
+        // 1. Tampilkan Formulir & Buka Langkah Wilayah
         tampilkanLayar('tampilan_formulir');
-        pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH');
+        pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH (MODE EDIT)');
         const badgeLangkah = document.getElementById('badgeLangkah');
         if (badgeLangkah) badgeLangkah.innerText = "LANGKAH 1";
 
-        // 2. Isi Data Wilayah (Langkah 1)
+        // 2. Isi Data Wilayah
         const kdProv = String(kel.kode_prov || '52').padStart(2, '0');
         const kdKab  = String(kel.kode_kab || '01').padStart(2, '0');
         const kdKec  = String(kel.kode_kec || '').padStart(2, '0');
@@ -4038,34 +4049,17 @@
         const kdDsn  = String(kel.kode_dusun || '').padStart(4, '0');
 
         const elProv = document.getElementById('provinsi');
-        if (elProv) {
-          elProv.value = kdProv;
-          updateFormKabupaten();
-        }
+        if (elProv) { elProv.value = kdProv; updateFormKabupaten(); }
         const elKab = document.getElementById('kabupaten');
-        if (elKab) {
-          elKab.value = kdKab;
-          updateFormKecamatan();
-        }
+        if (elKab) { elKab.value = kdKab; updateFormKecamatan(); }
         const elKec = document.getElementById('kecamatan');
-        if (elKec) {
-          elKec.value = kdKec;
-          updateFormDesa();
-        }
+        if (elKec) { elKec.value = kdKec; updateFormDesa(); }
         const elDesa = document.getElementById('desa');
-        if (elDesa) {
-          elDesa.value = kdDesa;
-          updateFormDusun();
-        }
+        if (elDesa) { elDesa.value = kdDesa; updateFormDusun(); }
         const elDusun = document.getElementById('dusun');
-        if (elDusun) {
-          elDusun.value = kdDsn;
-          updateFormRT();
-        }
+        if (elDusun) { elDusun.value = kdDsn; updateFormRT(); }
         const elRt = document.getElementById('rt');
-        if (elRt) {
-          elRt.value = String(kel.rt || '001').padStart(3, '0');
-        }
+        if (elRt) { elRt.value = String(kel.rt || '001').padStart(3, '0'); }
 
         sinkronkanLabelWilayah();
 
@@ -4081,10 +4075,11 @@
         document.getElementById('no_urut_keluarga').value = kel.no_urut_keluarga || '001';
         document.getElementById('no_hp').value = kel.no_hp || '';
         document.getElementById('alamat_detail').value = kel.alamat_detail || '';
+        document.getElementById('jumlah_anggota_input').value = (kel.anggota_keluarga || []).length || 1;
 
         evaluasiStatusKeluarga();
 
-        // 3. Susun Ulang Anggota Keluarga (Langkah 2)
+        // Siapkan juga data anggota di latar belakang untuk review & simpan
         const rawAnggota = kel.anggota_keluarga || [];
         rawAnggota.sort((a, b) => (parseInt(a.nomor_anggota_keluarga, 10) || 0) - (parseInt(b.nomor_anggota_keluarga, 10) || 0));
 
@@ -4092,52 +4087,27 @@
         containerAnggota.innerHTML = '';
         totalHalamanAnggota = 0;
 
-        const jmlAng = Math.max(rawAnggota.length, 1);
-        document.getElementById('jumlah_anggota_input').value = jmlAng;
-
-        for (let i = 1; i <= jmlAng; i++) {
+        for (let i = 1; i <= Math.max(rawAnggota.length, 1); i++) {
           tambahHalamanAnggotaBaru();
-          const dataAng = rawAnggota[i - 1];
-          if (dataAng) {
-            const hal = document.getElementById(`hal_anggota_${i}`);
-            if (hal) {
-              hal.querySelector('[name="nama_lengkap"]').value = dataAng.nama_lengkap || '';
-              hal.querySelector('[name="nik"]').value = dataAng.nik || '';
-              hal.querySelector('[name="jenis_kelamin"]').value = String(dataAng.jenis_kelamin || '1');
-              hal.querySelector('[name="tanggal_lahir"]').value = dataAng.tanggal_lahir || '';
-              hal.querySelector('[name="display_usia"]').value = dataAng.tanggal_lahir ? hitungUsiaTahun(dataAng.tanggal_lahir) : '';
-              
-              const selKawin = hal.querySelector('[name="status_perkawinan"]');
-              selKawin.value = String(dataAng.status_perkawinan || '1');
-              evaluasiUsiaKawin(selKawin, i);
-              if (dataAng.usia_kawin_pertama) {
-                hal.querySelector('[name="usia_kawin_pertama"]').value = dataAng.usia_kawin_pertama;
-              }
-
-              hal.querySelector('[name="memiliki_akta_lahir"]').value = String(dataAng.memiliki_akta_lahir || '1');
-              hal.querySelector('[name="hubungan_dengan_kk"]').value = String(dataAng.hubungan_dengan_kk || (i === 1 ? '1' : '3'));
-              hal.querySelector('[name="agama"]').value = String(dataAng.agama || '1');
-              hal.querySelector('[name="jenis_pekerjaan"]').value = String(dataAng.jenis_pekerjaan || '1');
-              hal.querySelector('[name="pendidikan"]').value = String(dataAng.pendidikan || '1');
-              hal.querySelector('[name="kepesertaan_jkn"]').value = String(dataAng.kesertaan_jkn || dataAng.kepesertaan_jkn || '1');
-              hal.querySelector('[name="gangguan_fungsional"]').value = String(dataAng.gangguan_fungsional || '5');
-              hal.querySelector('[name="kemampuan_mengurus_diri"]').value = String(dataAng.kemampuan_mengurus_diri || '4');
-              hal.querySelector('[name="bekerja_luar_negeri"]').value = String(dataAng.bekerja_luar_negeri || '4');
-              hal.querySelector('[name="mutasi_anggota"]').value = String(dataAng.mutasi_anggota || '0');
+          const dAng = rawAnggota[i - 1];
+          if (dAng) {
+            const hAng = document.getElementById(`hal_anggota_${i}`);
+            if (hAng) {
+              hAng.querySelector('[name="nama_lengkap"]').value = dAng.nama_lengkap || '';
+              hAng.querySelector('[name="nik"]').value = dAng.nik || '';
+              hAng.querySelector('[name="jenis_kelamin"]').value = String(dAng.jenis_kelamin || '1');
+              hAng.querySelector('[name="tanggal_lahir"]').value = dAng.tanggal_lahir || '';
+              hAng.querySelector('[name="status_perkawinan"]').value = String(dAng.status_perkawinan || '1');
+              hAng.querySelector('[name="hubungan_dengan_kk"]').value = String(dAng.hubungan_dengan_kk || (i === 1 ? '1' : '3'));
+              hAng.querySelector('[name="agama"]').value = String(dAng.agama || '1');
+              hAng.querySelector('[name="jenis_pekerjaan"]').value = String(dAng.jenis_pekerjaan || '1');
+              hAng.querySelector('[name="pendidikan"]').value = String(dAng.pendidikan || '1');
+              hAng.querySelector('[name="kepesertaan_jkn"]').value = String(dAng.kesertaan_jkn || dAng.kepesertaan_jkn || '1');
             }
           }
         }
 
-        perbaruiSemuaOpsiIbuKandung();
-        rawAnggota.forEach((ang, idx) => {
-          const hal = document.getElementById(`hal_anggota_${idx + 1}`);
-          if (hal && ang.kode_ibu_kandung) {
-            const selIbu = hal.querySelector('[name="kode_ibu_kandung"]');
-            if (selIbu) selIbu.value = String(ang.kode_ibu_kandung);
-          }
-        });
-
-        // 4. Isi Data Blok KB (Langkah 3)
+        // 3. Muat Data Blok KB
         dataNilaiKB.kb_01_melahirkan = kel.kb_01_melahirkan ?? '';
         dataNilaiKB.kb_01_hidup_laki = kel.kb_01_hidup_laki ?? '';
         dataNilaiKB.kb_01_hidup_perempuan = kel.kb_01_hidup_perempuan ?? '';
@@ -4163,7 +4133,7 @@
         dataNilaiKB.kb_09_info_efek_samping = kel.kb_09_info_efek_samping === true ? '1' : (kel.kb_09_info_efek_samping === false ? '2' : String(kel.kb_09_info_efek_samping || ''));
         dataNilaiKB.kb_09_info_tindakan = kel.kb_09_info_tindakan === true ? '1' : (kel.kb_09_info_tindakan === false ? '2' : String(kel.kb_09_info_tindakan || ''));
 
-        // 5. Isi Data Blok PK (Langkah 4)
+        // 4. Muat Data Blok PK
         const parseArrayPK = (val) => {
           if (!val) return [];
           return Array.isArray(val) ? val : String(val).split(',').map(s => s.trim());
@@ -4216,7 +4186,7 @@
           pk_29_persetujuan_keluarga: parseArrayPK(kel.pk_29_persetujuan_keluarga || kel.pk_29)
         };
 
-        // Inisialisasi tampilan wizard KB dan PK
+        // Reset wizard view KB & PK
         indexStepKB = 0;
         riwayatStepKB = [];
         indexStepPK = 0;
@@ -7978,6 +7948,18 @@
       document.getElementById('no_urut_keluarga').value = noUrutKel;
 
       if (status === '1' || status === '6') {
+        // JIKA DALAM MODE EDIT LUAR: Langsung lewati pengisian individu dan menuju ke Blok KB
+        if (modeEditKeluargaLuar) {
+          pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
+          const badge = document.getElementById('badgeLangkah');
+          if (badge) badge.innerText = "LANGKAH 3 (KB)";
+          indexStepKB = 0;
+          riwayatStepKB = [];
+          tampilkanStepKB();
+          return;
+        }
+
+        // MODE NORMAL (INPUT BARU): Menuju input individu satu per satu
         const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value, 10) || 0;
         if (jmlAnggota < 1) {
           Swal.fire({
@@ -8542,7 +8524,7 @@
     function majuDariAnggota(noUrut) {
       const pageEl = document.getElementById(`hal_anggota_${noUrut}`);
       if (!pageEl) return;
-
+      
       const nama = pageEl.querySelector('[name="nama_lengkap"]')?.value.trim() || '';
       const nik = pageEl.querySelector('[name="nik"]')?.value.trim() || '';
       const jk = pageEl.querySelector('[name="jenis_kelamin"]')?.value || '';
@@ -8562,157 +8544,104 @@
       const mutasi = pageEl.querySelector('[name="mutasi_anggota"]')?.value || '';
 
       const daftarBelumSesuai = [];
+      if (!nama) daftarBelumSesuai.push('Kolom 2: Nama Lengkap belum diisi');
+      if (!nik || nik.length !== 16) daftarBelumSesuai.push('Kolom 2: NIK harus 16 digit');
+      if (!jk) daftarBelumSesuai.push('Kolom 3: Jenis Kelamin belum dipilih');
+      if (!tgl) daftarBelumSesuai.push('Kolom 4: Tanggal Lahir belum diisi');
+      if (!statusKawin) daftarBelumSesuai.push('Kolom 5: Status Perkawinan belum dipilih');
+      if (['2', '3', '4', '5', '6'].includes(statusKawin) && !usiaKawin) daftarBelumSesuai.push('Kolom 6: Usia Kawin Pertama belum diisi');
+      if (!akta) daftarBelumSesuai.push('Kolom 7: Memiliki Akta Lahir belum dipilih');
+      if (!hub) daftarBelumSesuai.push('Kolom 8: Hubungan Dengan KK belum dipilih');
+      if (!kodeIbu) daftarBelumSesuai.push('Kolom 9: Kode Ibu Kandung belum dipilih');
+      if (!agama) daftarBelumSesuai.push('Kolom 10: Agama belum dipilih');
+      if (!kerja) daftarBelumSesuai.push('Kolom 11: Jenis Pekerjaan belum dipilih');
+      if (!didik) daftarBelumSesuai.push('Kolom 13: Pendidikan belum dipilih');
+      if (!jkn) daftarBelumSesuai.push('Kolom 14: Kepesertaan JKN belum dipilih');
+      if (!disabilitas) daftarBelumSesuai.push('Kolom 15: Kesulitan Fungsional belum dipilih');
+      if (!urusDiri) daftarBelumSesuai.push('Kolom 16: Mengurus Diri Sendiri belum dipilih');
+      if (!luarNegeri) daftarBelumSesuai.push('Kolom 17: Bekerja di Luar Negeri belum dipilih');
+      if (mutasi === '') daftarBelumSesuai.push('Kolom 18: Mutasi Anggota belum dipilih');
 
-      // Validasi kolom satu per satu
-      if (!nama) {
-        daftarBelumSesuai.push('Kolom 2: Nama Lengkap belum diisi');
-      }
-
-      if (!nik) {
-        daftarBelumSesuai.push('Kolom 2: NIK belum diisi');
-      } else if (nik.length !== 16) {
-        daftarBelumSesuai.push('Kolom 2: NIK harus terdiri dari 16 digit angka');
-      }
-
-      if (!jk) {
-        daftarBelumSesuai.push('Kolom 3: Jenis Kelamin belum dipilih');
-      }
-
-      if (!tgl) {
-        daftarBelumSesuai.push('Kolom 4: Tanggal Lahir belum diisi');
-      }
-
-      if (!statusKawin) {
-        daftarBelumSesuai.push('Kolom 5: Status Perkawinan belum dipilih');
-      }
-
-      if (['2', '3', '4', '5', '6'].includes(statusKawin)) {
-        if (!usiaKawin) {
-          daftarBelumSesuai.push('Kolom 6: Usia Kawin Pertama wajib diisi untuk status Kawin/Cerai');
-        } else {
-          const uK = parseInt(usiaKawin, 10);
-          if (isNaN(uK) || uK < 10 || uK > 70) {
-            daftarBelumSesuai.push('Kolom 6: Usia Kawin Pertama harus antara 10 - 70 tahun');
-          }
-        }
-      }
-
-      if (!akta) {
-        daftarBelumSesuai.push('Kolom 7: Memiliki Akta Lahir belum dipilih');
-      }
-
-      if (!hub) {
-        daftarBelumSesuai.push('Kolom 8: Hubungan Dengan KK belum dipilih');
-      }
-
-      if (!kodeIbu) {
-        daftarBelumSesuai.push('Kolom 9: Kode Ibu Kandung belum dipilih');
-      }
-
-      if (!agama) {
-        daftarBelumSesuai.push('Kolom 10: Agama belum dipilih');
-      }
-
-      if (!kerja) {
-        daftarBelumSesuai.push('Kolom 11: Jenis Pekerjaan belum dipilih');
-      }
-
-      if (!didik) {
-        daftarBelumSesuai.push('Kolom 13: Pendidikan belum dipilih');
-      }
-
-      if (!jkn) {
-        daftarBelumSesuai.push('Kolom 14: Kepesertaan JKN belum dipilih');
-      }
-
-      if (!disabilitas) {
-        daftarBelumSesuai.push('Kolom 15: Kesulitan Fungsional belum dipilih');
-      }
-
-      if (!urusDiri) {
-        daftarBelumSesuai.push('Kolom 16: Mengurus Diri Sendiri belum dipilih');
-      }
-
-      if (!luarNegeri) {
-        daftarBelumSesuai.push('Kolom 17: Bekerja di Luar Negeri belum dipilih');
-      }
-
-      if (mutasi === '') {
-        daftarBelumSesuai.push('Kolom 18: Mutasi Anggota belum dipilih');
-      }
-
-      // Tampilkan popup jika ada kolom yang belum lengkap
       if (daftarBelumSesuai.length > 0) {
-        const itemHtml = daftarBelumSesuai.map(item => `<li>${item}</li>`).join('');
         Swal.fire({
           icon: 'warning',
-          title: 'Isian Belum Lengkap / Sesuai',
-          html: `
-            <div class="text-left text-xs text-slate-700 space-y-2">
-              <p class="font-semibold text-rose-600">Mohon periksa dan lengkapi kolom-kolom berikut:</p>
-              <ul class="list-disc pl-5 space-y-1 text-slate-800">
-                ${itemHtml}
-              </ul>
-            </div>
-          `,
+          title: 'Isian Belum Lengkap',
+          html: `<ul class="list-disc pl-5 text-xs text-left">${daftarBelumSesuai.map(d => `<li>${d}</li>`).join('')}</ul>`,
           confirmButtonColor: '#0284c7'
         });
         return;
       }
+      
+      if (daftarUrutanAnomali.length > 0) {
+        // Ambil data terbaru anggota saat ini untuk mengecek apakah masih anomali
+        const dataAnggotaSekarang = {
+          nama_lengkap: nama,
+          nik: nik,
+          jenis_kelamin: jk,
+          tanggal_lahir: tgl,
+          status_perkawinan: statusKawin,
+          hubungan_dengan_kk: hub,
+          jenis_pekerjaan: kerja,
+          pendidikan: didik
+        };
 
-      // Jika validasi lolos dan ini anggota terakhir
+        const anomaliSisa = deteksiAnomaliAnggota(dataAnggotaSekarang);
+        if (anomaliSisa.length === 0) {
+          // Jika individu ini sudah tidak anomali, hapus dari antrean
+          daftarUrutanAnomali = daftarUrutanAnomali.filter(num => num !== noUrut);
+        } else {
+          // Jika masih anomali, geser index ke anggota berikutnya di antrean
+          indexAnomaliAktif++;
+        }
+        
+        if (daftarUrutanAnomali.length === 0) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Semua Anomali Berhasil Diperbaiki!',
+            text: 'Data individu telah valid. Dialihkan kembali ke form pratinjau.',
+            timer: 1500,
+            showConfirmButton: false
+          }).then(() => {
+            bukaHalamanReview();
+          });
+          return;
+        }
+
+        // Jika masih ada anomali lain yang tersisa, arahkan ke individu berikutnya
+        if (indexAnomaliAktif >= daftarUrutanAnomali.length) {
+          indexAnomaliAktif = 0; // Ulangi ke anomali yang belum selesai
+        }
+
+        const noUrutTarget = daftarUrutanAnomali[indexAnomaliAktif];
+        bukaHalamanAnggota(noUrutTarget);
+
+        Swal.fire({
+          icon: 'info',
+          title: `Pemeriksaan Anomali (${indexAnomaliAktif + 1} dari ${daftarUrutanAnomali.length})`,
+          text: `Mengarahkan ke Anggota #${noUrutTarget}.`,
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
+      }
+      
       if (noUrut === totalHalamanAnggota) {
         Swal.fire({
-          title: `
-            <div class="text-base sm:text-lg font-black text-slate-800 uppercase tracking-tight">
-              Tambah Data Individu
-            </div>
-          `,
-          html: `
-            <div class="space-y-4 pt-1 pb-2">
-              <p class="text-xs sm:text-sm text-slate-600 font-medium">
-                Apakah anda akan melakukan tambah data individu?
-              </p>
-              
-              <div class="flex flex-col gap-2.5 pt-2">
-                <button type="button" id="btnYaTambahIndividu"
-                        class="w-full py-3 bg-[#48bb78] hover:bg-[#38a169] active:scale-95 text-white font-bold rounded-2xl shadow transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
-                  <span>👤+</span>
-                  <span>Ya, Tambah Individu</span>
-                </button>
-                
-                <button type="button" id="btnTidakLanjutKB"
-                        class="w-full py-3 bg-slate-50 hover:bg-slate-100 active:scale-95 text-slate-700 font-bold border border-slate-200 rounded-2xl shadow-sm transition text-xs sm:text-sm flex items-center justify-center gap-1.5 uppercase">
-                  <span>Tidak</span>
-                  <span>&rarr;</span>
-                </button>
-              </div>
-
-              <p class="text-[11px] text-slate-400 italic pt-1">
-                *Jika pilih Tidak maka akan dilanjutkan ke Blok KB / Form Penapisan
-              </p>
-            </div>
-          `,
-          showConfirmButton: false,
-          showCancelButton: false,
-          showCloseButton: true,
-          customClass: {
-            popup: 'rounded-3xl p-5 sm:p-6 shadow-2xl max-w-xs sm:max-w-sm border border-slate-100',
-            closeButton: 'text-slate-400 hover:text-slate-700 focus:outline-none'
-          },
-          didOpen: () => {
-            document.getElementById('btnYaTambahIndividu').addEventListener('click', () => {
-              Swal.close();
-              tambahHalamanAnggotaBaru();
-              bukaHalamanAnggota(totalHalamanAnggota);
-            });
-
-            document.getElementById('btnTidakLanjutKB').addEventListener('click', () => {
-              Swal.close();
-              pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
-              const badge = document.getElementById('badgeLangkah');
-              if (badge) badge.innerText = "LANGKAH 3";
-            });
+          title: '<div class="text-base sm:text-lg font-black text-slate-800 uppercase">Tambah Data Individu</div>',
+          html: '<p class="text-xs sm:text-sm text-slate-600 font-medium">Apakah anda akan melakukan tambah data individu?</p>',
+          showCancelButton: true,
+          confirmButtonText: '👤+ Ya, Tambah Individu',
+          cancelButtonText: 'Tidak, Lanjut ke Blok KB →',
+          confirmButtonColor: '#48bb78',
+          cancelButtonColor: '#0284c7'
+        }).then((res) => {
+          if (res.isConfirmed) {
+            tambahHalamanAnggotaBaru();
+            bukaHalamanAnggota(totalHalamanAnggota);
+          } else {
+            pindahHalamanForm('hal_kb', 'III. BLOK KELUARGA BERENCANA');
+            const badge = document.getElementById('badgeLangkah');
+            if (badge) badge.innerText = "LANGKAH 3";
           }
         });
       } else {
@@ -10500,10 +10429,17 @@
       if (riwayatStepKB.length > 0) {
         indexStepKB = riwayatStepKB.pop();
         tampilkanStepKB();
-      } else {        
-        bukaHalamanAnggota(totalHalamanAnggota);
+      } else {
+        // Jika dalam mode edit luar, kembali ke Form Wilayah
+        if (modeEditKeluargaLuar) {
+          pindahHalamanForm('hal_wilayah', 'I. IDENTITAS WILAYAH (MODE EDIT)');
+          const badge = document.getElementById('badgeLangkah');
+          if (badge) badge.innerText = "LANGKAH 1";
+        } else {        
+          bukaHalamanAnggota(totalHalamanAnggota);
+        }
       }
-    }    
+    }   
     
     function renderBlokPK() {
       const kontainer = document.getElementById('wadahPertanyaanPK');
@@ -11798,13 +11734,17 @@
           mutasi_anggota: hal.querySelector('[name="mutasi_anggota"]')?.value || '0'
         };
       });
-
+      
       // 3. Deteksi Data Anomali & Tampilkan Dialog Konfirmasi Cerdas
       let statusKonfirmasiAnomali = 'NORMAL';
       if (typeof periksaSeluruhAnomaliKeluarga === 'function') {
         const anomaliTerdeteksi = periksaSeluruhAnomaliKeluarga(rawDaftarAnggota);
 
         if (anomaliTerdeteksi.length > 0) {
+          // CATAT NOMOR URUT INDIVIDU YANG MENGALAMI ANOMALI KE DALAM ANTREAN
+          daftarUrutanAnomali = anomaliTerdeteksi.map(item => item.noUrut);
+          indexAnomaliAktif = 0;
+
           let rincianHtml = anomaliTerdeteksi.map(item => `
             <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl mb-2 text-left">
               <p class="font-bold text-slate-800 text-xs">${item.noUrut}. ${item.nama.toUpperCase()} (NIK: ${item.nik})</p>
@@ -11831,9 +11771,9 @@
             `,
             showCancelButton: true,
             confirmButtonText: '💾 Tetap Simpan & Konfirmasi',
-            cancelButtonText: 'Periksa Kembali Form',
+            cancelButtonText: '🔍 Periksa Kembali Form',
             confirmButtonColor: '#059669',
-            cancelButtonColor: '#64748b',
+            cancelButtonColor: '#0284c7',
             focusConfirm: false,
             preConfirm: () => {
               const cb = document.getElementById('cbKonfirmasiAnomali');
@@ -11845,8 +11785,18 @@
             }
           });
 
-          // Jika kader memilih "Periksa Kembali Form" atau membatalkan, proses berhenti di sini
+          // JIKA MEMILIH "Periksa Kembali Form", LANGSUNG ARAHKAN KE ANOMALI PERTAMA
           if (!hasilKonfirmasi.isConfirmed) {
+            const targetNoUrutPertama = daftarUrutanAnomali[0];
+            bukaHalamanAnggota(targetNoUrutPertama);
+            
+            Swal.fire({
+              icon: 'info',
+              title: `Pemeriksaan Anomali (1 dari ${daftarUrutanAnomali.length})`,
+              text: `Mengarahkan ke Anggota #${targetNoUrutPertama}. Silakan periksa atau perbaiki isian data.`,
+              timer: 2000,
+              showConfirmButton: false
+            });
             return;
           }
 
