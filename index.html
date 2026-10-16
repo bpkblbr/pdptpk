@@ -6590,24 +6590,30 @@
     function getNamaWilayahByKode(kdKab, kdKec, kdDesa) {
       const listWil = window.rawWilayahList || rawWilayahList || [];
 
-      const strKab = kdKab !== null && kdKab !== undefined ? String(kdKab).trim() : '';
-      const strKec = kdKec !== null && kdKec !== undefined ? String(kdKec).trim() : '';
-      const strDesa = kdDesa !== null && kdDesa !== undefined ? String(kdDesa).trim() : '';
+      // Bersihkan dan ambil 4 digit terakhir jika berupa kode wilayah panjang
+      let strKab = kdKab !== null && kdKab !== undefined ? String(kdKab).trim() : '';
+      let strKec = kdKec !== null && kdKec !== undefined ? String(kdKec).trim() : '';
+      let strDesa = kdDesa !== null && kdDesa !== undefined ? String(kdDesa).trim() : '';
+
+      // Ekstrak akhiran jika user menyimpan kode panjang (misal 520113 -> 13, 5201132005 -> 2005)
+      const cleanKec = strKec.length > 2 ? strKec.slice(-2) : strKec;
+      const cleanDesa = strDesa.length > 4 ? strDesa.slice(-4) : strDesa;
 
       const intKab = parseInt(strKab, 10);
-      const intKec = parseInt(strKec, 10);
-      const intDesa = parseInt(strDesa, 10);
+      const intKec = parseInt(cleanKec, 10);
+      const intDesa = parseInt(cleanDesa, 10);
 
       let namaKab = '';
       let namaKec = '';
       let namaDesa = '';
 
       if (Array.isArray(listWil) && listWil.length > 0) {
-        // 1. CARI NAMA DESA (Prioritas utama)
+        // 1. CARI NAMA DESA (Cocokkan string utuh, potongan akhir, atau integer)
         if (strDesa) {
           const itemD = listWil.find(w => {
-            const d = String(w.kode_desa || '').trim();
-            return d === strDesa || (!isNaN(intDesa) && parseInt(d, 10) === intDesa);
+            const d = String(w.kode_desa || w.kd_desa || '').trim();
+            const dInt = parseInt(d, 10);
+            return d === strDesa || d === cleanDesa || (!isNaN(intDesa) && dInt === intDesa);
           });
           if (itemD) {
             namaDesa = itemD.desa || itemD.nama_desa || itemD.kelurahan || '';
@@ -6616,11 +6622,12 @@
           }
         }
 
-        // 2. CARI NAMA KECAMATAN (Jika belum ketemu dari baris desa)
+        // 2. CARI NAMA KECAMATAN (Jika belum didapat dari data desa)
         if (!namaKec && strKec) {
           const itemK = listWil.find(w => {
-            const k = String(w.kode_kec || w.kode_kecamatan || '').trim();
-            return k === strKec || (!isNaN(intKec) && parseInt(k, 10) === intKec);
+            const k = String(w.kode_kec || w.kd_kec || w.kode_kecamatan || '').trim();
+            const kInt = parseInt(k, 10);
+            return k === strKec || k === cleanKec || (!isNaN(intKec) && kInt === intKec);
           });
           if (itemK) {
             namaKec = itemK.kecamatan || itemK.nama_kecamatan || '';
@@ -6631,7 +6638,7 @@
         // 3. CARI NAMA KABUPATEN
         if (!namaKab && strKab) {
           const itemB = listWil.find(w => {
-            const b = String(w.kode_kab || w.kode_kabupaten || '').trim();
+            const b = String(w.kode_kab || w.kd_kab || w.kode_kabupaten || '').trim();
             return b === strKab || (!isNaN(intKab) && parseInt(b, 10) === intKab);
           });
           if (itemB) {
@@ -6640,8 +6647,18 @@
         }
       }
 
-      // Fallback nama Kabupaten Lombok Barat jika masih kosong
-      if (!namaKab && (strKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
+      // Fallback Kamus Object Lokal jika data di database belum lengkap
+      const padKab = !isNaN(intKab) ? String(intKab).padStart(2, '0') : '';
+      const padKec = !isNaN(intKec) ? String(intKec).padStart(2, '0') : '';
+      const padDesa = !isNaN(intDesa) ? String(intDesa).padStart(4, '0') : '';
+
+      if (!namaKab && (padKab === '01' || strKab === '1')) namaKab = 'LOMBOK BARAT';
+      if (!namaKec && padKec) {
+        namaKec = window.dataKecamatan?.[padKab]?.[padKec] || window.dataKecamatan?.['01']?.[padKec] || '';
+      }
+      if (!namaDesa && padDesa) {
+        namaDesa = window.dataDesa?.[`${padKab || '01'}_${padKec}`]?.[padDesa] || '';
+      }
 
       return {
         kab: (namaKab || strKab || '-').toUpperCase(),
@@ -6955,7 +6972,7 @@
               kode_kab: userAktif.kode_kab || '01',
               kode_kec: kdKec || null,
               kode_desa: (role === 'User Desa') ? (kdDesa || null) : null,
-              allowed_dusun: allowedDusun
+              allowed_dusun: allowedDusun,
               allowed_wilayah_rt: String(r.ALLOWED_WILAYAH_RT || r.allowed_wilayah_rt || '').trim() || null
             });
           }
@@ -7481,9 +7498,11 @@
       }
 
       try {
+        // Berikan limit besar agar seluruh desa terambil lengkap
         const { data, error } = await supabaseClient
           .from('master_wilayah')
           .select('*')
+          .range(0, 99999)
           .order('provinsi', { ascending: true });
 
         if (error) {
@@ -7491,7 +7510,6 @@
           throw error;
         }
 
-        // SIMPAN KE KEDUA REFERENSI AGAR TIDAK HILANG
         rawWilayahList = data || [];
         window.rawWilayahList = rawWilayahList;
 
