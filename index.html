@@ -8122,9 +8122,28 @@
           return;
         }
         
-        bukaHalamanAnggota(1);
-      }
+        const jmlAnggota = parseInt(document.getElementById('jumlah_anggota_input').value, 10) || 0;
+        if (jmlAnggota < 1) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Jumlah Anggota',
+            text: 'Jumlah anggota keluarga minimal 1 orang!',
+            confirmButtonColor: '#059669'
+          });
+          return;
+        }
 
+        const sisaHalaman = document.querySelectorAll('.item-anggota-page');
+        if (sisaHalaman.length === 0) {
+          const container = document.getElementById('area_anggota_keluarga');
+          container.innerHTML = '';
+          totalHalamanAnggota = 0;
+          for (let i = 1; i <= jmlAnggota; i++) {
+            tambahHalamanAnggotaBaru();
+          }
+        }
+
+        bukaHalamanAnggota(1);
       } else {
         const textStatus = document.getElementById('status_keluarga').selectedOptions[0].text;
         
