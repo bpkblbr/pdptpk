@@ -2216,18 +2216,37 @@
       }
     }
 
+    // 3. Pastikan Event Listener terpasang dengan benar untuk mendeteksi perubahan
+    window.addEventListener('online', () => {
+      perbaruiIndikatorStatusKoneksi();
+      perbaruiIndikatorSinyalKader();
+      sinkronkanDataOffline();
+    });
+
+    window.addEventListener('offline', () => {
+      perbaruiIndikatorStatusKoneksi();
+      perbaruiIndikatorSinyalKader();
+    });
+
     // Perbarui icon dan teks sinyal di header kader
     function perbaruiIndikatorSinyalKader() {
       const iconWrap = document.getElementById('kaderHomeKoneksiIcon');
       const textSinyal = document.getElementById('kaderHomeKoneksiText');
+      
+      // Cek apakah perangkat online atau offline secara riil
+      const statusOnline = navigator.onLine;
+
+      // Perbarui indikator umum di dashboard utama jika ada
+      perbaruiIndikatorStatusKoneksi();
+
       if (!iconWrap || !textSinyal) return;
 
-      if (navigator.onLine) {
+      if (statusOnline) {
         iconWrap.className = "px-2.5 py-1 rounded-full bg-emerald-500/30 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold text-white shadow-sm transition";
-        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span><span>Online</span>`;
+        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse"></span><span id="kaderHomeKoneksiText">Online</span>`;
       } else {
         iconWrap.className = "px-2.5 py-1 rounded-full bg-rose-500/40 backdrop-blur-md flex items-center gap-1.5 text-xs font-bold text-rose-100 shadow-sm transition";
-        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span><span>Offline</span>`;
+        iconWrap.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span><span id="kaderHomeKoneksiText">Offline</span>`;
       }
     }
 
